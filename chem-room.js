@@ -4,12 +4,12 @@
 (function () {
   "use strict";
 
-  /** 미니룸 배경 — `원소의 방` 폴더 PNG (1.png … 10.png) */
+  /** 미니룸 배경 — `원소의 방/` 폴더 PNG (1.png … 10.png) */
   function getElementRoomImageUrl(z) {
     if (z < 1 || z > 10) {
       return "";
     }
-    return encodeURI("원소의 방/" + z + ".png") + "?v=9";
+    return encodeURI(("원소의 방/" + z + ".png").normalize("NFD")) + "?v=11";
   }
 
   /** 상온 기체(대표) — 미니홈 Z 1–10 중 기체: H, He, N, O, F, Ne 등 */
