@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="ko">
   <head>
+    <script>
+      (function () {
+        var isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+        if (!isMobile) {
+          location.replace("index.html" + location.search + location.hash);
+        }
+      })();
+    </script>
     <meta charset="UTF-8" />
     <meta
       name="viewport"
