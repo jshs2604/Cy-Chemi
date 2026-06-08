@@ -7,6 +7,13 @@
 (function () {
   "use strict";
 
+  /** Mac→GitHub 업로드 시 한글 폴더명이 NFD로 저장됨 → encodeURI 전에 normalize 필수 */
+  function localPngUrl(folder, z, version) {
+    return encodeURI((folder + "/" + z + ".png").normalize("NFD")) + "?v=" + version;
+  }
+
+  var CHAR_DIR = "원소 캐릭터";
+  var ROOM_DIR = "원소의 방";
   /**
    * 원소별 대표 이미지(금속 시료, 방전관, 결정 등) — 없으면 풀에서 순환
    * 출처: Wikimedia Commons (파일명 기준)
@@ -49,7 +56,7 @@
       cap: "플루오린(F) 방전관 · Commons",
     },
     10: {
-      url: encodeURI("원소 캐릭터/10.png") + "?v=17",
+      url: localPngUrl(CHAR_DIR, 10, 19),
       cap: "네온(Ne) 캐릭터 일러스트 (원소 캐릭터/10.png)",
     },
     11: {
@@ -193,8 +200,7 @@
     }
     /** Z 1–10: `원소 캐릭터/1.png`…`10.png` (1380×752, 직접 교체). 프로필 프레임은 style.css contain. */
     if (el.z >= 1 && el.z <= 10) {
-      /* 쿼리: 브라우저 캐시에 남은 예전 PNG를 피하기 위함(파일 바꾼 뒤에도 번호만 올리면 됨) */
-      return encodeURI("원소 캐릭터/" + el.z + ".png") + "?v=17";
+      return localPngUrl(CHAR_DIR, el.z, 19);
     }
     var seed = encodeURIComponent(el.symbol + "-" + el.name + "-" + el.z);
     var bg = ["b6e3f4", "c0aede", "d1d4f9", "ffd5dc", "ffdfbf", "e0e0e0"];
@@ -208,9 +214,9 @@
     );
   }
 
-  /** Z 1–10: 로컬 `원소의 방/` 폴더의 png를 1순위 구조 사진으로 사용 (네트워크 끊겨도 보임) */
+  /** Z 1–10: 로컬 `원소의 방/` 폴더의 png를 1순위 구조 사진으로 사용 */
   function getLocalStructureUrl(z) {
-    return encodeURI("원소의 방/" + z + ".png") + "?v=9";
+    return localPngUrl(ROOM_DIR, z, 11);
   }
 
   function getStructureAsset(el) {
