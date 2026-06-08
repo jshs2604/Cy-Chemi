@@ -1,0 +1,3284 @@
+/* Cy-Chemi — index-mobile.html 싸이월드 앱 스타일 */
+
+body.cy-mobile-page.cyworld-body {
+  margin: 0;
+  padding: 0 0 calc(64px + env(safe-area-inset-bottom, 0px));
+  background: #e8e8e8;
+  overflow-x: hidden;
+  max-width: 100vw;
+  font-size: 16px;
+  line-height: 1.45;
+  transition: background-color 0.4s ease, background 0.4s ease;
+  /* 패널·카드 — 테마별로 --mh-m-* 변수 덮어씀 */
+  --mh-m-panel-bg: #eef6fc;
+  --mh-m-card-h2: linear-gradient(90deg, #1976d2 0%, #1565c0 50%, #0d47a1 100%);
+  --mh-m-card-h2-color: #fff;
+  --mh-m-diary-bg: linear-gradient(180deg, #fff5f8 0%, #ffe8f0 55%, #ffd9e6 100%);
+  --mh-m-diary-h2: linear-gradient(90deg, #ff8db1 0%, #ee6a96 50%, #d8528a 100%);
+  --mh-m-gb-bg: linear-gradient(180deg, #f6f0ff 0%, #ece1ff 55%, #ddd0f5 100%);
+  --mh-m-gb-h2: linear-gradient(90deg, #a08adf 0%, #8a6dd0 50%, #6f53b8 100%);
+  --mh-m-text: #1e2a33;
+  --mh-m-muted: #5a6a78;
+  --mh-m-diary-page: #fffdf8;
+  --mh-m-gb-wrap-dot: rgba(200, 180, 240, 0.45);
+}
+
+body.cy-mobile-page .cy-mobile-banner,
+body.cy-mobile-page .cy-chrome {
+  display: none !important;
+}
+
+/* ── 상단 앱 바 (하늘색) ── */
+.cy-app-bar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 14px calc(10px + env(safe-area-inset-top, 0px));
+  background: linear-gradient(180deg, #6ec6f5 0%, #4db3e8 100%);
+  border-bottom: 1px solid #3a9fd4;
+  box-shadow: 0 2px 8px rgba(30, 100, 150, 0.2);
+}
+
+.cy-app-bar__title {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  flex: 1;
+  font-family: "Galmuri11", Gulim, sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(0, 60, 100, 0.25);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.cy-app-bar__nick {
+  flex-shrink: 0;
+  max-width: 42%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #fff;
+  font: inherit;
+  text-shadow: inherit;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-decoration: underline dotted rgba(255, 255, 255, 0.55);
+  text-underline-offset: 2px;
+}
+
+.cy-app-bar__home {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cy-app-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.cy-app-bar__btn {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cy-app-bar__btn:active {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.cy-app-bar__btn--theme {
+  font-size: 15px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0.22) 100%);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.35) inset;
+}
+
+/* ── 레이아웃: 데스크톱 틀 제거 ── */
+body.cy-mobile-page .mh-layout {
+  display: block;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body.cy-mobile-page .mh-frame {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  max-width: 100%;
+  min-width: 0;
+}
+
+body.cy-mobile-page .mh-book {
+  flex-direction: column;
+  background: #e8e8e8;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  min-height: auto;
+  overflow: visible;
+}
+
+body.cy-mobile-page .mh-book-spine {
+  display: none !important;
+}
+
+/* 홈 하단 사이드 위젯 — 모바일에서는 숨김 (상단 🌰 시트로 이동) */
+body.cy-mobile-page .mh-widgets {
+  display: none !important;
+}
+
+/* ── 상단 바: 도토리 버튼 ── */
+.cy-app-bar__btn--dotori {
+  position: relative;
+  width: auto;
+  min-width: 36px;
+  padding: 0 8px;
+  gap: 2px;
+  flex-direction: row;
+}
+
+.cy-app-bar__dotori-icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.cy-app-bar__dotori-count {
+  font-family: "Galmuri11", Gulim, sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(0, 60, 100, 0.25);
+}
+
+/* ── 도토리 · 럭키 박스 시트 ── */
+.cy-app-dotori[hidden] {
+  display: none !important;
+}
+
+.cy-app-dotori {
+  position: fixed;
+  inset: 0;
+  z-index: 1120;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.cy-app-dotori__sheet {
+  width: 100%;
+  max-height: 88vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 14px 14px calc(16px + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(180deg, #fff8e1 0%, #fff 28%);
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -8px 28px rgba(80, 50, 20, 0.2);
+}
+
+.cy-app-dotori__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.cy-app-dotori__title {
+  margin: 0;
+  flex: 1;
+  font-family: "Galmuri11", Gulim, sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  color: #6d4c1e;
+  line-height: 1.3;
+}
+
+.cy-app-dotori__x {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #d7a86e;
+  border-radius: 50%;
+  background: #fff;
+  color: #6d4c1e;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.cy-app-dotori__body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cy-app-dotori__close {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  min-height: 46px;
+  font-family: "Galmuri11", Gulim, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #6d4c1e;
+  background: #fff;
+  border: 1.5px solid #d7a86e;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.cy-app-dotori .mh-widget--dotori,
+.cy-app-dotori .mh-widget--gacha {
+  display: block !important;
+}
+
+/* ── 도토리 · 가챠 (시트 안) ── */
+.cy-app-dotori .mh-widget--dotori {
+  padding: 12px 14px;
+  border-radius: 10px;
+}
+
+.cy-app-dotori .mh-dotori-title {
+  font-size: 17px;
+}
+
+.cy-app-dotori .mh-dotori-emoji {
+  font-size: 22px;
+}
+
+.cy-app-dotori .mh-dotori-count {
+  font-size: 18px;
+}
+
+.cy-app-dotori .mh-dotori-unit {
+  font-size: 13px;
+}
+
+.cy-app-dotori .mh-dotori-hint {
+  margin: 0 0 8px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #8a6a3e;
+}
+
+.cy-app-dotori .mh-dotori-log {
+  max-height: 132px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  font-size: 12px;
+  gap: 4px;
+}
+
+.cy-app-dotori .mh-dotori-log li {
+  padding: 5px 8px;
+  font-size: 12px;
+}
+
+.cy-app-dotori .mh-dotori-log-amt {
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+/* ── 럭키 도토리 박스 (보상 미리보기) ── */
+.cy-app-dotori .mh-widget--gacha {
+  padding: 12px 14px 14px;
+  border-radius: 10px;
+}
+
+.cy-app-dotori .mh-gacha-title {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.cy-app-dotori .mh-gacha-prizes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  width: 100%;
+}
+
+.cy-app-dotori .mh-gacha-prize {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 4px 6px;
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid #f0a4b4;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.cy-app-dotori .mh-gacha-prize__icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.cy-app-dotori .mh-gacha-prize__name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #b04a78;
+  line-height: 1.2;
+  word-break: keep-all;
+}
+
+.cy-app-dotori .mh-gacha-prize__val {
+  font-size: 15px;
+  font-weight: 900;
+  color: #c83c70;
+}
+
+.cy-app-dotori .mh-gacha-desc,
+.cy-app-dotori .mh-gacha-meta {
+  display: none !important;
+}
+
+.cy-app-dotori .mh-gacha-btn {
+  font-size: 16px;
+  padding: 12px 18px;
+}
+
+.cy-app-dotori .mh-gacha-result {
+  font-size: 15px;
+}
+
+/* ── 프로필 카드 ── */
+body.cy-mobile-page .mh-profile {
+  width: 100%;
+  padding: 12px 14px;
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  grid-template-areas:
+    "visit visit"
+    "avatar info"
+    "avatar stats"
+    "intro intro";
+  gap: 8px 12px;
+  align-items: start;
+}
+
+/* 오늘의 행운 — TODAY IS 아래 */
+body.cy-mobile-page .cy-app-fortune {
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px dashed #eee;
+}
+
+body.cy-mobile-page .cy-app-fortune__label {
+  margin: 0 0 4px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #ff9800;
+  letter-spacing: 0.02em;
+}
+
+body.cy-mobile-page .cy-app-fortune__banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid #ffe0b2;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #fff8e1 0%, #fff3e0 100%);
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+body.cy-mobile-page .cy-app-fortune__banner:active {
+  transform: scale(0.99);
+}
+
+body.cy-mobile-page .cy-app-fortune__icon {
+  flex-shrink: 0;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+body.cy-mobile-page .cy-app-fortune__body {
+  flex: 1;
+  min-width: 0;
+}
+
+body.cy-mobile-page .cy-app-fortune__rank {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  color: #e65100;
+  line-height: 1.3;
+}
+
+body.cy-mobile-page .cy-app-fortune__msg {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  color: #555;
+  line-height: 1.4;
+  word-break: keep-all;
+}
+
+body.cy-mobile-page .cy-app-fortune__banner.is-rolling {
+  animation: cyAppFortuneRoll 0.45s ease-out;
+}
+
+@keyframes cyAppFortuneRoll {
+  0% {
+    opacity: 0.4;
+    transform: scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+body.cy-mobile-page .mh-visit {
+  grid-area: visit;
+  font-size: 11px;
+  color: #888;
+}
+
+body.cy-mobile-page .mh-visit .today,
+body.cy-mobile-page .mh-visit #visit-today {
+  color: #ff9800;
+  font-weight: 800;
+}
+
+body.cy-mobile-page .mh-avatar-stack,
+body.cy-mobile-page .mh-avatar {
+  grid-area: avatar;
+  width: 80px;
+  height: 80px;
+  margin: 0;
+}
+
+body.cy-mobile-page .mh-mascot-host--character-photo {
+  width: 80px;
+  height: 80px;
+  max-height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+body.cy-mobile-page .cy-app-profile-info {
+  grid-area: info;
+  min-width: 0;
+}
+
+body.cy-mobile-page .mh-status {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+body.cy-mobile-page .mh-status strong {
+  display: block;
+  font-size: 10px;
+  color: #888;
+  margin-bottom: 2px;
+}
+
+body.cy-mobile-page #profile-mood {
+  font-size: 12px;
+  color: #333;
+}
+
+body.cy-mobile-page .cy-app-profile-name {
+  margin: 0 0 4px;
+  font-family: "Galmuri11", Gulim, sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  color: #222;
+  line-height: 1.3;
+}
+
+body.cy-mobile-page .cy-app-nick-input,
+body.cy-mobile-page .cy-app-bar__title .cy-app-nick-input {
+  width: 100%;
+  max-width: 140px;
+  padding: 2px 6px;
+  border: 1px solid #fff;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #333;
+  font-family: "Galmuri11", Gulim, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+body.cy-mobile-page .mh-intro {
+  grid-area: intro;
+  margin: 0;
+  padding: 8px 0 0;
+  border-top: 1px dashed #eee;
+  font-size: 11px;
+  line-height: 1.45;
+  color: #666;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+body.cy-mobile-page .mh-profile > *:not(:last-child) {
+  border-bottom: none;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+body.cy-mobile-page .cy-app-profile-actions {
+  display: none !important;
+}
+
+body.cy-mobile-page .cy-app-profile-stats {
+  grid-area: stats;
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+  color: #666;
+}
+
+body.cy-mobile-page .cy-app-profile-stats b {
+  color: #ff9800;
+  font-weight: 800;
+}
+
+body.cy-mobile-page .mh-sidebar-panel {
+  display: none;
+}
+
+/* 홈 2×2 메뉴 — 모바일은 ☰ 더보기로 통일 */
+body.cy-mobile-page .cy-app-menu-grid {
+  display: none !important;
+}
+
+/* ── 홈 2×2 메뉴 그리드 (데스크톱) ── */
+.cy-app-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: #ccc;
+  border-bottom: 1px solid #ccc;
+}
+
+.cy-app-menu__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-height: 48px;
+  padding: 10px 8px;
+  font-family: "Galmuri11", Gulim, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #333;
+  background: #fff;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.cy-app-menu__item:active {
+  background: #f5f5f5;
+}
+
+.cy-app-menu__label {
+  flex: 1;
+}
+
+.cy-app-menu__count {
+  font-size: 11px;
+  font-weight: 400;
+  color: #888;
+}
+
+.cy-app-menu__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ff9800;
+  flex-shrink: 0;
+}
+
+/* ── 메인 영역 ── */
+body.cy-mobile-page .mh-main {
+  flex-direction: column;
+  background: #e8e8e8;
+}
+
+body.cy-mobile-page .mh-main-inner {
+  padding: 0;
+  background: #e8e8e8;
+}
+
+body.cy-mobile-page .mh-main-head {
+  display: none;
+}
+
+body.cy-mobile-page .mh-footer-note {
+  display: none;
+}
+
+body.cy-mobile-page .mh-tabs {
+  display: none !important;
+}
+
+/* 패널 전환 — style.css display 충돌 해소 */
+body.cy-mobile-page .mh-panel {
+  display: none !important;
+}
+
+body.cy-mobile-page .mh-panel.is-active:not([hidden]) {
+  display: block !important;
+}
+
+body.cy-mobile-page #panel-home.is-active:not([hidden]) {
+  display: flex !important;
+  flex-direction: column;
+  background: #e8e8e8;
+}
+
+/* 홈 탭: 프로필·메뉴만 / 다른 탭: 본문만 전체 */
+body.cy-mobile-page:not([data-cy-app-tab="home"]) .mh-profile,
+body.cy-mobile-page:not([data-cy-app-tab="home"]) .cy-app-menu-grid {
+  display: none !important;
+}
+
+/* 서브 탭(홈 제외): 짧은 콘텐츠여도 회색 여백 없이 화면 채움 */
+body.cy-mobile-page:not([data-cy-app-tab="home"]) {
+  background: #fff;
+}
+
+body.cy-mobile-page:not([data-cy-app-tab="home"]) .mh-layout,
+body.cy-mobile-page:not([data-cy-app-tab="home"]) .mh-frame {
+  background: #fff;
+  min-height: calc(
+    100dvh - 52px - 56px - env(safe-area-inset-top, 0px) -
+      env(safe-area-inset-bottom, 0px)
+  );
+}
+
+body.cy-mobile-page:not([data-cy-app-tab="home"]) .mh-book {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 100%;
+  background: #fff;
+}
+
+body.cy-mobile-page:not([data-cy-app-tab="home"]) .mh-main,
+body.cy-mobile-page:not([data-cy-app-tab="home"]) .mh-main-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 0;
+  background: #fff;
+}
+
+body.cy-mobile-page:not([data-cy-app-tab="home"]) .mh-main-inner {
+  padding: 0;
+}
+
+/* 미니게임 — 선택 팝업 전체 화면 (닫힐 때 터치 막지 않도록 is-open 때만 fixed) */
+body.cy-mobile-page .game-picker:not(.is-open) {
+  display: none !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}
+
+body.cy-mobile-page .game-picker.is-open {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex !important;
+  pointer-events: auto;
+  visibility: visible;
+  min-height: 100%;
+  padding: 16px 12px calc(72px + env(safe-area-inset-bottom, 0px));
+  border-radius: 0;
+}
+
+/* 게임 진행 중 상단 바 — 스크롤해도 눌리게 sticky + z-index */
+body.cy-mobile-page .game-active-bar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  flex-shrink: 0;
+  margin-top: 0;
+}
+
+body.cy-mobile-page .game-back-btn {
+  position: relative;
+  z-index: 41;
+  min-height: 44px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(236, 64, 122, 0.25);
+}
+
+body.cy-mobile-page .game-active-title {
+  cursor: default;
+}
+
+body.cy-mobile-page .game-active-title--btn {
+  flex: 1 1 auto;
+  margin: 0;
+  padding: 6px 8px;
+  border: none;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-shadow: inherit;
+  letter-spacing: inherit;
+  text-align: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0.2);
+}
+
+body.cy-mobile-page .game-picker__card {
+  width: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+body.cy-mobile-page #panel-game .mh-card-body {
+  min-height: 280px;
+}
+
+/* 퀴즈 — 탐정 수첩 (모바일에서 더 크게) */
+body.cy-mobile-page .game-detective-board__casefile {
+  font-size: 15px;
+  margin-bottom: 12px;
+}
+
+body.cy-mobile-page .game-detective-board__cork {
+  min-height: 300px;
+  padding: 20px 12px 22px;
+}
+
+body.cy-mobile-page .game-hints {
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+body.cy-mobile-page .game-hint-note[data-note="0"],
+body.cy-mobile-page .game-hint-note[data-note="1"],
+body.cy-mobile-page .game-hint-note[data-note="2"] {
+  grid-column: 1;
+  width: 100%;
+  max-width: none;
+  margin-top: 0;
+}
+
+body.cy-mobile-page .game-hint-note[data-note="0"] {
+  transform: rotate(-1.5deg);
+}
+
+body.cy-mobile-page .game-hint-note[data-note="1"] {
+  transform: rotate(1.2deg);
+}
+
+body.cy-mobile-page .game-hint-note[data-note="2"] {
+  transform: rotate(-0.8deg);
+}
+
+body.cy-mobile-page .game-hint-note {
+  min-height: 96px;
+  padding: 34px 16px 16px;
+}
+
+body.cy-mobile-page .game-hint-note__text {
+  font-size: 19px;
+  line-height: 1.5;
+}
+
+body.cy-mobile-page .game-hint-note__tag {
+  font-size: 12px;
+}
+
+body.cy-mobile-page .game-hint-note__pin {
+  width: 18px;
+  height: 18px;
+}
+
+@keyframes gameHintNoteIn0 {
+  from { opacity: 0; transform: translateY(-10px) rotate(-1.5deg) scale(0.96); }
+  to { opacity: 1; transform: rotate(-1.5deg); }
+}
+
+@keyframes gameHintNoteIn1 {
+  from { opacity: 0; transform: translateY(-10px) rotate(1.2deg) scale(0.96); }
+  to { opacity: 1; transform: rotate(1.2deg); }
+}
+
+@keyframes gameHintNoteIn2 {
+  from { opacity: 0; transform: translateY(-10px) rotate(-0.8deg) scale(0.96); }
+  to { opacity: 1; transform: rotate(-0.8deg); }
+}
+
+/* 원소 분리수거 — 🧪 화학 실험실 (모바일) */
+body.cy-mobile-page .sort-chem-lab__intro {
+  font-size: 15px;
+}
+
+body.cy-mobile-page .sort-chem-lab__room {
+  min-height: 500px;
+  padding: 12px 10px 14px;
+}
+
+body.cy-mobile-page .sort-chem-lab__memo strong {
+  font-size: 12px;
+}
+
+body.cy-mobile-page .sort-chem-lab__memo span:last-child {
+  font-size: 11px;
+}
+
+body.cy-mobile-page .sort-chem-lab__bench {
+  min-height: 240px;
+}
+
+body.cy-mobile-page .sort-chem-lab__sample {
+  min-height: 215px;
+  padding: 32px 14px 16px;
+}
+
+body.cy-mobile-page .sort-card__hint {
+  font-size: 19px;
+}
+
+body.cy-mobile-page .sort-card__sym {
+  font-size: 80px;
+}
+
+body.cy-mobile-page .sort-card__name {
+  font-size: 30px;
+}
+
+body.cy-mobile-page .sort-card__z {
+  font-size: 18px;
+}
+
+body.cy-mobile-page .sort-card__clue {
+  font-size: 15px;
+  padding: 10px 12px;
+}
+
+body.cy-mobile-page .sort-bins {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+body.cy-mobile-page .sort-bin {
+  padding: 14px 4px 12px;
+}
+
+body.cy-mobile-page .sort-bin__label {
+  font-size: 15px;
+}
+
+body.cy-mobile-page .sort-bin__hint {
+  font-size: 10px;
+}
+
+body.cy-mobile-page .sort-bin__emoji {
+  font-size: 26px;
+}
+
+body.cy-mobile-page .sort-chem-lab__feedback {
+  font-size: 16px;
+}
+
+body.cy-mobile-page .mh-intro {
+  display: none !important;
+}
+
+/* 홈 — 수소 요약 */
+body.cy-mobile-page .cy-app-home-brief {
+  order: 1;
+  margin: 0;
+  padding: 12px 14px;
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+}
+
+body.cy-mobile-page .cy-app-home-brief__title {
+  margin: 0 0 8px;
+  font-family: "Galmuri11", Gulim, sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  color: #4db3e8;
+}
+
+body.cy-mobile-page .cy-app-home-brief__dl {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 0;
+  font-size: 11px;
+}
+
+body.cy-mobile-page .cy-app-home-brief__dl > div {
+  padding: 8px;
+  background: #f8fcff;
+  border: 1px solid #d0e8f5;
+  border-radius: 8px;
+  text-align: center;
+}
+
+body.cy-mobile-page .cy-app-home-brief__dl dt {
+  margin: 0 0 4px;
+  font-size: 10px;
+  color: #888;
+  font-weight: 400;
+}
+
+body.cy-mobile-page .cy-app-home-brief__dl dd {
+  margin: 0;
+  font-weight: 800;
+  color: #333;
+}
+
+body.cy-mobile-page .cy-app-section-label {
+  order: 2;
+  margin: 0;
+  padding: 10px 14px 4px;
+  font-family: "Galmuri11", Gulim, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #4db3e8;
+  background: #e8e8e8;
+}
+
+body.cy-mobile-page #panel-home .mh-miniroom {
+  order: 3;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  min-height: min(52vw, 280px);
+  box-shadow: none;
+}
+
+body.cy-mobile-page #panel-home .mh-friends-say {
+  order: 4;
+  margin: 0;
+  padding: 12px 14px 16px;
+  background: #fff;
+  border-top: 1px solid #ddd;
+}
+
+/* 조회 탭 — 최근 본 원소 (큰 카드) */
+body.cy-mobile-page .mh-home-recent--lookup {
+  margin: 0 0 12px;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+
+body.cy-mobile-page .mh-home-recent--lookup .mh-home-recent__title {
+  font-size: 13px;
+  color: #4db3e8;
+  margin: 0 0 10px;
+  font-family: "Galmuri11", Gulim, sans-serif;
+}
+
+body.cy-mobile-page .mh-home-recent--lookup .mh-home-recent__list {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 10px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+}
+
+body.cy-mobile-page .mh-home-recent--lookup .mh-home-recent__card {
+  flex: 0 0 76px;
+  width: 76px;
+  min-height: 76px;
+  padding: 10px 6px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border-width: 2px;
+}
+
+body.cy-mobile-page .mh-home-recent--lookup .mh-home-recent__sym {
+  font-size: 24px;
+  line-height: 1.1;
+}
+
+body.cy-mobile-page .mh-home-recent--lookup .mh-home-recent__name {
+  font-size: 10px;
+  margin-top: 4px;
+  line-height: 1.2;
+  text-align: center;
+  word-break: keep-all;
+}
+
+body.cy-mobile-page .mh-home-recent--lookup .mh-home-recent__lock {
+  font-size: 14px;
+  margin-top: 2px;
+}
+
+body.cy-mobile-page .mh-friends-say__banner {
+  margin-bottom: 10px;
+}
+
+body.cy-mobile-page .mh-friends-say__en {
+  font-size: 11px;
+  color: #4db3e8;
+  font-weight: 700;
+}
+
+body.cy-mobile-page .mh-friends-say__ko {
+  font-size: 14px;
+  color: #4db3e8;
+}
+
+/* 다른 탭 패널 — 카드가 뷰포트 높이까지 늘어남 */
+body.cy-mobile-page .mh-panel:not(#panel-home).is-active:not([hidden]) {
+  flex: 1;
+  display: flex !important;
+  flex-direction: column;
+  width: 100%;
+  min-height: calc(
+    100dvh - 52px - 56px - env(safe-area-inset-top, 0px) -
+      env(safe-area-inset-bottom, 0px)
+  );
+  margin: 0;
+  padding: 0;
+  background: var(--mh-m-panel-bg);
+  box-sizing: border-box;
+  transition: background-color 0.4s ease, background 0.4s ease;
+}
+
+body.cy-mobile-page.mh-theme-switching .mh-panel:not(#panel-home).is-active:not([hidden]) {
+  animation: mhThemePanelPulse 0.45s ease;
+}
+
+@keyframes mhThemePanelPulse {
+  0% {
+    opacity: 0.92;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+body.cy-mobile-page .mh-panel:not(#panel-home) .mh-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  width: 100%;
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+body.cy-mobile-page .mh-panel:not(#panel-home) .mh-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+body.cy-mobile-page .mh-card > h2 {
+  background: var(--mh-m-card-h2);
+  color: var(--mh-m-card-h2-color);
+  font-size: 13px;
+}
+
+body.cy-mobile-page .mh-card--diary {
+  background: var(--mh-m-diary-bg);
+}
+
+body.cy-mobile-page .mh-card--diary > h2 {
+  background: var(--mh-m-diary-h2);
+  color: #fff;
+}
+
+body.cy-mobile-page .mh-card--gb {
+  background: var(--mh-m-gb-bg);
+}
+
+body.cy-mobile-page .mh-card--gb > h2 {
+  background: var(--mh-m-gb-h2);
+  color: #fff;
+}
+
+body.cy-mobile-page .mh-card--diary .mh-card-body,
+body.cy-mobile-page .mh-card--gb .mh-card-body {
+  color: var(--mh-m-text);
+}
+
+body.cy-mobile-page .mh-card--diary .mh-diary-book__page {
+  background: var(--mh-m-diary-page);
+}
+
+body.cy-mobile-page .mh-card--gb .mh-gb-wrap {
+  background-image:
+    radial-gradient(circle at 14px 22px, var(--mh-m-gb-wrap-dot) 1.6px, transparent 2px),
+    radial-gradient(circle at 32px 46px, var(--mh-m-gb-wrap-dot) 1.2px, transparent 1.8px);
+}
+
+/* ── 하단 네비 ── */
+.cy-app-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 900;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  padding: 8px 6px calc(10px + env(safe-area-inset-bottom, 0px));
+  background: #fff;
+  border-top: 1px solid #ddd;
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.cy-app-nav__btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 58px;
+  max-width: 20%;
+  padding: 6px 2px;
+  border: none;
+  background: transparent;
+  color: #999;
+  font-family: "Galmuri11", Gulim, sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.cy-app-nav__icon {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.cy-app-nav__btn.is-active {
+  color: #e53935;
+}
+
+.cy-app-nav__btn.is-active .cy-app-nav__icon {
+  filter: none;
+}
+
+.cy-app-nav__btn--home.is-active .cy-app-nav__icon {
+  color: #e53935;
+}
+
+/* MP3 도크 — 상단 ♪ 버튼으로만 열기 */
+.cy-app-mp3-dock {
+  position: fixed;
+  left: 8px;
+  right: 8px;
+  top: calc(48px + env(safe-area-inset-top, 0px));
+  z-index: 990;
+  padding: 0;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.cy-app-mp3-dock .mh-mp3--dock {
+  pointer-events: auto;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto;
+  gap: 6px 10px;
+  align-items: center;
+  padding: 8px 10px 8px 12px;
+  background: linear-gradient(180deg, #f8f8f8 0%, #e2e2e2 100%);
+  border: 2px solid #bbb;
+  border-radius: 12px;
+  box-shadow: 0 2px 0 #fff inset, 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+.cy-app-mp3-dock.is-expanded {
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.cy-app-mp3-dock .mh-mp3__brand {
+  grid-column: 1 / -1;
+  padding: 0;
+}
+
+.cy-app-mp3-dock .mh-mp3__screen {
+  grid-column: 1;
+  min-width: 0;
+  padding: 6px 8px;
+}
+
+.cy-app-mp3-dock .mh-mp3__scr-title {
+  font-size: 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cy-app-mp3-dock .mh-mp3__scr-sub {
+  font-size: 9px;
+  margin: 2px 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cy-app-mp3-dock .mh-mp3__wheel {
+  grid-column: 2;
+  grid-row: 2;
+  position: relative;
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.cy-app-mp3-dock .mh-mp3__wheel-btn--left {
+  left: 2px;
+}
+
+.cy-app-mp3-dock .mh-mp3__wheel-btn--right {
+  right: 2px;
+}
+
+.cy-app-mp3-dock .mh-mp3__wheel-btn--left,
+.cy-app-mp3-dock .mh-mp3__wheel-btn--right {
+  display: none;
+}
+
+.cy-app-mp3-dock.is-expanded .mh-mp3__wheel-btn--left,
+.cy-app-mp3-dock.is-expanded .mh-mp3__wheel-btn--right {
+  display: flex;
+}
+
+.cy-app-mp3-dock .mh-mp3__wheel-center {
+  width: 34px;
+  height: 34px;
+  font-size: 12px;
+}
+
+/* 파도타기 시트 */
+.cy-app-wave[hidden] {
+  display: none !important;
+}
+
+.cy-app-wave {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.cy-app-wave__sheet {
+  width: 100%;
+  max-height: 72vh;
+  overflow-y: auto;
+  padding: 16px 14px calc(18px + env(safe-area-inset-bottom, 0px));
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+}
+
+.cy-app-wave__title {
+  margin: 0 0 4px;
+  font-family: "Galmuri11", Gulim, sans-serif;
+  font-size: 16px;
+  color: #1565c0;
+  text-align: center;
+}
+
+.cy-app-wave__sub {
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: #888;
+  text-align: center;
+}
+
+.cy-app-wave__list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.cy-app-wave__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid #e3f2fd;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #e3f2fd 0%, #fff 100%);
+  color: #1565c0;
+  font-family: "Galmuri11", Gulim, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.cy-app-wave__item:active {
+  background: #bbdefb;
+}
+
+.cy-app-wave__chev {
+  color: #42a5f5;
+  font-size: 16px;
+}
+
+.cy-app-wave__sym {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 28px;
+  padding: 0 6px;
+  border-radius: 6px;
+  background: #fff;
+  border: 1px solid #90caf9;
+  font-size: 12px;
+}
+
+.cy-app-wave__name {
+  flex: 1;
+}
+
+.cy-app-wave__empty {
+  margin: 0;
+  padding: 20px 12px;
+  text-align: center;
+  font-size: 13px;
+  color: #888;
+}
+
+.cy-app-wave__close {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #4db3e8;
+  color: #fff;
+  font-family: "Galmuri11", Gulim, sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* 더보기 시트 */
+.cy-app-more[hidden] {
+  display: none !important;
+}
+
+.cy-app-more {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.cy-app-more__sheet {
+  width: 100%;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 16px 12px calc(20px + env(safe-area-inset-bottom, 0px));
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+}
+
+.cy-app-more__title {
+  margin: 0 0 12px;
+  font-family: "Galmuri11", Gulim, sans-serif;
+  font-size: 14px;
+  color: #4db3e8;
+  text-align: center;
+}
+
+.cy-app-more__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.cy-app-more__grid button {
+  min-height: 44px;
+  padding: 8px 4px;
+  font-family: "Galmuri11", Gulim, sans-serif;
+  font-size: 11px;
+  color: #333;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* 테마 모달 — 모바일 바텀 시트 */
+body.cy-mobile-page .mh-theme-modal {
+  align-items: flex-end;
+  padding: 0;
+  background: rgba(12, 18, 28, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+body.cy-mobile-page .mh-theme-modal__card {
+  width: 100%;
+  max-height: min(78vh, 520px);
+  border-radius: 22px 22px 0 0;
+  padding: 10px 16px calc(16px + env(safe-area-inset-bottom, 0px));
+  border-width: 3px 0 0;
+  border-color: #f48fb1;
+  box-shadow: 0 -8px 32px rgba(74, 20, 80, 0.28);
+  animation: mhThemeSheetUp 0.32s cubic-bezier(0.32, 1.1, 0.48, 1) both;
+}
+
+@keyframes mhThemeSheetUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+body.cy-mobile-page .mh-theme-modal__handle {
+  width: 40px;
+  height: 4px;
+  margin: 4px auto 12px;
+  border-radius: 999px;
+  background: rgba(244, 143, 177, 0.55);
+}
+
+body.cy-mobile-page .mh-theme-modal__title {
+  font-size: 22px;
+}
+
+body.cy-mobile-page .mh-theme-modal__grid--mobile {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  max-height: 52vh;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+body.cy-mobile-page .mh-theme-modal__item {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding: 12px 10px 10px;
+  text-align: center;
+}
+
+body.cy-mobile-page .mh-theme-modal__swatch {
+  width: 100%;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 10px;
+}
+
+body.cy-mobile-page .mh-theme-modal__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+
+body.cy-mobile-page .mh-theme-modal__emoji {
+  font-size: 18px;
+}
+
+body.cy-mobile-page .mh-theme-modal__name {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 12px;
+  text-align: center;
+}
+
+body.cy-mobile-page .mh-theme-modal__badge {
+  display: inline-block;
+  padding: 1px 5px;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #6a1b9a;
+  background: #f3e5f5;
+  border: 1px solid #ce93d8;
+  border-radius: 4px;
+  vertical-align: middle;
+}
+
+body.cy-mobile-page .mh-theme-modal__desc {
+  font-size: 10px;
+  font-weight: 500;
+  color: #90a4ae;
+  line-height: 1.3;
+  text-align: center;
+}
+
+body.cy-mobile-page .mh-theme-modal__item.is-active::after {
+  top: 8px;
+  right: 8px;
+  transform: none;
+  width: 18px;
+  height: 18px;
+  font-size: 10px;
+}
+
+body.cy-mobile-page .mh-theme-modal__close {
+  margin-top: 4px;
+  min-height: 46px;
+  border-radius: 14px;
+}
+
+.cy-app-more__close {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  min-height: 44px;
+  font-family: "Galmuri11", Gulim, sans-serif;
+  font-size: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+}
+
+/* ── 동영상: 폴더폰 — 뷰포트에 딱 맞게 (스크롤 없음) ── */
+body.cy-mobile-page .mh-card--video {
+  background: #1a1a1a;
+}
+
+body.cy-mobile-page .mh-card--video > h2 {
+  display: none;
+}
+
+body.cy-mobile-page[data-cy-app-tab="video"] #panel-video.is-active:not([hidden]) {
+  display: flex !important;
+  flex-direction: column;
+  height: calc(
+    100dvh - 52px - 64px - env(safe-area-inset-top, 0px) -
+      env(safe-area-inset-bottom, 0px)
+  );
+  max-height: calc(
+    100dvh - 52px - 64px - env(safe-area-inset-top, 0px) -
+      env(safe-area-inset-bottom, 0px)
+  );
+  padding: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+body.cy-mobile-page #panel-video .mh-card,
+body.cy-mobile-page #panel-video .mh-card-body,
+body.cy-mobile-page #panel-video .mh-video-wrap,
+body.cy-mobile-page #panel-video .mh-phone--iphone,
+body.cy-mobile-page #panel-video .mh-phone--iphone .mh-phone__shell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+body.cy-mobile-page #panel-video .mh-card-body {
+  padding: 4px 6px 6px !important;
+  justify-content: center;
+  align-items: stretch;
+  background: #1a1a1a;
+}
+
+body.cy-mobile-page #panel-video .mh-video-wrap {
+  padding: 0 !important;
+  background: #1a1a1a;
+  justify-content: center;
+}
+
+body.cy-mobile-page #panel-video .mh-phone--iphone {
+  width: 100%;
+  max-width: 100%;
+  filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.35));
+}
+
+body.cy-mobile-page #panel-video .mh-phone--iphone .mh-phone__shell {
+  flex: 1;
+  min-height: 0;
+}
+
+body.cy-mobile-page #panel-video .mh-phone--iphone .mh-phone__lcd {
+  flex: 1;
+  min-height: 0;
+}
+
+body.cy-mobile-page #panel-video .mh-phone--iphone .mh-phone__content {
+  flex: 1;
+  min-height: 0;
+}
+
+body.cy-mobile-page #panel-video .mh-iphone__springboard {
+  flex: 1;
+  min-height: 0;
+}
+
+body.cy-mobile-page #panel-video .mh-phone__grid-zone {
+  flex: 1;
+  min-height: 0;
+}
+
+body.cy-mobile-page #panel-video .mh-phone__menu {
+  height: 100%;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  align-content: stretch;
+}
+
+body.cy-mobile-page #panel-video .mh-phone__dock {
+  flex-shrink: 0;
+}
+
+body.cy-mobile-page #panel-video .mh-phone__home-btn {
+  flex-shrink: 0;
+}
+
+/* 모바일 마이크로 인터랙션 */
+@keyframes cyMobilePop {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.cy-mobile-pop {
+  animation: cyMobilePop 0.38s ease;
+}
+
+/* 터치 영역 44px+ */
+body.cy-mobile-page .mh-ilchon-btn,
+body.cy-mobile-page .board-compose__btn,
+body.cy-mobile-page .cy-app-fortune__banner,
+body.cy-mobile-page .board-color {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+body.cy-mobile-page .board-color {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+}
+
+body.cy-mobile-page .mh-ilchon-btn {
+  min-width: 160px;
+}
+
+/* ── 동영상: 1세대 아이폰 스타일 ── */
+body.cy-mobile-page .mh-phone--iphone .mh-phone__shell {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 10px 12px;
+  border-radius: 28px;
+  background: linear-gradient(
+    180deg,
+    #f4f4f4 0%,
+    #d8d8d8 35%,
+    #b8b8b8 70%,
+    #a0a0a0 100%
+  );
+  border: 1px solid #8a8a8a;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.12),
+    0 0 0 1px #c8c8c8,
+    0 10px 24px rgba(0, 0, 0, 0.28);
+}
+
+body.cy-mobile-page .mh-phone--iphone .mh-phone__lcd {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-radius: 4px;
+  background: #000;
+  border: 2px solid #1a1a1a;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
+    inset 0 2px 12px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+}
+
+body.cy-mobile-page .mh-phone__status {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  min-height: 22px;
+  padding: 5px 10px 4px;
+  font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+body.cy-mobile-page .mh-phone__status-left,
+body.cy-mobile-page .mh-phone__status-right {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 72px;
+}
+
+body.cy-mobile-page .mh-phone__status-right {
+  justify-content: flex-end;
+}
+
+body.cy-mobile-page .mh-phone__clock {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+body.cy-mobile-page .mh-phone__signal {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 1px;
+  height: 10px;
+}
+
+body.cy-mobile-page .mh-phone__signal i {
+  display: block;
+  width: 3px;
+  background: #fff;
+  border-radius: 1px;
+}
+
+body.cy-mobile-page .mh-phone__signal i:nth-child(1) {
+  height: 3px;
+}
+body.cy-mobile-page .mh-phone__signal i:nth-child(2) {
+  height: 5px;
+}
+body.cy-mobile-page .mh-phone__signal i:nth-child(3) {
+  height: 7px;
+}
+body.cy-mobile-page .mh-phone__signal i:nth-child(4) {
+  height: 9px;
+}
+body.cy-mobile-page .mh-phone__signal i:nth-child(5) {
+  height: 10px;
+}
+
+body.cy-mobile-page .mh-phone__carrier {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+body.cy-mobile-page .mh-phone__wifi {
+  width: 12px;
+  height: 9px;
+  border: 2px solid #fff;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  opacity: 0.95;
+}
+
+body.cy-mobile-page .mh-phone__bluetooth {
+  width: 6px;
+  height: 10px;
+  margin-right: 2px;
+  background: linear-gradient(
+    135deg,
+    transparent 45%,
+    #fff 45%,
+    #fff 55%,
+    transparent 55%
+  );
+  opacity: 0.9;
+}
+
+body.cy-mobile-page .mh-phone__battery-body {
+  display: block;
+  position: relative;
+  width: 22px;
+  height: 10px;
+  border: 1.5px solid #fff;
+  border-radius: 2px;
+  box-sizing: border-box;
+}
+
+body.cy-mobile-page .mh-phone__battery-body::after {
+  content: "";
+  position: absolute;
+  right: -4px;
+  top: 2px;
+  width: 2px;
+  height: 4px;
+  background: #fff;
+  border-radius: 0 1px 1px 0;
+}
+
+body.cy-mobile-page .mh-phone__battery-fill {
+  display: block;
+  width: 78%;
+  height: 100%;
+  background: linear-gradient(180deg, #b8f0a0 0%, #6bc84a 100%);
+  border-radius: 1px;
+}
+
+body.cy-mobile-page .mh-phone--iphone .mh-phone__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0;
+  background: #000;
+  font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
+  color: #fff;
+}
+
+body.cy-mobile-page .mh-iphone__springboard {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+
+body.cy-mobile-page .mh-phone__empty {
+  flex-shrink: 0;
+  margin: 6px 10px 2px;
+  text-align: center;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.4;
+}
+
+body.cy-mobile-page .mh-phone__menu-title {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  margin: 0;
+  padding: 1px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  pointer-events: none;
+}
+
+body.cy-mobile-page .mh-phone__menu-title span {
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+body.cy-mobile-page .mh-phone__grid-zone {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+body.cy-mobile-page .mh-phone__menu {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 0;
+  padding: 0;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  align-content: stretch;
+}
+
+body.cy-mobile-page .mh-phone__dock {
+  flex: 0 0 21%;
+  min-height: 68px;
+  max-height: 24%;
+  padding: 0 7px 5px;
+  box-sizing: border-box;
+}
+
+body.cy-mobile-page .mh-phone__dock-tray {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  height: 100%;
+  padding: 7px 8px 10px;
+  border-radius: 18px;
+  box-sizing: border-box;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.34) 0%,
+      rgba(180, 180, 180, 0.22) 100%
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.06) 0 1px,
+      transparent 1px 3px
+    );
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+body.cy-mobile-page .mh-phone__app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0;
+  height: 100%;
+  min-height: 0;
+  padding: 1px 2px 0;
+  border: none;
+  background: none;
+  box-shadow: none;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+body.cy-mobile-page a.mh-phone__app:active .mh-phone__app-icon-wrap {
+  transform: scale(0.92);
+  filter: brightness(1.08);
+}
+
+body.cy-mobile-page .mh-phone__app-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 auto;
+  width: auto;
+  height: calc(100% - 14px);
+  max-width: 100%;
+  aspect-ratio: 1;
+  min-height: 0;
+  border-radius: 24%;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.38);
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.42);
+  transition: transform 0.12s ease;
+  container-type: size;
+}
+
+body.cy-mobile-page .mh-phone__app-icon-wrap::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.52) 0%,
+    rgba(255, 255, 255, 0.14) 36%,
+    transparent 52%
+  );
+  pointer-events: none;
+}
+
+body.cy-mobile-page .mh-phone__app-icon-wrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  box-shadow: inset 0 -10px 14px rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+}
+
+body.cy-mobile-page .mh-phone__app-glyph {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+body.cy-mobile-page .mh-phone__app-name {
+  flex: 0 0 auto;
+  max-width: 100%;
+  font-family: Helvetica, "Helvetica Neue", Arial, sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 앱 아이콘 배경 (1세대 iOS 톤) */
+body.cy-mobile-page .mh-phone__app--sms .mh-phone__app-icon-wrap {
+  background: linear-gradient(180deg, #9ae85c 0%, #5cb336 45%, #3d8f22 100%);
+}
+body.cy-mobile-page .mh-phone__app--cal .mh-phone__app-icon-wrap {
+  background: linear-gradient(180deg, #fff 0%, #fff 54%, #d32f2f 54%, #b71c1c 100%);
+}
+body.cy-mobile-page .mh-phone__app--photos .mh-phone__app-icon-wrap {
+  background: linear-gradient(180deg, #ffe566 0%, #f5b800 55%, #e65100 100%);
+}
+body.cy-mobile-page .mh-phone__app--camera .mh-phone__app-icon-wrap {
+  background: linear-gradient(180deg, #eceff1 0%, #90a4ae 50%, #455a64 100%);
+}
+body.cy-mobile-page .mh-phone__app--tube .mh-phone__app-icon-wrap {
+  background: linear-gradient(180deg, #d7ccc8 0%, #8d6e63 50%, #4e342e 100%);
+}
+body.cy-mobile-page .mh-phone__app--stocks .mh-phone__app-icon-wrap {
+  background: linear-gradient(180deg, #546e7a 0%, #263238 100%);
+}
+body.cy-mobile-page .mh-phone__app--maps .mh-phone__app-icon-wrap {
+  background: linear-gradient(180deg, #81d4fa 0%, #0288d1 55%, #01579b 100%);
+}
+body.cy-mobile-page .mh-phone__app--weather .mh-phone__app-icon-wrap {
+  background: linear-gradient(180deg, #4fc3f7 0%, #039be5 60%, #0277bd 100%);
+}
+body.cy-mobile-page .mh-phone__app--clock .mh-phone__app-icon-wrap {
+  background: linear-gradient(180deg, #424242 0%, #111 100%);
+}
+body.cy-mobile-page .mh-phone__app--calc .mh-phone__app-icon-wrap {
+  background: linear-gradient(180deg, #757575 0%, #212121 100%);
+}
+body.cy-mobile-page .mh-phone__app--notes .mh-phone__app-icon-wrap {
+  background: linear-gradient(180deg, #fff9c4 0%, #fdd835 55%, #c49000 100%);
+}
+body.cy-mobile-page .mh-phone__app--settings .mh-phone__app-icon-wrap {
+  background: linear-gradient(180deg, #bdbdbd 0%, #616161 100%);
+}
+body.cy-mobile-page .mh-phone__app--phone .mh-phone__app-icon-wrap {
+  background: linear-gradient(180deg, #9ccc65 0%, #43a047 55%, #2e7d32 100%);
+}
+body.cy-mobile-page .mh-phone__app--mail .mh-phone__app-icon-wrap {
+  background: linear-gradient(180deg, #64b5f6 0%, #1976d2 55%, #0d47a1 100%);
+}
+body.cy-mobile-page .mh-phone__app--safari .mh-phone__app-icon-wrap {
+  background: linear-gradient(180deg, #4fc3f7 0%, #1565c0 100%);
+}
+body.cy-mobile-page .mh-phone__app--ipod .mh-phone__app-icon-wrap {
+  background: linear-gradient(180deg, #f48fb1 0%, #ad1457 100%);
+}
+body.cy-mobile-page .mh-phone__app--yt .mh-phone__app-icon-wrap {
+  background: linear-gradient(180deg, #b0bec5 0%, #607d8b 55%, #37474f 100%);
+}
+body.cy-mobile-page .mh-phone__app--lab .mh-phone__app-icon-wrap {
+  background: linear-gradient(180deg, #d0fff2 0%, #4db6ac 55%, #00796b 100%);
+}
+body.cy-mobile-page .mh-phone__app--doc .mh-phone__app-icon-wrap {
+  background: linear-gradient(180deg, #bbdefb 0%, #42a5f5 55%, #1565c0 100%);
+}
+
+/* 앱 글리프 (CSS 스케어모피즘) */
+body.cy-mobile-page .mh-phone__app--sms .mh-phone__app-glyph::before {
+  content: "";
+  position: absolute;
+  top: 28%;
+  left: 50%;
+  width: 56%;
+  height: 44%;
+  transform: translateX(-50%);
+  background: #fff;
+  border-radius: 7px;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.08);
+}
+
+body.cy-mobile-page .mh-phone__app--cal .mh-phone__app-glyph::before {
+  content: attr(data-day);
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 46cqmin;
+  font-weight: 700;
+  color: #222;
+  line-height: 1;
+}
+
+body.cy-mobile-page .mh-phone__app--cal .mh-phone__app-glyph::after {
+  content: attr(data-month);
+  position: absolute;
+  bottom: 14%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 17cqmin;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 0.04em;
+}
+
+body.cy-mobile-page .mh-phone__app--photos .mh-phone__app-glyph::before {
+  content: "";
+  position: absolute;
+  top: 22%;
+  left: 50%;
+  width: 62%;
+  height: 62%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #ffeb3b 0%, #f9a825 55%, #6d4c41 100%);
+}
+
+body.cy-mobile-page .mh-phone__app--camera .mh-phone__app-glyph::before {
+  content: "";
+  position: absolute;
+  top: 26%;
+  left: 50%;
+  width: 50%;
+  height: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #90a4ae 0%, #37474f 70%, #263238 100%);
+  border: 3px solid #cfd8dc;
+  box-sizing: border-box;
+}
+
+body.cy-mobile-page .mh-phone__app--tube .mh-phone__app-glyph::before,
+body.cy-mobile-page .mh-phone__app--doc .mh-phone__app-glyph::before,
+body.cy-mobile-page .mh-phone__app--yt .mh-phone__app-glyph::before {
+  content: "";
+  position: absolute;
+  top: 23%;
+  left: 50%;
+  width: 62%;
+  height: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, #8d6e63 0%, #4e342e 100%);
+  border-radius: 4px;
+  border: 2px solid #3e2723;
+  box-sizing: border-box;
+}
+
+body.cy-mobile-page .mh-phone__app--tube .mh-phone__app-glyph::after,
+body.cy-mobile-page .mh-phone__app--doc .mh-phone__app-glyph::after,
+body.cy-mobile-page .mh-phone__app--yt .mh-phone__app-glyph::after {
+  content: "";
+  position: absolute;
+  top: 29%;
+  left: 50%;
+  width: 45%;
+  height: 31%;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, #b3e5fc 0%, #4fc3f7 100%);
+  border: 1px solid #0277bd;
+}
+
+body.cy-mobile-page .mh-phone__app--stocks .mh-phone__app-glyph::before {
+  content: "";
+  position: absolute;
+  bottom: 28%;
+  left: 22%;
+  width: 56%;
+  height: 3px;
+  background: #ef5350;
+  transform: rotate(-28deg);
+  transform-origin: left bottom;
+  box-shadow: 12px -10px 0 #66bb6a;
+}
+
+body.cy-mobile-page .mh-phone__app--maps .mh-phone__app-glyph::before {
+  content: "";
+  position: absolute;
+  top: 30%;
+  left: 28%;
+  width: 44%;
+  height: 38%;
+  background: #a5d6a7;
+  border-radius: 2px;
+  transform: rotate(-8deg);
+  box-shadow: 8px 6px 0 #fff59d;
+}
+
+body.cy-mobile-page .mh-phone__app--weather .mh-phone__app-glyph::before {
+  content: "";
+  position: absolute;
+  top: 26%;
+  left: 30%;
+  width: 34%;
+  height: 34%;
+  border-radius: 50%;
+  background: #ffee58;
+  box-shadow: 14px 8px 0 -4px #fff, 18px 14px 0 -6px rgba(255, 255, 255, 0.85);
+}
+
+body.cy-mobile-page .mh-phone__app--clock .mh-phone__app-glyph::before {
+  content: "";
+  position: absolute;
+  top: 24%;
+  left: 50%;
+  width: 54%;
+  height: 54%;
+  transform: translateX(-50%);
+  border: 3px solid #eee;
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+body.cy-mobile-page .mh-phone__app--clock .mh-phone__app-glyph::after {
+  content: "";
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  width: 2px;
+  height: 22%;
+  background: #fff;
+  transform: translateX(-50%);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+
+body.cy-mobile-page .mh-phone__app--calc .mh-phone__app-glyph::before {
+  content: "123";
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 22cqmin;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 0.08em;
+}
+
+body.cy-mobile-page .mh-phone__app--notes .mh-phone__app-glyph::before {
+  content: "";
+  position: absolute;
+  top: 22%;
+  left: 50%;
+  width: 52%;
+  height: 58%;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, #fff9c4 0%, #fff59d 100%);
+  border-radius: 2px;
+  border-top: 6px solid #8d6e63;
+  box-sizing: border-box;
+}
+
+body.cy-mobile-page .mh-phone__app--settings .mh-phone__app-glyph::before {
+  content: "";
+  position: absolute;
+  top: 28%;
+  left: 50%;
+  width: 44%;
+  height: 44%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  border: 5px dashed #eee;
+  box-sizing: border-box;
+}
+
+body.cy-mobile-page .mh-phone__app--phone .mh-phone__app-glyph::before {
+  content: "";
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  width: 46%;
+  height: 46%;
+  transform: translateX(-50%) rotate(-30deg);
+  border: 5px solid #fff;
+  border-radius: 8px;
+  border-top-right-radius: 14px;
+  box-sizing: border-box;
+}
+
+body.cy-mobile-page .mh-phone__app--mail .mh-phone__app-glyph::before {
+  content: "";
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  width: 54%;
+  height: 38%;
+  transform: translateX(-50%);
+  background: #fff;
+  clip-path: polygon(0 0, 100% 0, 50% 55%);
+}
+
+body.cy-mobile-page .mh-phone__app--safari .mh-phone__app-glyph::before {
+  content: "";
+  position: absolute;
+  top: 24%;
+  left: 50%;
+  width: 54%;
+  height: 54%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: conic-gradient(#e53935 0 25%, #fff 25% 50%, #43a047 50% 75%, #1e88e5 75% 100%);
+  border: 2px solid #cfd8dc;
+  box-sizing: border-box;
+}
+
+body.cy-mobile-page .mh-phone__app--ipod .mh-phone__app-glyph::before {
+  content: "";
+  position: absolute;
+  top: 26%;
+  left: 50%;
+  width: 50%;
+  height: 50%;
+  transform: translateX(-50%);
+  border-radius: 8px;
+  background: linear-gradient(180deg, #f8bbd0 0%, #ec407a 100%);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+body.cy-mobile-page .mh-phone__app--ipod .mh-phone__app-glyph::after {
+  content: "♪";
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 28cqmin;
+  color: #fff;
+  line-height: 1;
+}
+
+body.cy-mobile-page .mh-phone__app--lab .mh-phone__app-glyph::before {
+  content: "";
+  position: absolute;
+  top: 18%;
+  left: 50%;
+  width: 40%;
+  height: 56%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.45);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 3px 3px 14px 14px;
+  box-sizing: border-box;
+}
+
+body.cy-mobile-page .mh-phone__app--lab .mh-phone__app-glyph::after {
+  content: "";
+  position: absolute;
+  top: 45%;
+  left: 50%;
+  width: 30%;
+  height: 32%;
+  transform: translateX(-50%);
+  border-radius: 0 0 10px 10px;
+  background: linear-gradient(180deg, #9cff80 0%, #39c66c 100%);
+}
+
+body.cy-mobile-page .mh-phone__app--doc .mh-phone__app-glyph::after {
+  background:
+    linear-gradient(180deg, #ccefff 0%, #6bc6f0 100%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.15) 0 2px,
+      transparent 2px 8px
+    );
+}
+
+body.cy-mobile-page .mh-phone__app--dim {
+  opacity: 0.55;
+  pointer-events: none;
+  filter: saturate(0.72) brightness(0.92);
+}
+
+body.cy-mobile-page .mh-phone__app--dim .mh-phone__app-icon-wrap {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.45);
+}
+
+body.cy-mobile-page .mh-phone__tip {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 2px 8px 6px;
+  text-align: center;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+body.cy-mobile-page .mh-phone__home-btn {
+  display: block;
+  flex-shrink: 0;
+  width: clamp(44px, 14vw, 52px);
+  height: clamp(44px, 14vw, 52px);
+  margin: 10px auto 2px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  background: radial-gradient(
+    circle at 35% 30%,
+    #3a3a3a 0%,
+    #1a1a1a 55%,
+    #0a0a0a 100%
+  );
+  box-shadow:
+    inset 0 2px 4px rgba(255, 255, 255, 0.12),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.6),
+    0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+body.cy-mobile-page .mh-phone__home-btn::before {
+  content: "";
+  display: block;
+  width: 38%;
+  height: 38%;
+  margin: 31% auto 0;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+body.cy-mobile-page .mh-phone__home-btn:active {
+  transform: scale(0.96);
+  filter: brightness(1.15);
+}
+
+/* 가로모드 실험실: 원소 선택 세로로 */
+@media (orientation: landscape) {
+  body.cy-mobile-page #panel-bond-sim .bond-sim-picker {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  body.cy-mobile-page #panel-bond-sim .bond-sim-plus {
+    align-self: center;
+    transform: none;
+  }
+
+  body.cy-mobile-page #panel-bond-sim .bond-sim-run {
+    width: 100%;
+  }
+}
+
+/* 선물하기(자판기) — 모바일 */
+body.cy-mobile-page #panel-shop .mh-vending {
+  max-width: 100%;
+}
+
+body.cy-mobile-page #panel-shop .mh-vending__grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+body.cy-mobile-page #panel-shop .mh-shop-tip {
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.cy-app-menu__item.is-active {
+  background: #f0f9ff;
+}
+
+/* 모달 · 입력 */
+body.cy-mobile-page .mh-ilchon-modal,
+body.cy-mobile-page .cy-nick-modal,
+body.cy-mobile-page .cy-gift-modal,
+body.cy-mobile-page .cy-inv-modal,
+body.cy-mobile-page .cy-peer-modal {
+  align-items: flex-end;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+}
+
+body.cy-mobile-page .mh-ilchon-modal__box,
+body.cy-mobile-page .cy-nick-modal__box,
+body.cy-mobile-page .cy-gift-modal__box {
+  width: 100%;
+  max-width: 100%;
+  border-radius: 14px 14px 0 0;
+}
+
+body.cy-mobile-page .mh-lookup-btn,
+body.cy-mobile-page .mh-lookup-input,
+body.cy-mobile-page .cy-chrome__login {
+  min-height: 44px;
+  font-size: 16px;
+}
+
+body.cy-mobile-page .mh-ilchon-pair {
+  grid-template-columns: 1fr;
+}
+
+body.cy-mobile-page .mh-ilchon-list {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* 일촌맺기 — 한 카드 안에 시도 + 친구 목록 */
+body.cy-mobile-page #panel-ilchon .mh-card {
+  flex: 0 0 auto;
+}
+
+body.cy-mobile-page #panel-ilchon .mh-card-body {
+  flex: 0 1 auto;
+}
+
+body.cy-mobile-page #panel-ilchon .mh-ilchon-body {
+  gap: 10px;
+  padding: 10px 12px 12px !important;
+}
+
+body.cy-mobile-page #panel-ilchon .mh-ilchon-tips {
+  margin-bottom: 2px;
+}
+
+body.cy-mobile-page #panel-ilchon .mh-ilchon-hint-line {
+  margin: 2px 0 0;
+  padding: 5px 8px;
+}
+
+body.cy-mobile-page #panel-ilchon .mh-ilchon-result {
+  min-height: 36px;
+  padding: 6px 10px;
+}
+
+body.cy-mobile-page .mh-ilchon-list-section {
+  margin-top: 4px;
+  padding-top: 10px;
+  border-top: 2px dashed #f0a47a;
+}
+
+body.cy-mobile-page .mh-ilchon-list-section .mh-ilchon-list-heading {
+  margin: 0 0 2px;
+  padding: 0;
+  font-family: "Galmuri11", Gulim, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #b04020;
+  background: none;
+  text-shadow: none;
+}
+
+body.cy-mobile-page .mh-ilchon-list-section .mh-ilchon-list-sub {
+  margin: 0 0 8px;
+  padding: 0;
+  font-size: 10px;
+  color: #8a4a28;
+  background: none;
+  border: none;
+}
+
+body.cy-mobile-page .mh-ilchon-list-section .mh-ilchon-list {
+  margin: 0;
+}
+
+/* 게시판 — 칠판 크기 */
+body.cy-mobile-page #panel-board .mh-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+body.cy-mobile-page #panel-board .mh-board-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+
+body.cy-mobile-page #panel-board .board-chalk {
+  flex: 1;
+  min-height: min(48vh, 380px);
+  max-height: none;
+  padding: 24px 14px 52px;
+}
+
+body.cy-mobile-page #panel-board .board-compose {
+  flex-shrink: 0;
+}
+
+/* ── 모바일 전체 글씨 크기 상향 ── */
+body.cy-mobile-page .cy-app-bar__title {
+  font-size: 19px;
+}
+
+body.cy-mobile-page .cy-app-bar__btn {
+  font-size: 20px;
+}
+
+body.cy-mobile-page .cy-app-bar__dotori-count {
+  font-size: 15px;
+}
+
+body.cy-mobile-page .cy-app-fortune__label {
+  font-size: 14px;
+}
+
+body.cy-mobile-page .cy-app-fortune__rank {
+  font-size: 15px;
+}
+
+body.cy-mobile-page .cy-app-fortune__msg {
+  font-size: 15px;
+}
+
+body.cy-mobile-page .mh-visit {
+  font-size: 15px;
+}
+
+body.cy-mobile-page .mh-status strong {
+  font-size: 14px;
+}
+
+body.cy-mobile-page #profile-mood {
+  font-size: 16px;
+}
+
+body.cy-mobile-page .cy-app-profile-name {
+  font-size: 20px;
+}
+
+body.cy-mobile-page .mh-intro {
+  font-size: 15px;
+}
+
+body.cy-mobile-page .cy-app-profile-actions button {
+  font-size: 16px;
+}
+
+body.cy-mobile-page .cy-app-profile-stats {
+  font-size: 15px;
+}
+
+body.cy-mobile-page .cy-app-menu__item {
+  font-size: 17px;
+}
+
+body.cy-mobile-page .cy-app-menu__count {
+  font-size: 15px;
+}
+
+body.cy-mobile-page .cy-app-home-brief__title {
+  font-size: 18px;
+}
+
+body.cy-mobile-page .cy-app-home-brief__dl {
+  font-size: 15px;
+}
+
+body.cy-mobile-page .cy-app-home-brief__dl dt {
+  font-size: 14px;
+}
+
+body.cy-mobile-page .cy-app-section-label {
+  font-size: 16px;
+}
+
+body.cy-mobile-page .mh-friends-say__en {
+  font-size: 15px;
+}
+
+body.cy-mobile-page .mh-friends-say__ko {
+  font-size: 18px;
+}
+
+body.cy-mobile-page #panel-home .mh-friends-say__list,
+body.cy-mobile-page #panel-home .mh-friends-say__list p {
+  font-size: 16px;
+}
+
+body.cy-mobile-page .cy-app-nav__btn {
+  font-size: 13px;
+}
+
+body.cy-mobile-page .cy-app-nav__icon {
+  font-size: 30px;
+}
+
+body.cy-mobile-page .mh-card > h2 {
+  font-size: 17px;
+}
+
+.cy-app-more__title {
+  font-size: 17px;
+}
+
+.cy-app-more__grid button {
+  font-size: 14px;
+}
+
+/* 동영상 탭 — 1세대 아이폰: 4×3 아이콘이 LCD를 꽉 채움 */
+body.cy-mobile-page #panel-video .mh-phone--iphone .mh-phone__shell {
+  padding: 8px 8px 10px;
+}
+
+body.cy-mobile-page #panel-video .mh-phone__status {
+  min-height: 18px;
+  padding: 3px 8px 2px;
+  font-size: 11px;
+}
+
+body.cy-mobile-page #panel-video .mh-phone__clock {
+  font-size: 12px;
+}
+
+body.cy-mobile-page #panel-video .mh-iphone__springboard {
+  flex: 1;
+  min-height: 0;
+}
+
+body.cy-mobile-page #panel-video .mh-phone__grid-zone {
+  flex: 1 1 0;
+  min-height: 0;
+  padding: 4px 9px 2px;
+  box-sizing: border-box;
+}
+
+body.cy-mobile-page #panel-video .mh-phone__menu {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  gap: 6px 4px;
+  padding: 6px 8px 4px;
+}
+
+body.cy-mobile-page #panel-video .mh-phone__menu .mh-phone__app {
+  height: 100%;
+  padding: 2px 1px 0;
+  justify-content: flex-start;
+  gap: 4px;
+  container-type: inline-size;
+}
+
+body.cy-mobile-page #panel-video .mh-phone__menu .mh-phone__app-icon-wrap {
+  width: clamp(84px, 24.9vw, 111px) !important;
+  height: clamp(84px, 24.9vw, 111px) !important;
+  max-width: none !important;
+  flex: 0 0 auto;
+  border-radius: 24%;
+}
+
+body.cy-mobile-page #panel-video .mh-phone__dock {
+  flex: 0 0 22%;
+  min-height: 78px;
+  max-height: 26%;
+  padding: 0 7px 5px;
+}
+
+body.cy-mobile-page #panel-video .mh-phone__dock .mh-phone__app {
+  height: 100%;
+  justify-content: flex-start;
+  gap: 4px;
+  container-type: inline-size;
+}
+
+body.cy-mobile-page #panel-video .mh-phone__dock .mh-phone__app-icon-wrap {
+  width: clamp(54px, 15.8vw, 70px) !important;
+  height: clamp(54px, 15.8vw, 70px) !important;
+  max-width: none !important;
+  border-radius: 24%;
+  -webkit-box-reflect: below 2px
+    linear-gradient(transparent 52%, rgba(255, 255, 255, 0.16) 100%);
+}
+
+body.cy-mobile-page #panel-video .mh-phone__dock-tray {
+  height: 100%;
+  padding: 5px 7px 8px;
+  box-sizing: border-box;
+}
+
+body.cy-mobile-page #panel-video .mh-phone__tip {
+  display: none !important;
+}
+
+body.cy-mobile-page #panel-video .mh-phone__menu .mh-phone__app-name {
+  width: 100%;
+  max-width: 100%;
+  font-size: clamp(14px, 19cqw, 18px) !important;
+  font-weight: 500;
+  line-height: 1.2;
+  min-height: 1.2em;
+  height: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+body.cy-mobile-page #panel-video .mh-phone__dock .mh-phone__app-name {
+  width: 100%;
+  max-width: 100%;
+  font-size: clamp(12px, 22cqw, 15px) !important;
+  font-weight: 500;
+  line-height: 1.2;
+  min-height: 1.2em;
+  height: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+}
+
+body.cy-mobile-page #panel-video .mh-phone__home-btn {
+  width: clamp(42px, 13vw, 50px);
+  height: clamp(42px, 13vw, 50px);
+  margin: 8px auto 0;
+}
+
+/* ── 모바일 테마: PC 6종 + 전용 2종 ── */
+
+/* 💧 하늘 (dot) */
+body.cy-mobile-page.mh-theme-dot {
+  background: #d4eaf5;
+}
+
+body.cy-mobile-page.mh-theme-dot .cy-app-bar {
+  background: linear-gradient(180deg, #6ec6f5 0%, #4db3e8 100%);
+  border-bottom-color: #3a9fd4;
+}
+
+body.cy-mobile-page.mh-theme-dot .cy-app-nav {
+  background: #f0f8fc;
+  border-top-color: #b8dff5;
+}
+
+body.cy-mobile-page.mh-theme-dot .cy-app-nav__btn {
+  color: #5a8fad;
+}
+
+body.cy-mobile-page.mh-theme-dot .cy-app-nav__btn.is-active {
+  color: #1565c0;
+}
+
+body.cy-mobile-page.mh-theme-dot .cy-app-menu-grid {
+  background: #d8eef9;
+  border-bottom-color: #c5e3f5;
+}
+
+body.cy-mobile-page.mh-theme-dot .cy-app-menu__item {
+  background: #fff;
+  color: #2a6a8a;
+}
+
+/* 🌿 민트 */
+body.cy-mobile-page.mh-theme-mint {
+  background: #d4ebe4;
+}
+
+body.cy-mobile-page.mh-theme-mint .cy-app-bar {
+  background: linear-gradient(180deg, #66bb9a 0%, #26a69a 100%);
+  border-bottom-color: #00897b;
+}
+
+body.cy-mobile-page.mh-theme-mint .cy-app-nav {
+  background: #e8f5f0;
+  border-top-color: #a5d6c5;
+}
+
+body.cy-mobile-page.mh-theme-mint .cy-app-nav__btn {
+  color: #4f8a72;
+}
+
+body.cy-mobile-page.mh-theme-mint .cy-app-nav__btn.is-active {
+  color: #00695c;
+}
+
+body.cy-mobile-page.mh-theme-mint .cy-app-menu-grid {
+  background: #c8e6d8;
+  border-bottom-color: #b2dfcc;
+}
+
+body.cy-mobile-page.mh-theme-mint .cy-app-menu__item {
+  background: #f1faf6;
+  color: #2e6b55;
+}
+
+/* 🌸 핑크 */
+body.cy-mobile-page.mh-theme-pink {
+  background: #ffeaf4;
+}
+
+body.cy-mobile-page.mh-theme-pink .cy-app-bar {
+  background: linear-gradient(180deg, #f48fb1 0%, #ec407a 100%);
+  border-bottom-color: #c2185b;
+}
+
+body.cy-mobile-page.mh-theme-pink .cy-app-nav {
+  background: #fff5fa;
+  border-top-color: #f8bbd0;
+}
+
+body.cy-mobile-page.mh-theme-pink .cy-app-nav__btn {
+  color: #b85c7e;
+}
+
+body.cy-mobile-page.mh-theme-pink .cy-app-nav__btn.is-active {
+  color: #ad1457;
+}
+
+body.cy-mobile-page.mh-theme-pink .cy-app-menu-grid {
+  background: #ffd6e8;
+  border-bottom-color: #ffc4dc;
+}
+
+body.cy-mobile-page.mh-theme-pink .cy-app-menu__item {
+  background: #fff7fb;
+  color: #880e4f;
+}
+
+/* 🌙 미드나잇 */
+body.cy-mobile-page.mh-theme-night {
+  background: #1a2435;
+}
+
+body.cy-mobile-page.mh-theme-night .cy-app-bar {
+  background: linear-gradient(180deg, #3a5578 0%, #1d2f50 100%);
+  border-bottom-color: #5d7ea4;
+}
+
+body.cy-mobile-page.mh-theme-night .cy-app-nav {
+  background: #152033;
+  border-top-color: #3a4f68;
+}
+
+body.cy-mobile-page.mh-theme-night .cy-app-nav__btn {
+  color: #8fa8c4;
+}
+
+body.cy-mobile-page.mh-theme-night .cy-app-nav__btn.is-active {
+  color: #e3f2fd;
+}
+
+body.cy-mobile-page.mh-theme-night .cy-app-menu-grid {
+  background: #243552;
+  border-bottom-color: #2c4060;
+}
+
+body.cy-mobile-page.mh-theme-night .cy-app-menu__item {
+  background: #1d2c44;
+  color: #c0d2e6;
+}
+
+body.cy-mobile-page.mh-theme-night .cy-app-home-brief__title {
+  color: #90caf9;
+}
+
+/* ⚙️ 모노 */
+body.cy-mobile-page.mh-theme-mono {
+  background: #eceff1;
+}
+
+body.cy-mobile-page.mh-theme-mono .cy-app-bar {
+  background: linear-gradient(180deg, #90a4ae 0%, #607d8b 100%);
+  border-bottom-color: #455a64;
+}
+
+body.cy-mobile-page.mh-theme-mono .cy-app-nav {
+  background: #f5f5f5;
+  border-top-color: #cfd8dc;
+}
+
+body.cy-mobile-page.mh-theme-mono .cy-app-nav__btn {
+  color: #78909c;
+}
+
+body.cy-mobile-page.mh-theme-mono .cy-app-nav__btn.is-active {
+  color: #37474f;
+}
+
+body.cy-mobile-page.mh-theme-mono .cy-app-menu-grid {
+  background: #e0e0e0;
+  border-bottom-color: #d0d0d0;
+}
+
+body.cy-mobile-page.mh-theme-mono .cy-app-menu__item {
+  background: #fafafa;
+  color: #455a64;
+}
+
+/* 📜 페이퍼 */
+body.cy-mobile-page.mh-theme-paper {
+  background: #f5efe6;
+}
+
+body.cy-mobile-page.mh-theme-paper .cy-app-bar {
+  background: linear-gradient(180deg, #ffcc80 0%, #ffb74d 100%);
+  border-bottom-color: #f57c00;
+}
+
+body.cy-mobile-page.mh-theme-paper .cy-app-nav {
+  background: #fff8e1;
+  border-top-color: #ffe082;
+}
+
+body.cy-mobile-page.mh-theme-paper .cy-app-nav__btn {
+  color: #a67c52;
+}
+
+body.cy-mobile-page.mh-theme-paper .cy-app-nav__btn.is-active {
+  color: #e65100;
+}
+
+body.cy-mobile-page.mh-theme-paper .cy-app-menu-grid {
+  background: #ffe8c8;
+  border-bottom-color: #ffd9a8;
+}
+
+body.cy-mobile-page.mh-theme-paper .cy-app-menu__item {
+  background: #fffdf7;
+  color: #6d4c41;
+}
+
+/* 🍬 캔디 (모바일 전용) */
+body.cy-mobile-page.mh-theme-candy {
+  background: linear-gradient(180deg, #fff5f8 0%, #fff9e6 100%);
+}
+
+body.cy-mobile-page.mh-theme-candy .cy-app-bar {
+  background: linear-gradient(90deg, #ff6b9d 0%, #ffc371 50%, #a8e063 100%);
+  border-bottom-color: #ff5c8a;
+}
+
+body.cy-mobile-page.mh-theme-candy .cy-app-nav {
+  background: #fff0f5;
+  border-top-color: #ffb3d0;
+}
+
+body.cy-mobile-page.mh-theme-candy .cy-app-nav__btn {
+  color: #e0709a;
+}
+
+body.cy-mobile-page.mh-theme-candy .cy-app-nav__btn.is-active {
+  color: #ff4081;
+}
+
+body.cy-mobile-page.mh-theme-candy .cy-app-menu-grid {
+  background: linear-gradient(90deg, #ffe0ec 0%, #fff3cd 100%);
+  border-bottom-color: #ffc9de;
+}
+
+body.cy-mobile-page.mh-theme-candy .cy-app-menu__item {
+  background: #fff;
+  color: #c2185b;
+  border: 1px solid #ffcce0;
+}
+
+/* 💜 라벤더 (모바일 전용) */
+body.cy-mobile-page.mh-theme-lavender {
+  background: #f3e8ff;
+}
+
+body.cy-mobile-page.mh-theme-lavender .cy-app-bar {
+  background: linear-gradient(180deg, #b39ddb 0%, #7e57c2 100%);
+  border-bottom-color: #5e35b1;
+}
+
+body.cy-mobile-page.mh-theme-lavender .cy-app-nav {
+  background: #f8f0ff;
+  border-top-color: #d1c4e9;
+}
+
+body.cy-mobile-page.mh-theme-lavender .cy-app-nav__btn {
+  color: #9575cd;
+}
+
+body.cy-mobile-page.mh-theme-lavender .cy-app-nav__btn.is-active {
+  color: #6a1b9a;
+}
+
+body.cy-mobile-page.mh-theme-lavender .cy-app-menu-grid {
+  background: #e8daf8;
+  border-bottom-color: #d7c4f0;
+}
+
+body.cy-mobile-page.mh-theme-lavender .cy-app-menu__item {
+  background: #fdfaff;
+  color: #5e35b1;
+}
+
+/* ── 모바일 패널·다이어리·방명록 — 테마 연동 ── */
+
+body.cy-mobile-page.mh-theme-dot {
+  --mh-m-panel-bg: #e8f4fc;
+  --mh-m-card-h2: linear-gradient(90deg, #1976d2 0%, #1565c0 50%, #0d47a1 100%);
+}
+
+body.cy-mobile-page.mh-theme-mint {
+  --mh-m-panel-bg: #e8f5f0;
+  --mh-m-card-h2: linear-gradient(90deg, #00897b 0%, #00695c 55%, #004d40 100%);
+  --mh-m-diary-bg: linear-gradient(180deg, #f1faf6 0%, #e0f5ee 55%, #c8ebe4 100%);
+  --mh-m-diary-h2: linear-gradient(90deg, #4db6ac 0%, #00897b 50%, #00695c 100%);
+  --mh-m-gb-bg: linear-gradient(180deg, #eef8f4 0%, #dcefe8 55%, #c5e6d8 100%);
+  --mh-m-gb-h2: linear-gradient(90deg, #66bb9a 0%, #26a69a 50%, #00796b 100%);
+  --mh-m-gb-wrap-dot: rgba(102, 187, 154, 0.35);
+}
+
+body.cy-mobile-page.mh-theme-pink {
+  --mh-m-panel-bg: #fff0f6;
+  --mh-m-card-h2: linear-gradient(90deg, #d05c9f 0%, #b4458d 55%, #9b3779 100%);
+  --mh-m-diary-bg: linear-gradient(180deg, #fff7fb 0%, #ffeaf4 55%, #ffd6e8 100%);
+  --mh-m-diary-h2: linear-gradient(90deg, #f06292 0%, #ec407a 50%, #c2185b 100%);
+  --mh-m-gb-bg: linear-gradient(180deg, #fff5fa 0%, #ffe8f3 55%, #ffd6e8 100%);
+  --mh-m-gb-h2: linear-gradient(90deg, #ec407a 0%, #d81b60 50%, #ad1457 100%);
+  --mh-m-gb-wrap-dot: rgba(244, 143, 177, 0.45);
+}
+
+body.cy-mobile-page.mh-theme-night {
+  --mh-m-panel-bg: #121c2c;
+  --mh-m-card-h2: linear-gradient(90deg, #3a5578 0%, #2a3f5a 55%, #1a2838 100%);
+  --mh-m-diary-bg: linear-gradient(180deg, #1a2438 0%, #1f2d45 55%, #243552 100%);
+  --mh-m-diary-h2: linear-gradient(90deg, #5c7a99 0%, #455f7a 50%, #2e4058 100%);
+  --mh-m-gb-bg: linear-gradient(180deg, #1c2640 0%, #222f4a 55%, #283a58 100%);
+  --mh-m-gb-h2: linear-gradient(90deg, #6a7fa8 0%, #4a6085 50%, #334866 100%);
+  --mh-m-text: #e3f2fd;
+  --mh-m-muted: #90a4ae;
+  --mh-m-diary-page: #1e2a3c;
+  --mh-m-gb-wrap-dot: rgba(120, 144, 180, 0.35);
+}
+
+body.cy-mobile-page.mh-theme-night .mh-diary-book__hint,
+body.cy-mobile-page.mh-theme-night .mh-diary-book__title,
+body.cy-mobile-page.mh-theme-night .mh-diary-entry p,
+body.cy-mobile-page.mh-theme-night .mh-diary-compose--cute label,
+body.cy-mobile-page.mh-theme-night .mh-gb-mailbox__title,
+body.cy-mobile-page.mh-theme-night .mh-gb-mailbox__sub,
+body.cy-mobile-page.mh-theme-night .mh-gb-letter__body,
+body.cy-mobile-page.mh-theme-night .mh-gb-compose__title,
+body.cy-mobile-page.mh-theme-night .mh-gb-compose__field label {
+  color: var(--mh-m-text);
+}
+
+body.cy-mobile-page.mh-theme-night .mh-diary-book__hint small,
+body.cy-mobile-page.mh-theme-night .mh-diary-compose__hint,
+body.cy-mobile-page.mh-theme-night .mh-gb-compose__hint {
+  color: var(--mh-m-muted);
+}
+
+body.cy-mobile-page.mh-theme-night .mh-diary-entry {
+  background: rgba(30, 42, 60, 0.85);
+  border-color: #4a6788;
+}
+
+body.cy-mobile-page.mh-theme-night .mh-diary-entry h4,
+body.cy-mobile-page.mh-theme-night .mh-diary-entry p {
+  color: #dce7f5;
+}
+
+body.cy-mobile-page.mh-theme-night .mh-diary-compose--cute {
+  background: rgba(28, 38, 56, 0.9);
+  border-color: #5d7ea4;
+}
+
+body.cy-mobile-page.mh-theme-night .mh-gb-letter {
+  background: rgba(30, 42, 60, 0.9);
+  border-color: #5d7ea4;
+}
+
+body.cy-mobile-page.mh-theme-night .mh-gb-compose--cute {
+  background: rgba(28, 38, 56, 0.92);
+  border-color: #6a7fa8;
+}
+
+body.cy-mobile-page.mh-theme-mono {
+  --mh-m-panel-bg: #eceff1;
+  --mh-m-card-h2: linear-gradient(90deg, #455a64 0%, #37474f 50%, #263238 100%);
+  --mh-m-diary-bg: linear-gradient(180deg, #f5f5f5 0%, #eceff1 55%, #e0e0e0 100%);
+  --mh-m-diary-h2: linear-gradient(90deg, #78909c 0%, #546e7a 50%, #37474f 100%);
+  --mh-m-gb-bg: linear-gradient(180deg, #f0f0f0 0%, #e8e8e8 55%, #dde2e6 100%);
+  --mh-m-gb-h2: linear-gradient(90deg, #607d8b 0%, #455a64 50%, #37474f 100%);
+  --mh-m-gb-wrap-dot: rgba(120, 144, 156, 0.4);
+}
+
+body.cy-mobile-page.mh-theme-paper {
+  --mh-m-panel-bg: #faf6ee;
+  --mh-m-card-h2: linear-gradient(90deg, #8d6e63 0%, #6d4c41 50%, #4e342e 100%);
+  --mh-m-diary-bg: linear-gradient(180deg, #fff9e8 0%, #fdf2c9 55%, #f5e6c8 100%);
+  --mh-m-diary-h2: linear-gradient(90deg, #bc8f68 0%, #a1887f 50%, #795548 100%);
+  --mh-m-gb-bg: linear-gradient(180deg, #fff8e1 0%, #f5ecd4 55%, #efe0c0 100%);
+  --mh-m-gb-h2: linear-gradient(90deg, #a1887f 0%, #8d6e63 50%, #6d4c41 100%);
+  --mh-m-gb-wrap-dot: rgba(188, 143, 104, 0.35);
+  --mh-m-diary-page: #fffdf5;
+}
+
+body.cy-mobile-page.mh-theme-candy {
+  --mh-m-panel-bg: #fff5f8;
+  --mh-m-card-h2: linear-gradient(90deg, #ff6b9d 0%, #ff8a65 50%, #ffc371 100%);
+  --mh-m-diary-bg: linear-gradient(180deg, #fff8fc 0%, #ffe8f3 55%, #ffd6ec 100%);
+  --mh-m-diary-h2: linear-gradient(90deg, #ff80ab 0%, #ff4081 50%, #f50057 100%);
+  --mh-m-gb-bg: linear-gradient(180deg, #fff9e6 0%, #ffe8f5 55%, #e8f8ff 100%);
+  --mh-m-gb-h2: linear-gradient(90deg, #ff9a9e 0%, #fecfef 50%, #fad961 100%);
+  --mh-m-gb-wrap-dot: rgba(255, 154, 158, 0.45);
+}
+
+body.cy-mobile-page.mh-theme-lavender {
+  --mh-m-panel-bg: #f3e8ff;
+  --mh-m-card-h2: linear-gradient(90deg, #7e57c2 0%, #5e35b1 50%, #4527a0 100%);
+  --mh-m-diary-bg: linear-gradient(180deg, #faf5ff 0%, #f3e5f5 55%, #e1bee7 100%);
+  --mh-m-diary-h2: linear-gradient(90deg, #ba68c8 0%, #9c27b0 50%, #7b1fa2 100%);
+  --mh-m-gb-bg: linear-gradient(180deg, #f8f0ff 0%, #ede7f6 55%, #d1c4e9 100%);
+  --mh-m-gb-h2: linear-gradient(90deg, #9575cd 0%, #7e57c2 50%, #5e35b1 100%);
+  --mh-m-gb-wrap-dot: rgba(149, 117, 205, 0.45);
+}
