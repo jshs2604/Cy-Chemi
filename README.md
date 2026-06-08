@@ -62,69 +62,6 @@ H부터 Og까지, 118명의 원소 친구들이 기다리고 있어요.
 
 ---
 
-## 📁 폴더 구조
-
-```
-원대한꿈 2/
-├── index.html          ← PC 미니홈피
-├── index-mobile.html   ← 모바일 앱 UI
-├── style.css           ← 공통 + PC 스타일
-├── mobile-app.css      ← 모바일 전용 스타일
-├── script.js           ← 원소 118개 데이터 + 결합 로직
-├── chem-room.js        ← 미니룸 · 마스코트
-├── element-assets.js   ← 캐릭터 · 에셋
-├── 원소 캐릭터/         ← H~Ne 캐릭터 PNG ♡
-└── 원소의 방/           ← 미니룸 배경 PNG ♡
-```
-
----
-
-## 🖥️ 로컬에서 켜보기
-
-설치 없이 바로 열 수 있어요!
-
-```bash
-cd "원대한꿈 2"
-python3 -m http.server 8080
-```
-
-브라우저에서 → `http://localhost:8080/`
-
-> 💡 `file://` 로 직접 열어도 되지만, 이미지·한글 경로 때문에 **로컬 서버 추천**!
-
----
-
-## 🚀 배포하기 (GitHub Pages)
-
-1. GitHub 저장소 만들고 이 폴더 **통째로** push
-2. **Settings → Pages → Branch: `main`, Folder: `/ (root)`**
-3. 1~2분 기다리면 `https://아이디.github.io/저장소명/` 에서 접속 가능!
-4. 배포 후 [OG 설정](#-카톡에-링크-올릴-때-og-설정)도 꼭 해 주세요
-
----
-
-## 💬 카톡에 링크 올릴 때 (OG 설정)
-
-카톡·디스코드·SNS에 링크 붙이면 미리보기 카드가 뜨는데,  
-`og:image`랑 `og:url`은 **https:// 로 시작하는 전체 주소**여야 해요.
-
-`index.html`, `index-mobile.html`의 `<head>` 안에 이 주석이 있어요:
-
-```html
-<!-- OG_SITE_URL: 배포 후 실제 사이트 주소로 교체 (끝에 / 포함) -->
-```
-
-**예시** (저장소명 `cy-chemi` 일 때):
-
-| 항목 | 값 |
-|------|-----|
-| PC `og:url` | `https://아이디.github.io/cy-chemi/` |
-| 모바일 `og:url` | `https://아이디.github.io/cy-chemi/index-mobile.html` |
-| `og:image` | `https://아이디.github.io/cy-chemi/원소%20캐릭터/6.png` |
-
-1200×630 전용 미리보기 이미지(`og-image.png`) 만들면 더 예뻐요 ♡
-
----
 
 ## 🛠️ 기술 스택
 
@@ -149,4 +86,5 @@ python3 -m http.server 8080
 ```
 ♡ Cy-Chemi 미니홈피 ♡
   화학도 재밌다구요 ☆
+  과학이 웃으면 화하학
 ```
