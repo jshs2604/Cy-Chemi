@@ -1,0 +1,39 @@
+{
+  "nicknames": {
+    "테스트유저": {
+      "token": "a5e3f17aa9e28df8529dcb5593099bfd",
+      "createdAt": "2026-06-09T01:06:15.218Z"
+    },
+    "고은우": {
+      "token": "cdc34f3d247c67fa56f941da22301891",
+      "createdAt": "2026-06-09T01:08:47.662Z"
+    },
+    "유저A": {
+      "token": "f94b9ac982af0a81bf198e913cca1eb0",
+      "createdAt": "2026-06-09T01:13:12.847Z"
+    },
+    "유저B": {
+      "token": "8e2c758f304d9854524cc88de43d9588",
+      "createdAt": "2026-06-09T01:13:12.859Z"
+    },
+    "친구1": {
+      "token": "4933278350fdc126bdc562381b88d8e5",
+      "createdAt": "2026-06-09T01:14:10.323Z"
+    },
+    "친구2": {
+      "token": "cd57bffeaa7972321e634ba5476b1ff1",
+      "createdAt": "2026-06-09T01:14:10.336Z"
+    }
+  },
+  "boards": {
+    "H": [
+      {
+        "text": "안녕",
+        "color": "yellow",
+        "author": "테스트유저",
+        "t": "2026. 6. 9. AM 10:06:15"
+      }
+    ]
+  },
+  "guestbooks": {}
+}
