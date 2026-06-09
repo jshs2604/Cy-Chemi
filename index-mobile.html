@@ -409,31 +409,31 @@
                     <div class="mh-ilchon-banner" aria-hidden="true">
                       <span class="mh-ilchon-banner__deco mh-ilchon-banner__deco--l">♥</span>
                       <span class="mh-ilchon-banner__title">우리, 일촌 할래?</span>
-                      <span class="mh-ilchon-banner__sub">두 원소가 만나면 무슨 일이…</span>
+                      <span class="mh-ilchon-banner__sub">진짜 사용자끼리 일촌 맺기 ♡</span>
                       <span class="mh-ilchon-banner__deco mh-ilchon-banner__deco--r">♥</span>
                     </div>
 
                     <div class="mh-ilchon-tips" aria-label="일촌 안내">
-                      <span class="mh-ilchon-tip-chip">A = 미니홈 주인</span>
-                      <span class="mh-ilchon-tip-chip">B = 친구 기호</span>
-                      <span class="mh-ilchon-tip-chip">18족 = 거절 🫧</span>
+                      <span class="mh-ilchon-tip-chip">A = 내 닉네임</span>
+                      <span class="mh-ilchon-tip-chip">B = 친구 닉네임</span>
+                      <span class="mh-ilchon-tip-chip">서로 맺으면 양쪽에 보여요</span>
                     </div>
 
                     <div class="mh-ilchon-pair">
                       <div class="mh-ilchon-card mh-ilchon-card--a">
-                        <span class="mh-ilchon-card__label">원소 A · 미니홈 주인</span>
+                        <span class="mh-ilchon-card__label">나 · 닉네임</span>
                         <input
                           id="bond-a"
                           class="mh-ilchon-input mh-ilchon-input--a"
                           type="text"
-                          maxlength="3"
+                          maxlength="12"
                           readonly
-                          placeholder="조회 후 자동"
+                          placeholder="입장 후 자동"
                           autocomplete="off"
                           aria-describedby="bond-hint"
-                          title="홈에서 조회한 원소가 A로 들어가요"
+                          title="내 닉네임이 자동으로 들어가요"
                         />
-                        <span class="mh-ilchon-card__hint">조회한 원소 자동입력</span>
+                        <span class="mh-ilchon-card__hint">입장한 닉네임 자동입력</span>
                       </div>
 
                       <div class="mh-ilchon-heart" aria-hidden="true">
@@ -442,28 +442,28 @@
                       </div>
 
                       <div class="mh-ilchon-card mh-ilchon-card--b">
-                        <span class="mh-ilchon-card__label">원소 B · 상대</span>
+                        <span class="mh-ilchon-card__label">친구 · 닉네임</span>
                         <input
                           id="bond-b"
                           class="mh-ilchon-input mh-ilchon-input--b"
                           type="text"
-                          maxlength="3"
-                          placeholder="Cl"
+                          maxlength="12"
+                          placeholder="반응왕"
                           autocomplete="off"
                           aria-describedby="bond-hint"
                         />
-                        <span class="mh-ilchon-card__hint">예: Cl, O, Na…</span>
+                        <span class="mh-ilchon-card__hint">친구가 쓰는 닉네임 입력</span>
                       </div>
                     </div>
 
                     <div class="mh-ilchon-actions">
-                      <button type="button" id="btn-ilchon" class="mh-ilchon-btn" aria-label="두 원소로 일촌 시도">
-                        💞 일촌 시도하기
+                      <button type="button" id="btn-ilchon" class="mh-ilchon-btn" aria-label="친구 닉네임으로 일촌 시도">
+                        💞 일촌 신청하기
                       </button>
                     </div>
 
                     <p id="bond-hint" class="mh-ilchon-hint-line">
-                      💡 Na + Cl → ⚡ 이온 일촌!
+                      💡 친구도 먼저 닉네임 입장을 해야 일촌 맺을 수 있어요!
                     </p>
 
                     <div
@@ -473,12 +473,12 @@
                       aria-live="polite"
                       aria-atomic="true"
                     >
-                      <span class="mh-ilchon-result__idle">B 기호 넣고 💞 눌러봐~</span>
+                      <span class="mh-ilchon-result__idle">친구 닉네임 넣고 💞 눌러봐~</span>
                     </div>
 
                     <div class="mh-ilchon-list-section">
                       <h3 class="mh-ilchon-list-heading">💕 일촌 친구들</h3>
-                      <p class="mh-ilchon-list-sub">맺은 친구는 여기에 ♡ 카드로 쌓여요</p>
+                      <p class="mh-ilchon-list-sub">맺은 일촌 친구가 모두에게 보여요 ♡</p>
                       <ul id="ilchon-list" class="mh-ilchon-list" aria-label="일촌 성공 기록"></ul>
                     </div>
                   </div>
@@ -1344,7 +1344,7 @@
       </div>
     </div>
 
-    <!-- 닉네임 입장 (localStorage만 사용) -->
+    <!-- 닉네임 입장 (서버에서 전역 유니크, 브라우저에 토큰 저장) -->
     <div
       id="nick-modal"
       class="cy-nick-modal"
@@ -1356,7 +1356,8 @@
       <div class="cy-nick-modal__box">
         <div class="cy-nick-modal__deco" aria-hidden="true">♡ ✿ ♡</div>
         <h3 id="nick-modal-title" class="cy-nick-modal__title">닉네임 입장</h3>
-        <p class="cy-nick-modal__sub">비밀번호 없어요 · 이 브라우저에만 저장돼요</p>
+        <p class="cy-nick-modal__sub">닉네임은 전 세계 한 명만 쓸 수 있어요 · 도토리·원소 해제는 이 브라우저에만 저장돼요</p>
+        <p id="nick-error" class="cy-nick-modal__error" hidden role="alert"></p>
         <label class="visually-hidden" for="nick-input">닉네임</label>
         <input
           id="nick-input"
@@ -1518,26 +1519,16 @@
     <script src="script.js"></script>
     <script src="element-assets.js"></script>
     <script src="chem-room.js"></script>
+    <script src="cy-shared.js"></script>
     <script>
-      var CY_NICK_KEY = "cy_nickname_v1";
+      var CY_NICK_KEY = CyShared.NICK_KEY;
 
       function getNickname() {
-        try {
-          return (localStorage.getItem(CY_NICK_KEY) || "").trim();
-        } catch (e) {
-          return "";
-        }
+        return CyShared.getNickname();
       }
 
-      function setNickname(name) {
-        var v = (name || "").trim().slice(0, 12);
-        try {
-          if (v) {
-            localStorage.setItem(CY_NICK_KEY, v);
-          } else {
-            localStorage.removeItem(CY_NICK_KEY);
-          }
-        } catch (e) {}
+      function setNickname(name, token) {
+        CyShared.saveNicknameLocal(name, token);
         applyNicknameChrome();
       }
 
@@ -1594,14 +1585,8 @@
             : "Mini Room";
         }
         var ilchonCount = 0;
-        if (el) {
-          try {
-            ilchonCount = JSON.parse(
-              localStorage.getItem(ilchonStorageKey(el.symbol)) || "[]"
-            ).length;
-          } catch (e) {
-            ilchonCount = 0;
-          }
+        if (window.__cyIlchonCache && Array.isArray(window.__cyIlchonCache)) {
+          ilchonCount = window.__cyIlchonCache.length;
         }
         var statIlchon = document.getElementById("cy-stat-ilchon");
         if (statIlchon) {
@@ -1629,14 +1614,8 @@
           menuDiary.textContent = String(diaryCount);
         }
         var gbCount = 0;
-        if (el) {
-          try {
-            gbCount = JSON.parse(
-              localStorage.getItem(guestbookKey(el.symbol)) || "[]"
-            ).length;
-          } catch (e) {
-            gbCount = 0;
-          }
+        if (el && window.__cyGuestbookCache && window.__cyGuestbookCache.symbol === el.symbol) {
+          gbCount = window.__cyGuestbookCache.items.length;
         }
         var menuGb = document.getElementById("cy-menu-gb");
         if (menuGb) {
@@ -1962,10 +1941,15 @@
         if (closeBtn) {
           closeBtn.textContent = hasNick ? "닫기" : "나중에 ♡";
         }
+        var err = document.getElementById("nick-error");
+        if (err) {
+          err.hidden = true;
+          err.textContent = "";
+        }
         if (sub) {
           sub.textContent = hasNick
-            ? "비밀번호 없어요 · 이 브라우저에만 저장돼요"
-            : "Cy-Chemi에 오신 걸 환영해요 ♡ 닉네임부터 정해 볼까요?";
+            ? "닉네임은 모두가 공유해요 · 도토리·원소 진행은 이 브라우저에만 저장돼요"
+            : "Cy-Chemi에 오신 걸 환영해요 ♡ 쓸 닉네임을 정해 볼까요? (중복 불가)";
         }
         m.hidden = false;
         if (inp) {
@@ -2012,17 +1996,16 @@
           .replace(/"/g, "&quot;");
       }
 
-      function ilchonStorageKey(sym) {
-        return "cy_ilchon_from_" + sym;
-      }
-
-      function syncBondAFromCurrent() {
+      function syncBondAFromNickname() {
         var inp = document.getElementById("bond-a");
         if (!inp) {
           return;
         }
-        var el = window.__cyCurrentElement;
-        inp.value = el ? el.symbol : "";
+        inp.value = getNickname() || "";
+      }
+
+      function syncBondAFromCurrent() {
+        syncBondAFromNickname();
       }
 
       function hideIlchonModal() {
@@ -2087,101 +2070,48 @@
         );
       }
 
-      function showIlchonModalFromVerdict(v) {
-        if (!v.ok) {
-          var failMsg = "일촌 실패 💦";
-          if (v.reason === "noble_gas") {
-            failMsg = "18족은 거절 🫧";
-          } else if (v.reason === "not_found") {
-            failMsg = "없는 기호예요 📭";
-          } else if (v.message) {
-            failMsg = v.message.length > 28 ? v.message.slice(0, 28) + "…" : v.message;
+      function showIlchonModalFromResult(result) {
+        if (!result || !result.ok) {
+          var failMsg = (result && result.message) || "일촌 실패 💦";
+          if (failMsg.length > 32) {
+            failMsg = failMsg.slice(0, 32) + "…";
           }
           showIlchonModalHtml(
             '<div class="mh-ilchon-pop mh-ilchon-pop--fail">' +
               '<span class="mh-ilchon-pop__emoji">💔</span>' +
               '<p class="mh-ilchon-pop__title">' + escapeHtml(failMsg) + "</p>" +
-              '<p class="mh-ilchon-pop__sub">다른 B로 다시 도전~</p>' +
+              '<p class="mh-ilchon-pop__sub">다른 닉네임으로 다시 도전~</p>' +
             "</div>",
             "fail"
           );
           return;
         }
-        var den =
-          typeof v.deltaEN === "number" ? v.deltaEN.toFixed(2) : "—";
         var okHtml =
           '<div class="mh-ilchon-pop mh-ilchon-pop--ok">' +
             '<span class="mh-ilchon-pop__emoji">💞</span>' +
             '<p class="mh-ilchon-pop__title">일촌 성공!</p>' +
             '<p class="mh-ilchon-pop__bond">' +
-              escapeHtml(bondKindShort(v.bondKind)) +
-              " · ΔEN " +
-              escapeHtml(den) +
+              escapeHtml(result.me) +
+              " ♡ " +
+              escapeHtml(result.peer) +
             "</p>" +
-            (window.getBondWhyLine
-              ? '<p class="mh-ilchon-pop__why">' +
-                escapeHtml(window.getBondWhyLine(v)) +
-                "</p>"
-              : "") +
+            '<p class="mh-ilchon-pop__why">이제 서로의 일촌 목록에 보여요</p>' +
           "</div>";
         showIlchonModalHtml(okHtml, "ok", "success");
       }
 
-      function appendIlchonRecord(elHome, verdict) {
-        if (!elHome || !verdict || !verdict.ok) {
-          return;
-        }
-        var peer = verdict.el1.z === elHome.z ? verdict.el2 : verdict.el1;
-        var key = ilchonStorageKey(elHome.symbol);
-        var arr = [];
-        try {
-          arr = JSON.parse(localStorage.getItem(key) || "[]");
-        } catch (e) {
-          arr = [];
-        }
-        var exists = arr.some(function (r) {
-          return r.peerSymbol === peer.symbol;
-        });
-        if (exists) {
-          return;
-        }
-        arr.unshift({
-          peerSymbol: peer.symbol,
-          peerName: peer.name,
-          labelKo: verdict.labelKo,
-          bondKind: verdict.bondKind,
-          t: new Date().toLocaleString("ko-KR"),
-        });
-        try {
-          localStorage.setItem(key, JSON.stringify(arr.slice(0, 24)));
-        } catch (e) {}
-      }
-
-      function loadIlchonList() {
-        var ul = document.getElementById("ilchon-list");
-        if (!ul) {
-          return;
-        }
-        var el = window.__cyCurrentElement;
-        if (!el) {
-          ul.innerHTML =
-            '<li class="mh-ilchon-empty">🔍 원소 조회하면<br>일촌 카드가 보여요</li>';
-          return;
-        }
-        var arr = [];
-        try {
-          arr = JSON.parse(localStorage.getItem(ilchonStorageKey(el.symbol)) || "[]");
-        } catch (e) {
-          arr = [];
-        }
-        if (!arr.length) {
+      function renderIlchonList(ul, me, arr) {
+        window.__cyIlchonCache = arr || [];
+        if (!arr || !arr.length) {
           ul.innerHTML =
             '<li class="mh-ilchon-empty">💕 아직 일촌 없음<br><small>위에서 💞 눌러봐!</small></li>';
+          updateMobileAppChrome();
           return;
         }
         ul.innerHTML = arr
           .map(function (r, idx) {
-            var gifts = getGiftsForPair(el.symbol, r.peerSymbol);
+            var peer = r.peer || r.peerNickname || "";
+            var gifts = getGiftsForPair(me, peer);
             var giftCount = gifts.length;
             var lastGift = giftCount ? gifts[0] : null;
             var giftBadge = giftCount
@@ -2195,25 +2125,23 @@
             var when = formatIlchonWhen(r.t);
             return (
               '<li class="mh-ilchon-chip" data-peer="' +
-              escapeHtml(r.peerSymbol) +
+              escapeHtml(peer) +
               '" data-idx="' + idx + '">' +
                 '<div class="mh-ilchon-chip__pair">' +
-                  '<span class="mh-ilchon-chip__sym">' + escapeHtml(el.symbol) + "</span>" +
+                  '<span class="mh-ilchon-chip__sym">' + escapeHtml(me) + "</span>" +
                   '<span class="mh-ilchon-chip__heart" aria-hidden="true">♥</span>' +
                   '<span class="mh-ilchon-chip__sym mh-ilchon-chip__sym--peer">' +
-                    escapeHtml(r.peerSymbol) +
+                    escapeHtml(peer) +
                   "</span>" +
                 "</div>" +
-                '<span class="mh-ilchon-chip__bond">' +
-                  escapeHtml(bondKindShort(r.bondKind)) +
-                "</span>" +
+                '<span class="mh-ilchon-chip__bond">일촌 맺음 ♡</span>' +
                 '<div class="mh-ilchon-chip__foot">' +
                   (when
                     ? '<time class="mh-ilchon-chip__when">' + escapeHtml(when) + "</time>"
                     : '<span class="mh-ilchon-chip__when"></span>') +
                   giftBadge +
                   '<button type="button" class="mh-ilchon-chip__giftbtn" data-gift-peer="' +
-                    escapeHtml(r.peerSymbol) +
+                    escapeHtml(peer) +
                   '" title="' + COST_ILCHON_GIFT + ' 도토리 선물">🎁</button>' +
                 "</div>" +
               "</li>"
@@ -2221,12 +2149,38 @@
           })
           .join("");
         ul.querySelectorAll(".mh-ilchon-chip__giftbtn").forEach(function (btn) {
-          btn.addEventListener("click", function (ev) {
+          btn.addEventListener("click", function () {
             var peer = btn.getAttribute("data-gift-peer");
             sendIlchonGift(peer, btn);
           });
         });
         updateMobileAppChrome();
+      }
+
+      function loadIlchonList() {
+        var ul = document.getElementById("ilchon-list");
+        if (!ul) {
+          return;
+        }
+        var me = getNickname();
+        syncBondAFromNickname();
+        if (!me) {
+          ul.innerHTML =
+            '<li class="mh-ilchon-empty">♡ 닉네임 입장 먼저!<br><small>입장 후 일촌 맺을 수 있어요</small></li>';
+          updateMobileAppChrome();
+          return;
+        }
+        ul.innerHTML =
+          '<li class="mh-ilchon-empty">일촌 목록 불러오는 중…</li>';
+        CyShared.getIlchon(me)
+          .then(function (arr) {
+            renderIlchonList(ul, me, arr);
+          })
+          .catch(function () {
+            ul.innerHTML =
+              '<li class="mh-ilchon-empty">서버에 연결할 수 없어요<br><small>일촌은 모두가 함께 봐요</small></li>';
+            updateMobileAppChrome();
+          });
       }
 
       var GIFT_TYPES = ["💐", "🍰", "🍫", "🎀", "💌", "🎁", "🌹"];
@@ -2293,13 +2247,13 @@
        * btnEl  : 애니메이션 시작점 버튼 엘리먼트(없으면 화면 중앙)
        * giftId : 선택한 선물 id (없으면 선택 모달 열기)
        */
-      function sendIlchonGift(peerSym, btnEl, giftId) {
-        var el = window.__cyCurrentElement;
-        if (!el || !peerSym) return;
+      function sendIlchonGift(peerNick, btnEl, giftId) {
+        var me = getNickname();
+        if (!me || !peerNick) return;
 
         if (!giftId) {
           openGiftModal({
-            peerSym: peerSym,
+            peerNick: peerNick,
             anchorBtn: btnEl,
           });
           return;
@@ -2323,20 +2277,20 @@
           consumeGiftToken();
           renderGachaWidget();
         } else {
-          var ok = spendDotori(price, "선물(" + item.name + ") → " + el.symbol + "+" + peerSym);
+          var ok = spendDotori(price, "선물(" + item.name + ") → " + me + "+" + peerNick);
           if (!ok) {
             showCyToast("도토리가 부족해요 ㅠㅠ", "bad");
             return;
           }
         }
-        recordGift(el.symbol, peerSym, item.emoji);
+        recordGift(me, peerNick, item.emoji);
         flyGiftFromButton(btnEl, item.emoji);
         showCyToast(
-          "<b>" + peerSym + "</b>에게 " + item.emoji + " " + item.name + " 보냈어요 ♡",
+          "<b>" + peerNick + "</b>에게 " + item.emoji + " " + item.name + " 보냈어요 ♡",
           "ok"
         );
         try { bumpAchievement("gift_sent"); renderAchievements(); } catch (e) {}
-        try { maybePeerReplyGift(peerSym, item); } catch (e) {}
+        try { maybePeerReplyGift(peerNick, item); } catch (e) {}
         loadIlchonList();
         renderShopBalance();
         /* 자판기 슬롯에서 상품 떨어지는 효과 + 입력 버퍼 초기화 */
@@ -2907,16 +2861,10 @@
       }
 
       function getCurrentIlchonList() {
-        var el = window.__cyCurrentElement;
-        if (!el || !el.symbol) return [];
-        try {
-          var raw = localStorage.getItem(ilchonStorageKey(el.symbol));
-          var arr = raw ? JSON.parse(raw) : [];
-          if (!Array.isArray(arr)) arr = [];
-          return arr;
-        } catch (e) {
-          return [];
+        if (window.__cyIlchonCache && Array.isArray(window.__cyIlchonCache)) {
+          return window.__cyIlchonCache;
         }
+        return [];
       }
 
       function openPeerPickModal(giftId, anchorBtn) {
@@ -2929,12 +2877,11 @@
         var seen = {};
         var arr = [];
         rawArr.forEach(function (r) {
-          var sym = r && (r.peerSymbol || r.symbol);
-          if (!sym || seen[sym]) return;
-          seen[sym] = true;
+          var nick = r && (r.peer || r.peerNickname || r.peerSymbol || r.symbol);
+          if (!nick || seen[nick]) return;
+          seen[nick] = true;
           arr.push({
-            symbol: sym,
-            label: r.labelKo || r.label || "",
+            nickname: nick,
             time: r.t || r.time || "",
           });
         });
@@ -2945,20 +2892,20 @@
         if (!arr.length) {
           var empty = document.createElement("li");
           empty.className = "cy-peer-modal__empty";
-          empty.innerHTML = '현재 미니홈에 일촌이 없어요 ㅠㅠ<br>👉 <b>일촌 맺기 탭</b>에서 친구를 먼저 만들어줘 ♡<br><small style="opacity:.8">(미니홈 원소 = 너의 캐릭터, 일촌 = 그 원소와 결합한 친구)</small>';
+          empty.innerHTML = '아직 일촌이 없어요 ㅠㅠ<br>👉 <b>일촌 맺기 탭</b>에서 친구 닉네임으로 먼저 맺어줘 ♡';
           list.appendChild(empty);
         } else {
           arr.forEach(function (peer) {
             var li = document.createElement("li");
             li.className = "cy-peer-modal__item";
             li.innerHTML =
-              '<span class="cy-peer-modal__sym">' + escapeHtml(peer.symbol) + '</span>' +
-              '<span class="cy-peer-modal__name">' + escapeHtml(peer.label || ("일촌 " + peer.symbol)) + '</span>' +
+              '<span class="cy-peer-modal__sym">♡</span>' +
+              '<span class="cy-peer-modal__name">' + escapeHtml(peer.nickname) + '</span>' +
               '<button type="button" class="cy-peer-modal__btn">📬 보내기</button>';
             var btn = li.querySelector(".cy-peer-modal__btn");
             btn.addEventListener("click", function () {
               closePeerPickModal();
-              sendIlchonGift(peer.symbol, anchorBtn || btn, giftId);
+              sendIlchonGift(peer.nickname, anchorBtn || btn, giftId);
             });
             list.appendChild(li);
           });
@@ -2982,8 +2929,9 @@
         if (!modal) return;
         renderShopBalance();
         var sub = document.getElementById("gift-modal-sub");
-        if (sub && ctx && ctx.peerSym) {
-          sub.innerHTML = '<b>' + ctx.peerSym + '</b>에게 선물을 골라줘. 도토리가 차감되고, 카드에 ♡표시가 늘어나요';
+        var peer = ctx && (ctx.peerNick || ctx.peerSym);
+        if (sub && peer) {
+          sub.innerHTML = '<b>' + peer + '</b>에게 선물을 골라줘. 도토리가 차감되고, 카드에 ♡표시가 늘어나요';
         }
         renderGiftModalCats();
         renderGiftModalGrid();
@@ -3039,7 +2987,7 @@
           card.addEventListener("click", function () {
             var ctx = CY_GIFT_MODAL_CTX || {};
             closeGiftModal();
-            sendIlchonGift(ctx.peerSym, ctx.anchorBtn || card, it.id);
+            sendIlchonGift(ctx.peerNick || ctx.peerSym, ctx.anchorBtn || card, it.id);
           });
           grid.appendChild(card);
         });
@@ -3719,17 +3667,14 @@
         } catch (e) {}
       }
 
-      function updateLpPlazaDockBadgeCount() {
+      function updateLpPlazaDockBadgeCount(count) {
         var badge = document.getElementById("lp-dock-fab-count");
         if (!badge) {
           return;
         }
-        var n = 0;
-        try {
-          var arr = JSON.parse(localStorage.getItem(PLAZA_GB_KEY) || "[]");
-          n = Array.isArray(arr) ? arr.length : 0;
-        } catch (e) {
-          n = 0;
+        var n = typeof count === "number" ? count : 0;
+        if (typeof count !== "number" && window.__cyPlazaGbCache) {
+          n = window.__cyPlazaGbCache.length;
         }
         badge.textContent = n > 99 ? "99+" : String(n);
       }
@@ -3766,55 +3711,69 @@
         setPlazaDockCollapsed(c, false);
       }
 
-      function loadPlazaGuestbook() {
-        var ul = document.getElementById("lp-plaza-gb-list");
+      function renderPlazaGuestbookList(ul, arr) {
         if (!ul) {
-          updateLpPlazaDockBadgeCount();
+          updateLpPlazaDockBadgeCount(arr ? arr.length : 0);
           return;
         }
-        try {
-          var arr = JSON.parse(localStorage.getItem(PLAZA_GB_KEY) || "[]");
-          if (!arr.length) {
-            ul.innerHTML =
-              '<li class="lp-chat-empty" role="status">아직 메시지가 없어요. 아래에서 첫 인사를 남겨 보세요 💬</li>';
-            updateLpPlazaDockBadgeCount();
-            return;
-          }
-          var rows = arr
-            .slice()
-            .reverse()
-            .map(function (o) {
-              var name = o.name || "익명";
-              var hue = 200;
-              for (var j = 0; j < name.length; j++) {
-                hue = (hue * 31 + name.charCodeAt(j)) | 0;
-              }
-              hue = Math.abs(hue) % 360;
-              return (
-                '<li class="lp-chat-msg">' +
-                '<div class="lp-chat-avatar" style="--lp-chat-h:' +
-                hue +
-                '" aria-hidden="true"></div>' +
-                '<div class="lp-chat-msg__body">' +
-                '<div class="lp-chat-msg__head">' +
-                '<span class="lp-chat-msg__name">' +
-                escapeHtml(name) +
-                "</span>" +
-                '<time class="lp-chat-msg__time">' +
-                escapeHtml(o.t || "") +
-                "</time></div>" +
-                '<p class="lp-chat-msg__bubble">' +
-                escapeHtml(o.msg) +
-                "</p></div></li>"
-              );
-            })
-            .join("");
-          ul.innerHTML = rows;
-          ul.scrollTop = ul.scrollHeight;
-        } catch (e) {
-          ul.innerHTML = "";
+        window.__cyPlazaGbCache = arr || [];
+        if (!arr || !arr.length) {
+          ul.innerHTML =
+            '<li class="lp-chat-empty" role="status">아직 메시지가 없어요. 아래에서 첫 인사를 남겨 보세요 💬</li>';
+          updateLpPlazaDockBadgeCount(0);
+          return;
         }
-        updateLpPlazaDockBadgeCount();
+        var rows = arr
+          .slice()
+          .reverse()
+          .map(function (o) {
+            var name = o.name || "익명";
+            var hue = 200;
+            for (var j = 0; j < name.length; j++) {
+              hue = (hue * 31 + name.charCodeAt(j)) | 0;
+            }
+            hue = Math.abs(hue) % 360;
+            return (
+              '<li class="lp-chat-msg">' +
+              '<div class="lp-chat-avatar" style="--lp-chat-h:' +
+              hue +
+              '" aria-hidden="true"></div>' +
+              '<div class="lp-chat-msg__body">' +
+              '<div class="lp-chat-msg__head">' +
+              '<span class="lp-chat-msg__name">' +
+              escapeHtml(name) +
+              "</span>" +
+              '<time class="lp-chat-msg__time">' +
+              escapeHtml(o.t || "") +
+              "</time></div>" +
+              '<p class="lp-chat-msg__bubble">' +
+              escapeHtml(o.msg) +
+              "</p></div></li>"
+            );
+          })
+          .join("");
+        ul.innerHTML = rows;
+        ul.scrollTop = ul.scrollHeight;
+        updateLpPlazaDockBadgeCount(arr.length);
+      }
+
+      function loadPlazaGuestbook() {
+        var ul = document.getElementById("lp-plaza-gb-list");
+        if (ul) {
+          ul.innerHTML =
+            '<li class="lp-chat-empty" role="status">광장 방명록 불러오는 중…</li>';
+        }
+        CyShared.getGuestbook("plaza")
+          .then(function (arr) {
+            renderPlazaGuestbookList(ul, arr);
+          })
+          .catch(function () {
+            if (ul) {
+              ul.innerHTML =
+                '<li class="lp-chat-empty" role="status">서버에 연결할 수 없어요. npm start로 서버를 켜 주세요.</li>';
+            }
+            updateLpPlazaDockBadgeCount(0);
+          });
       }
 
       var __lpTravelTimer = null;
@@ -4524,12 +4483,9 @@
       var __lpBubbleVariants = ["", "lp-plaza-bubble--pink", "lp-plaza-bubble--mint", "lp-plaza-bubble--peach"];
 
       function getPlazaGuestbookSamples() {
-        try {
-          var arr = JSON.parse(localStorage.getItem(PLAZA_GB_KEY) || "[]");
-          if (Array.isArray(arr) && arr.length) {
-            return arr;
-          }
-        } catch (e) {}
+        if (window.__cyPlazaGbCache && window.__cyPlazaGbCache.length) {
+          return window.__cyPlazaGbCache;
+        }
         /* 비어있을 땐 분위기용 디폴트 멘트 */
         return [
           { name: "H",  msg: "전자 한 개… 누가 받을래?" },
@@ -5654,8 +5610,32 @@
         return parts.join("");
       }
 
-      function boardKey(sym) {
-        return "cy_board_" + sym;
+      function renderBoardList(ul, arr) {
+        if (!arr.length) {
+          ul.innerHTML = '<li class="board-stickies__empty">📝 아직 글이 없어요. 첫 포스트잇을 붙여 보세요.</li>';
+          return;
+        }
+        ul.innerHTML = arr
+          .map(function (o, i) {
+            var color = o.color || "yellow";
+            var rot = ((i * 37) % 11) - 5;
+            var meta = (o.author ? o.author + " · " : "") + (o.t || "");
+            return (
+              '<li class="board-sticky board-sticky--' +
+              escapeHtml(color) +
+              '" style="--rot:' +
+              rot +
+              'deg">' +
+              '<span class="board-sticky__pin" aria-hidden="true"></span>' +
+              '<p class="board-sticky__text">' +
+              escapeHtml(o.text) +
+              "</p>" +
+              '<span class="board-sticky__meta">' +
+              escapeHtml(meta) +
+              "</span></li>"
+            );
+          })
+          .join("");
       }
 
       function loadBoardList(el) {
@@ -5667,41 +5647,141 @@
           ul.innerHTML = '<li class="board-stickies__empty">원소 조회 후 글이 분리 저장돼요.</li>';
           return;
         }
-        try {
-          var raw = localStorage.getItem(boardKey(el.symbol)) || "[]";
-          var arr = JSON.parse(raw);
-          if (!arr.length) {
-            ul.innerHTML = '<li class="board-stickies__empty">📝 아직 글이 없어요. 첫 포스트잇을 붙여 보세요.</li>';
-            return;
-          }
-          ul.innerHTML = arr
-            .map(function (o, i) {
-              var color = o.color || "yellow";
-              /* 살짝 다른 각도/위치 — 위치는 grid라 그냥 회전만 */
-              var rot = ((i * 37) % 11) - 5; /* -5° ~ +5° */
-              return (
-                '<li class="board-sticky board-sticky--' +
-                escapeHtml(color) +
-                '" style="--rot:' +
-                rot +
-                'deg">' +
-                '<span class="board-sticky__pin" aria-hidden="true"></span>' +
-                '<p class="board-sticky__text">' +
-                escapeHtml(o.text) +
-                "</p>" +
-                '<span class="board-sticky__meta">' +
-                escapeHtml(o.t || "") +
-                "</span></li>"
-              );
-            })
-            .join("");
-        } catch (e) {
-          ul.innerHTML = "";
-        }
+        ul.innerHTML = '<li class="board-stickies__empty">게시판 불러오는 중…</li>';
+        CyShared.getBoard(el.symbol)
+          .then(function (arr) {
+            renderBoardList(ul, arr);
+          })
+          .catch(function () {
+            ul.innerHTML =
+              '<li class="board-stickies__empty">서버에 연결할 수 없어요. 게시판은 모두가 함께 봐요.</li>';
+          });
       }
 
-      function guestbookKey(sym) {
-        return "cy_guestbook_" + sym;
+      function bindGuestbookInteractions(ul, el) {
+        ul.querySelectorAll(".mh-gb-letter__body--secret").forEach(function (b) {
+          b.addEventListener("click", function () {
+            var content = b.parentNode.querySelector(".mh-gb-letter__body--secret-content");
+            if (b.dataset.secret === "hidden") {
+              b.dataset.secret = "open";
+              b.classList.add("is-open");
+              if (content) content.hidden = false;
+            } else {
+              b.dataset.secret = "hidden";
+              b.classList.remove("is-open");
+              if (content) content.hidden = true;
+            }
+          });
+        });
+        ul.querySelectorAll(".mh-gb-reply-btn").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var li = btn.closest(".mh-gb-letter");
+            if (!li) return;
+            var form = li.querySelector(".mh-gb-reply-form");
+            if (!form) return;
+            form.hidden = !form.hidden;
+            if (!form.hidden) {
+              var ta = form.querySelector(".mh-gb-reply-form__msg");
+              if (ta) ta.focus();
+            }
+          });
+        });
+        ul.querySelectorAll(".mh-gb-reply-form").forEach(function (form) {
+          var cancel = form.querySelector(".mh-gb-reply-form__cancel");
+          if (cancel) cancel.addEventListener("click", function () { form.hidden = true; });
+          form.addEventListener("submit", function (ev) {
+            ev.preventDefault();
+            var ta = form.querySelector(".mh-gb-reply-form__msg");
+            var msg = ta && ta.value ? ta.value.trim() : "";
+            if (!msg) return;
+            var letterId = form.getAttribute("data-letter-id") || "";
+            if (!letterId) return;
+            CyShared.replyGuestbook(el.symbol, letterId, {
+              name: el.symbol + " 주인",
+              msg: msg,
+            })
+              .then(function () {
+                try { bumpAchievement("gb_reply"); renderAchievements(); } catch (e) {}
+                addDotori(1, "방명록 답글");
+                loadGuestbookList(el);
+                showCyToast("답장을 보냈어요 ✉", "ok");
+              })
+              .catch(function () {
+                showCyToast("서버에 연결할 수 없어요", "warn");
+              });
+          });
+        });
+      }
+
+      function renderGuestbookList(ul, el, arr) {
+        window.__cyGuestbookCache = { symbol: el.symbol, items: arr || [] };
+        if (!arr.length) {
+          ul.innerHTML =
+            "<li class=\"mh-empty mh-gb-empty\">" +
+            "<span class=\"mh-gb-empty__icon\" aria-hidden=\"true\">💌</span>" +
+            "<span>아직 도착한 편지가 없어요. 첫 한마디를 남겨봐 ♡</span>" +
+            "</li>";
+          return;
+        }
+        ul.innerHTML = arr
+          .map(function (o, idx) {
+            var nm = escapeHtml(o.name || "익명");
+            var firstChar = nm.replace(/<[^>]+>/g, "").trim().charAt(0) || "♡";
+            var msg = escapeHtml(o.msg || "").replace(/\n/g, "<br/>");
+            var ts = escapeHtml(o.t || "");
+            var secret = !!o.secret;
+            var letterId = escapeHtml(o.id || ("gb-" + idx));
+            var replies = Array.isArray(o.replies) ? o.replies : [];
+            var bodyHtml = secret
+              ? '<p class="mh-gb-letter__body mh-gb-letter__body--secret" data-secret="hidden" data-idx="' + idx + '">' +
+                  '<span class="mh-gb-secret-lock">🔒</span>' +
+                  '<span class="mh-gb-secret-text">비밀글 — 클릭해서 열기</span>' +
+                '</p>' +
+                '<p class="mh-gb-letter__body mh-gb-letter__body--secret-content" hidden>' + msg + '</p>'
+              : '<p class="mh-gb-letter__body">' + msg + '</p>';
+            var repliesHtml = replies.length
+              ? '<ul class="mh-gb-replies">' + replies.map(function (r) {
+                  var rn = escapeHtml(r.name || "주인");
+                  var rm = escapeHtml(r.msg || "").replace(/\n/g, "<br/>");
+                  var rt = escapeHtml(r.t || "");
+                  return (
+                    '<li class="mh-gb-reply">' +
+                      '<span class="mh-gb-reply__head">↳ <b>' + rn + '</b> · ' + rt + '</span>' +
+                      '<span class="mh-gb-reply__body">' + rm + '</span>' +
+                    '</li>'
+                  );
+                }).join("") + '</ul>'
+              : '';
+            return (
+              '<li class="mh-gb-letter' + (secret ? ' is-secret' : '') + '" data-idx="' + idx + '" data-letter-id="' + letterId + '" style="--gb-i:' + idx + '">' +
+                '<span class="mh-gb-letter__tape" aria-hidden="true"></span>' +
+                '<div class="mh-gb-letter__head">' +
+                  '<span class="mh-gb-letter__avatar" aria-hidden="true">' + escapeHtml(firstChar) + '</span>' +
+                  '<span class="mh-gb-letter__from"><b>From.</b> ' + nm + (secret ? ' <span class="mh-gb-secret-chip">비밀</span>' : '') + '</span>' +
+                  '<span class="mh-gb-letter__stamp" aria-hidden="true">' +
+                    '<span class="mh-gb-letter__stamp-mark">♥</span>' +
+                    '<span class="mh-gb-letter__stamp-cy">CY</span>' +
+                  '</span>' +
+                '</div>' +
+                bodyHtml +
+                repliesHtml +
+                '<div class="mh-gb-letter__foot">' +
+                  '<span class="mh-gb-letter__post">📮 ' + ts + '</span>' +
+                  '<button type="button" class="mh-gb-reply-btn" data-idx="' + idx + '">✉ 답글</button>' +
+                  '<span class="mh-gb-letter__heart" aria-hidden="true">♡</span>' +
+                '</div>' +
+                '<form class="mh-gb-reply-form" data-idx="' + idx + '" data-letter-id="' + letterId + '" hidden>' +
+                  '<textarea class="mh-gb-reply-form__msg" rows="2" placeholder="답장을 적어줘 ♡" maxlength="200"></textarea>' +
+                  '<div class="mh-gb-reply-form__actions">' +
+                    '<button type="button" class="mh-gb-reply-form__cancel">취소</button>' +
+                    '<button type="submit" class="mh-gb-reply-form__send">↩ 답장 보내기</button>' +
+                  '</div>' +
+                '</form>' +
+              '</li>'
+            );
+          })
+          .join("");
+        bindGuestbookInteractions(ul, el);
       }
 
       function loadGuestbookList(el) {
@@ -5718,138 +5798,19 @@
           updateMobileAppChrome();
           return;
         }
-        try {
-          var raw = localStorage.getItem(guestbookKey(el.symbol)) || "[]";
-          var arr = JSON.parse(raw);
-          if (!arr.length) {
+        ul.innerHTML =
+          "<li class=\"mh-empty mh-gb-empty\"><span>방명록 불러오는 중…</span></li>";
+        CyShared.getGuestbook(el.symbol)
+          .then(function (arr) {
+            renderGuestbookList(ul, el, arr);
+            updateMobileAppChrome();
+          })
+          .catch(function () {
             ul.innerHTML =
               "<li class=\"mh-empty mh-gb-empty\">" +
-              "<span class=\"mh-gb-empty__icon\" aria-hidden=\"true\">💌</span>" +
-              "<span>아직 도착한 편지가 없어요. 첫 한마디를 남겨봐 ♡</span>" +
-              "</li>";
+              "<span>서버에 연결할 수 없어요. 방명록은 모두가 함께 봐요.</span></li>";
             updateMobileAppChrome();
-            return;
-          }
-          ul.innerHTML = arr
-            .map(function (o, idx) {
-              var nm = escapeHtml(o.name || "익명");
-              var firstChar = nm.replace(/<[^>]+>/g, "").trim().charAt(0) || "♡";
-              var msg = escapeHtml(o.msg || "").replace(/\n/g, "<br/>");
-              var ts = escapeHtml(o.t || "");
-              var secret = !!o.secret;
-              var letterId = escapeHtml(o.id || ("gb-" + idx));
-              var replies = Array.isArray(o.replies) ? o.replies : [];
-              var bodyHtml = secret
-                ? '<p class="mh-gb-letter__body mh-gb-letter__body--secret" data-secret="hidden" data-idx="' + idx + '">' +
-                    '<span class="mh-gb-secret-lock">🔒</span>' +
-                    '<span class="mh-gb-secret-text">비밀글 — 클릭해서 열기</span>' +
-                  '</p>' +
-                  '<p class="mh-gb-letter__body mh-gb-letter__body--secret-content" hidden>' + msg + '</p>'
-                : '<p class="mh-gb-letter__body">' + msg + '</p>';
-              var repliesHtml = replies.length
-                ? '<ul class="mh-gb-replies">' + replies.map(function (r) {
-                    var rn = escapeHtml(r.name || "주인");
-                    var rm = escapeHtml(r.msg || "").replace(/\n/g, "<br/>");
-                    var rt = escapeHtml(r.t || "");
-                    return (
-                      '<li class="mh-gb-reply">' +
-                        '<span class="mh-gb-reply__head">↳ <b>' + rn + '</b> · ' + rt + '</span>' +
-                        '<span class="mh-gb-reply__body">' + rm + '</span>' +
-                      '</li>'
-                    );
-                  }).join("") + '</ul>'
-                : '';
-              return (
-                '<li class="mh-gb-letter' + (secret ? ' is-secret' : '') + '" data-idx="' + idx + '" data-letter-id="' + letterId + '" style="--gb-i:' + idx + '">' +
-                  '<span class="mh-gb-letter__tape" aria-hidden="true"></span>' +
-                  '<div class="mh-gb-letter__head">' +
-                    '<span class="mh-gb-letter__avatar" aria-hidden="true">' + escapeHtml(firstChar) + '</span>' +
-                    '<span class="mh-gb-letter__from"><b>From.</b> ' + nm + (secret ? ' <span class="mh-gb-secret-chip">비밀</span>' : '') + '</span>' +
-                    '<span class="mh-gb-letter__stamp" aria-hidden="true">' +
-                      '<span class="mh-gb-letter__stamp-mark">♥</span>' +
-                      '<span class="mh-gb-letter__stamp-cy">CY</span>' +
-                    '</span>' +
-                  '</div>' +
-                  bodyHtml +
-                  repliesHtml +
-                  '<div class="mh-gb-letter__foot">' +
-                    '<span class="mh-gb-letter__post">📮 ' + ts + '</span>' +
-                    '<button type="button" class="mh-gb-reply-btn" data-idx="' + idx + '">✉ 답글</button>' +
-                    '<span class="mh-gb-letter__heart" aria-hidden="true">♡</span>' +
-                  '</div>' +
-                  '<form class="mh-gb-reply-form" data-idx="' + idx + '" hidden>' +
-                    '<textarea class="mh-gb-reply-form__msg" rows="2" placeholder="답장을 적어줘 ♡" maxlength="200"></textarea>' +
-                    '<div class="mh-gb-reply-form__actions">' +
-                      '<button type="button" class="mh-gb-reply-form__cancel">취소</button>' +
-                      '<button type="submit" class="mh-gb-reply-form__send">↩ 답장 보내기</button>' +
-                    '</div>' +
-                  '</form>' +
-                '</li>'
-              );
-            })
-            .join("");
-          /* 비밀글 열기 */
-          ul.querySelectorAll(".mh-gb-letter__body--secret").forEach(function (b) {
-            b.addEventListener("click", function () {
-              var content = b.parentNode.querySelector(".mh-gb-letter__body--secret-content");
-              if (b.dataset.secret === "hidden") {
-                b.dataset.secret = "open";
-                b.classList.add("is-open");
-                if (content) content.hidden = false;
-              } else {
-                b.dataset.secret = "hidden";
-                b.classList.remove("is-open");
-                if (content) content.hidden = true;
-              }
-            });
           });
-          /* 답글 폼 토글 */
-          ul.querySelectorAll(".mh-gb-reply-btn").forEach(function (btn) {
-            btn.addEventListener("click", function () {
-              var li = btn.closest(".mh-gb-letter");
-              if (!li) return;
-              var form = li.querySelector(".mh-gb-reply-form");
-              if (!form) return;
-              form.hidden = !form.hidden;
-              if (!form.hidden) {
-                var ta = form.querySelector(".mh-gb-reply-form__msg");
-                if (ta) ta.focus();
-              }
-            });
-          });
-          ul.querySelectorAll(".mh-gb-reply-form").forEach(function (form) {
-            var cancel = form.querySelector(".mh-gb-reply-form__cancel");
-            if (cancel) cancel.addEventListener("click", function () { form.hidden = true; });
-            form.addEventListener("submit", function (ev) {
-              ev.preventDefault();
-              var ta = form.querySelector(".mh-gb-reply-form__msg");
-              var msg = ta && ta.value ? ta.value.trim() : "";
-              if (!msg) return;
-              var idx = parseInt(form.getAttribute("data-idx") || "-1", 10);
-              if (idx < 0) return;
-              try {
-                var raw2 = localStorage.getItem(guestbookKey(el.symbol)) || "[]";
-                var arr2 = JSON.parse(raw2);
-                if (arr2[idx]) {
-                  if (!Array.isArray(arr2[idx].replies)) arr2[idx].replies = [];
-                  arr2[idx].replies.push({
-                    name: el.symbol + " 주인",
-                    msg: msg,
-                    t: new Date().toLocaleString("ko-KR"),
-                  });
-                  localStorage.setItem(guestbookKey(el.symbol), JSON.stringify(arr2.slice(0, 50)));
-                }
-              } catch (e) {}
-              try { bumpAchievement("gb_reply"); renderAchievements(); } catch (e) {}
-              addDotori(1, "방명록 답글");
-              loadGuestbookList(el);
-              showCyToast("답장을 보냈어요 ✉", "ok");
-            });
-          });
-        } catch (e) {
-          ul.innerHTML = "";
-        }
-        updateMobileAppChrome();
       }
 
       /**
@@ -5943,7 +5904,7 @@
         renderElement(el);
       }
 
-      function renderBondResult(result) {
+      function renderIlchonResult(result) {
         var bondEl = document.querySelector("#bond-result");
         if (!bondEl || !result) {
           return;
@@ -5963,28 +5924,15 @@
         }
 
         bondEl.classList.add("is-success");
-        var prettyDelta =
-          typeof result.deltaEN === "number"
-            ? result.deltaEN.toFixed(2)
-            : String(result.deltaEN);
-
         bondEl.innerHTML =
           '<div class="mh-bond-mini mh-bond-mini--ok">' +
             '<div class="mh-bond-mini__pair">' +
-              '<b>' + escapeHtml(result.el1.symbol) + "</b>" +
+              '<b>' + escapeHtml(result.me) + "</b>" +
               '<span aria-hidden="true">♥</span>' +
-              "<b>" + escapeHtml(result.el2.symbol) + "</b>" +
+              "<b>" + escapeHtml(result.peer) + "</b>" +
             "</div>" +
-            '<p class="mh-bond-mini__bond">' +
-              escapeHtml(bondKindShort(result.bondKind)) +
-              " · ΔEN " +
-              escapeHtml(prettyDelta) +
-            "</p>" +
-            (window.getBondWhyLine
-              ? '<p class="mh-bond-mini__why">' +
-                escapeHtml(window.getBondWhyLine(result)) +
-                "</p>"
-              : "") +
+            '<p class="mh-bond-mini__bond">일촌 맺음 ♡</p>' +
+            '<p class="mh-bond-mini__why">서로의 일촌 목록에 추가됐어요</p>' +
           "</div>";
       }
 
@@ -7247,6 +7195,25 @@
         }
       }
 
+      function rewardIlchonPair(me, peer) {
+        try {
+          var pair = [me, peer].sort().join("-");
+          var earnedKey = "cy_dotori_ilchon_pairs_v1";
+          var earned = [];
+          try {
+            earned = JSON.parse(localStorage.getItem(earnedKey) || "[]");
+          } catch (e) {
+            earned = [];
+          }
+          if (!Array.isArray(earned)) earned = [];
+          if (earned.indexOf(pair) < 0) {
+            earned.unshift(pair);
+            localStorage.setItem(earnedKey, JSON.stringify(earned.slice(0, 200)));
+            addDotori(5, "새 일촌 (" + pair + ")");
+          }
+        } catch (e) {}
+      }
+
       function handleIlchon() {
         var inputB = document.querySelector("#bond-b");
         var bondEl = document.querySelector("#bond-result");
@@ -7254,68 +7221,69 @@
           return;
         }
 
-        var elA = window.__cyCurrentElement;
+        var me = getNickname();
         bumpAchievement("ilchon_try");
         renderAchievements();
-        if (!elA) {
-          showIlchonModal("먼저 홈에서 원소를 조회해 주세요! 미니홈 주인이 없어요 🏠", "fail");
+        syncBondAFromNickname();
+
+        if (!me) {
+          showIlchonModal("닉네임부터 정해 주세요 ♡ 입장 버튼에서 등록!", "fail");
           bondEl.classList.remove("is-success");
           bondEl.classList.add("is-error");
           bondEl.innerHTML =
             '<div class="mh-bond-mini mh-bond-mini--fail">' +
-              '<span class="mh-bond-mini__emoji">🏠</span>' +
-              '<span class="mh-bond-mini__txt">먼저 원소 조회!</span>' +
+              '<span class="mh-bond-mini__emoji">♡</span>' +
+              '<span class="mh-bond-mini__txt">닉네임 입장 먼저!</span>' +
             "</div>";
           return;
-        }
-
-        var inputA = document.getElementById("bond-a");
-        if (inputA) {
-          inputA.value = elA.symbol;
         }
 
         if (!inputB) {
           return;
         }
 
-        var rawB = inputB.value;
-        if (!rawB || !rawB.trim()) {
+        var rawB = (inputB.value || "").trim();
+        if (!rawB) {
           bondEl.classList.remove("is-success");
           bondEl.classList.add("is-error");
           bondEl.innerHTML =
             '<div class="mh-bond-mini mh-bond-mini--fail">' +
               '<span class="mh-bond-mini__emoji">✏️</span>' +
-              '<span class="mh-bond-mini__txt">B 기호 적어줘!</span>' +
+              '<span class="mh-bond-mini__txt">친구 닉네임 적어줘!</span>' +
             "</div>";
-          showIlchonModal("B 친구 기호를 적어 줘야 해요 ✏️", "fail");
+          showIlchonModal("일촌할 친구 닉네임을 적어 줘야 해요 ✏️", "fail");
           return;
         }
 
-        var verdict = window.judgeBondBySymbols(elA.symbol, rawB);
-        showIlchonModalFromVerdict(verdict);
-        renderBondResult(verdict);
-        if (verdict.ok) {
-          cyMobileHaptic("success");
-          cyMobilePop(document.getElementById("btn-ilchon"));
-          cyMobilePop(document.getElementById("bond-result"));
-          appendIlchonRecord(elA, verdict);
-          /* 같은 짝(sym pair)에 한 번만 도토리 +5 — 중복 적립 방지 */
-          try {
-            var pair = [elA.symbol, verdict.el2.symbol].sort().join("-");
-            var earnedKey = "cy_dotori_ilchon_pairs_v1";
-            var earned = [];
-            try {
-              earned = JSON.parse(localStorage.getItem(earnedKey) || "[]");
-            } catch (e) { earned = []; }
-            if (!Array.isArray(earned)) earned = [];
-            if (earned.indexOf(pair) < 0) {
-              earned.unshift(pair);
-              localStorage.setItem(earnedKey, JSON.stringify(earned.slice(0, 200)));
-              addDotori(5, "새 일촌 (" + pair + ")");
-            }
-          } catch (e) {}
+        if (rawB === me) {
+          var selfMsg = "나 자신과는 일촌 못 해요 ㅎㅎ";
+          showIlchonModal(selfMsg, "fail");
+          renderIlchonResult({ ok: false, message: selfMsg });
+          return;
         }
-        loadIlchonList();
+
+        CyShared.linkIlchon(rawB)
+          .then(function (items) {
+            window.__cyIlchonCache = items;
+            var okResult = { ok: true, me: me, peer: rawB };
+            showIlchonModalFromResult(okResult);
+            renderIlchonResult(okResult);
+            cyMobileHaptic("success");
+            cyMobilePop(document.getElementById("btn-ilchon"));
+            cyMobilePop(document.getElementById("bond-result"));
+            rewardIlchonPair(me, rawB);
+            if (inputB) {
+              inputB.value = "";
+            }
+            loadIlchonList();
+          })
+          .catch(function (e) {
+            var msg =
+              (e && e.data && e.data.message) ||
+              "서버에 연결할 수 없어요. server 폴더에서 npm start를 실행해 주세요.";
+            showIlchonModalFromResult({ ok: false, message: msg });
+            renderIlchonResult({ ok: false, message: msg });
+          });
       }
 
 
@@ -7413,6 +7381,9 @@
         }
 
         applyNicknameChrome();
+        if (getNickname()) {
+          loadIlchonList();
+        }
 
         var cyLogin = document.getElementById("cy-chrome-login");
         if (cyLogin) {
@@ -7425,6 +7396,7 @@
         if (nickSave) {
           nickSave.addEventListener("click", function () {
             var inp = document.getElementById("nick-input");
+            var err = document.getElementById("nick-error");
             var v = inp ? inp.value : "";
             if (!v.trim()) {
               alert("닉네임을 적어 주세요 ♡");
@@ -7433,8 +7405,32 @@
               }
               return;
             }
-            setNickname(v);
-            closeNickModal();
+            nickSave.disabled = true;
+            if (err) {
+              err.hidden = true;
+              err.textContent = "";
+            }
+            CyShared.claimNickname(v.trim())
+              .then(function () {
+                applyNicknameChrome();
+                loadIlchonList();
+                closeNickModal();
+                showCyToast("환영해요, " + getNickname() + "님 ♡", "ok");
+              })
+              .catch(function (e) {
+                var msg =
+                  (e && e.data && e.data.message) ||
+                  "서버에 연결할 수 없어요. server 폴더에서 npm start를 실행해 주세요.";
+                if (err) {
+                  err.hidden = false;
+                  err.textContent = msg;
+                } else {
+                  alert(msg);
+                }
+              })
+              .finally(function () {
+                nickSave.disabled = false;
+              });
           });
         }
 
@@ -7895,37 +7891,28 @@
           btnLpGb.addEventListener("click", function () {
             var nameEl = document.getElementById("lp-plaza-gb-name");
             var msgEl = document.getElementById("lp-plaza-gb-msg");
-            var gbName = nameEl && nameEl.value ? nameEl.value.trim() : "익명";
+            var gbName = nameEl && nameEl.value ? nameEl.value.trim() : getNickname() || "익명";
             var gbMsg = msgEl && msgEl.value ? msgEl.value.trim() : "";
             if (!gbMsg) {
               return;
             }
-            var arr = [];
-            try {
-              arr = JSON.parse(localStorage.getItem(PLAZA_GB_KEY) || "[]");
-            } catch (e) {
-              arr = [];
-            }
-            arr.unshift({
-              name: gbName,
-              msg: gbMsg,
-              t: new Date().toLocaleString("ko-KR"),
-            });
-            try {
-              localStorage.setItem(PLAZA_GB_KEY, JSON.stringify(arr.slice(0, 80)));
-            } catch (e) {}
-            if (msgEl) {
-              msgEl.value = "";
-            }
-            loadPlazaGuestbook();
-            addDotori(1, "광장 낙서장");
-            /* 막 등록한 메시지를 즉시 풍선으로 한 번 띄움 */
-            try {
-              var layer = document.getElementById("lp-plaza-bubbles");
-              if (layer && !document.getElementById("element-plaza-overlay").hidden) {
-                spawnPlazaBubble();
-              }
-            } catch (e) {}
+            CyShared.postGuestbook("plaza", { name: gbName, msg: gbMsg })
+              .then(function () {
+                if (msgEl) {
+                  msgEl.value = "";
+                }
+                loadPlazaGuestbook();
+                addDotori(1, "광장 낙서장");
+                try {
+                  var layer = document.getElementById("lp-plaza-bubbles");
+                  if (layer && !document.getElementById("element-plaza-overlay").hidden) {
+                    spawnPlazaBubble();
+                  }
+                } catch (e) {}
+              })
+              .catch(function () {
+                showCyToast("서버에 연결할 수 없어요", "warn");
+              });
           });
         }
 
@@ -7990,26 +7977,24 @@
             if (!text) {
               return;
             }
-            var arr = [];
-            try {
-              arr = JSON.parse(localStorage.getItem(boardKey(el.symbol)) || "[]");
-            } catch (e) {}
             var activeColor = document.querySelector(".board-color.is-active");
             var color = activeColor ? activeColor.getAttribute("data-color") : "yellow";
-            arr.unshift({
+            CyShared.postBoard(el.symbol, {
               text: text,
               color: color,
-              t: new Date().toLocaleString("ko-KR"),
-            });
-            try {
-              localStorage.setItem(boardKey(el.symbol), JSON.stringify(arr.slice(0, 30)));
-            } catch (e) {}
-            if (ta) {
-              ta.value = "";
-            }
-            loadBoardList(el);
-            addDotori(1, "게시판 글 (" + el.symbol + ")");
-            try { bumpAchievement("board_write"); renderAchievements(); } catch (e) {}
+              author: getNickname() || "익명",
+            })
+              .then(function () {
+                if (ta) {
+                  ta.value = "";
+                }
+                loadBoardList(el);
+                addDotori(1, "게시판 글 (" + el.symbol + ")");
+                try { bumpAchievement("board_write"); renderAchievements(); } catch (e) {}
+              })
+              .catch(function () {
+                showCyToast("서버에 연결할 수 없어요", "warn");
+              });
           });
         }
 
@@ -8035,7 +8020,7 @@
             }
             var nameEl = document.getElementById("gb-name");
             var msgEl = document.getElementById("gb-msg");
-            var name = nameEl && nameEl.value ? nameEl.value.trim() : "익명";
+            var name = nameEl && nameEl.value ? nameEl.value.trim() : getNickname() || "익명";
             var msg = msgEl && msgEl.value ? msgEl.value.trim() : "";
             if (!msg) {
               return;
@@ -8044,33 +8029,23 @@
             var secretEl = document.getElementById("gb-secret");
             var secret = !!(secretEl && secretEl.checked);
             flyLetterFromButton(ev.currentTarget, msg, function () {
-              var arr = [];
-              try {
-                arr = JSON.parse(
-                  localStorage.getItem(guestbookKey(el.symbol)) || "[]"
-                );
-              } catch (e) {}
-              arr.unshift({
-                id: "g_" + Date.now() + "_" + Math.floor(Math.random() * 1000),
+              CyShared.postGuestbook(el.symbol, {
                 name: name,
                 msg: msg,
                 secret: secret,
-                replies: [],
-                t: new Date().toLocaleString("ko-KR"),
-              });
-              try {
-                localStorage.setItem(
-                  guestbookKey(el.symbol),
-                  JSON.stringify(arr.slice(0, 50))
-                );
-              } catch (e) {}
-              if (msgEl) {
-                msgEl.value = "";
-              }
-              if (secretEl) secretEl.checked = false;
-              loadGuestbookList(el);
-              addDotori(1, "방명록 글 (" + el.symbol + ")");
-              try { bumpAchievement("gb_write"); renderAchievements(); } catch (e) {}
+              })
+                .then(function () {
+                  if (msgEl) {
+                    msgEl.value = "";
+                  }
+                  if (secretEl) secretEl.checked = false;
+                  loadGuestbookList(el);
+                  addDotori(1, "방명록 글 (" + el.symbol + ")");
+                  try { bumpAchievement("gb_write"); renderAchievements(); } catch (e) {}
+                })
+                .catch(function () {
+                  showCyToast("서버에 연결할 수 없어요", "warn");
+                });
             });
           });
         }
