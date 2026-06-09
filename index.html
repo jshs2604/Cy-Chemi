@@ -1309,6 +1309,38 @@
       </div>
     </div>
 
+    <!-- 도토리 미니홈 해제 안내 -->
+    <div
+      id="dotori-unlock-modal"
+      class="cy-dotori-unlock-modal"
+      hidden
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="dotori-unlock-title"
+    >
+      <div class="cy-dotori-unlock-modal__box">
+        <div class="cy-dotori-unlock-modal__icon" aria-hidden="true">🔒</div>
+        <h3 id="dotori-unlock-title" class="cy-dotori-unlock-modal__title">미니홈 잠금</h3>
+        <p class="cy-dotori-unlock-modal__msg" id="dotori-unlock-msg">
+          아직 열리지 않은 미니홈이에요. 도토리로 열어 주세요!
+        </p>
+        <p class="cy-dotori-unlock-modal__price">
+          🌰 <b id="dotori-unlock-cost">5</b> 도토리로 평생 해제
+        </p>
+        <p class="cy-dotori-unlock-modal__balance">
+          잔액: 🌰 <b id="dotori-unlock-balance">0</b>
+        </p>
+        <div class="cy-dotori-unlock-modal__actions">
+          <button type="button" class="cy-dotori-unlock-modal__btn cy-dotori-unlock-modal__btn--open" id="dotori-unlock-open">
+            🌰 도토리로 열기
+          </button>
+          <button type="button" class="cy-dotori-unlock-modal__btn cy-dotori-unlock-modal__btn--dismiss" id="dotori-unlock-dismiss">
+            나중에
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- 선물 선택 모달 -->
     <div
       id="gift-modal"
@@ -4236,6 +4268,7 @@
       function renderLockedElement(el) {
         var resultEl = document.querySelector("#result");
         if (!resultEl) return;
+        setPendingLockedElement(el);
         resultEl.classList.remove("is-error");
         resultEl.innerHTML =
           '<div class="cy-lock-card" data-lock-z="' +
@@ -4309,6 +4342,91 @@
         refreshFriendPillsLockState();
         renderGachaWidget();
         renderElement(el);
+        hideDotoriUnlockModal();
+        clearPendingLockedElement();
+        showTab("home");
+      }
+
+      window.__cyPendingLockedElement = null;
+
+      function setPendingLockedElement(el) {
+        window.__cyPendingLockedElement =
+          el && !isElementUnlocked(el.z) ? el : null;
+      }
+
+      function clearPendingLockedElement() {
+        window.__cyPendingLockedElement = null;
+      }
+
+      function showDotoriUnlockModal(el) {
+        if (!el) {
+          return;
+        }
+        var modal = document.getElementById("dotori-unlock-modal");
+        var msg = document.getElementById("dotori-unlock-msg");
+        var cost = document.getElementById("dotori-unlock-cost");
+        var bal = document.getElementById("dotori-unlock-balance");
+        var openBtn = document.getElementById("dotori-unlock-open");
+        if (!modal || !msg) {
+          return;
+        }
+        setPendingLockedElement(el);
+        msg.innerHTML =
+          "<b>" +
+          escapeHtml(el.symbol) +
+          " · " +
+          escapeHtml(el.name) +
+          "</b> 미니홈은<br>아직 열리지 않았어요!<br>🌰 도토리로 열어야 들어갈 수 있어요.";
+        if (cost) {
+          cost.textContent = String(COST_UNLOCK_ELEMENT);
+        }
+        if (bal) {
+          bal.textContent = String(getDotori());
+        }
+        if (openBtn) {
+          openBtn.textContent =
+            "🌰 " + COST_UNLOCK_ELEMENT + " 도토리로 열기";
+        }
+        modal.hidden = false;
+        modal.classList.add("is-open");
+        modal.__cyUnlockTarget = el;
+      }
+
+      function hideDotoriUnlockModal() {
+        var modal = document.getElementById("dotori-unlock-modal");
+        if (modal) {
+          modal.hidden = true;
+          modal.classList.remove("is-open");
+          modal.__cyUnlockTarget = null;
+        }
+      }
+
+      function maybeShowPendingUnlockOnHome() {
+        var pending = window.__cyPendingLockedElement;
+        if (pending && !isElementUnlocked(pending.z)) {
+          showDotoriUnlockModal(pending);
+          return true;
+        }
+        return false;
+      }
+
+      function openMinihomeForZ(z) {
+        var el = window.getElementByZ(z);
+        if (!el || !window.isMinihomeElement(el)) {
+          return false;
+        }
+        var num = document.getElementById("atomic-number");
+        if (num) {
+          num.value = String(z);
+        }
+        if (!isElementUnlocked(z)) {
+          showDotoriUnlockModal(el);
+          return false;
+        }
+        clearPendingLockedElement();
+        handleSearchByZ();
+        showTab("home");
+        return true;
       }
 
       /**
@@ -4337,6 +4455,12 @@
         }
 
         window.__cyCurrentElement = el;
+        if (
+          window.__cyPendingLockedElement &&
+          window.__cyPendingLockedElement.z === el.z
+        ) {
+          clearPendingLockedElement();
+        }
         pushElementHistory(el.z);
         bumpAchievement("lookup");
         renderHomeRecentCards();
@@ -6238,6 +6362,9 @@
             var name = btn.getAttribute("data-tab");
             if (name) {
               showTab(name);
+              if (name === "home") {
+                maybeShowPendingUnlockOnHome();
+              }
             }
           });
         });
@@ -6265,6 +6392,7 @@
         if (btnCyworldHome) {
           btnCyworldHome.addEventListener("click", function () {
             showTab("home");
+            maybeShowPendingUnlockOnHome();
             var inner = document.querySelector(".mh-main-inner");
             if (inner) {
               inner.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -6420,12 +6548,7 @@
               if (!vz) {
                 return;
               }
-              var num = document.getElementById("atomic-number");
-              if (num) {
-                num.value = vz;
-              }
-              handleSearchByZ();
-              showTab("home");
+              openMinihomeForZ(parseInt(vz, 10));
             }
           });
         }
@@ -6549,11 +6672,40 @@
             if (e.target === peerModalEl) closePeerPickModal();
           });
         }
+
+        var dotoriUnlockDismiss = document.getElementById("dotori-unlock-dismiss");
+        if (dotoriUnlockDismiss) {
+          dotoriUnlockDismiss.addEventListener("click", hideDotoriUnlockModal);
+        }
+        var dotoriUnlockOpen = document.getElementById("dotori-unlock-open");
+        if (dotoriUnlockOpen) {
+          dotoriUnlockOpen.addEventListener("click", function () {
+            var modal = document.getElementById("dotori-unlock-modal");
+            var el =
+              (modal && modal.__cyUnlockTarget) ||
+              window.__cyPendingLockedElement;
+            if (!el) {
+              hideDotoriUnlockModal();
+              return;
+            }
+            tryUnlockElement(el);
+          });
+        }
+        var dotoriUnlockModalEl = document.getElementById("dotori-unlock-modal");
+        if (dotoriUnlockModalEl) {
+          dotoriUnlockModalEl.addEventListener("click", function (e) {
+            if (e.target === dotoriUnlockModalEl) {
+              hideDotoriUnlockModal();
+            }
+          });
+        }
+
         document.addEventListener("keydown", function (e) {
           if (e.key === "Escape") {
             closeThemeModal();
             closeGiftModal();
             closePeerPickModal();
+            hideDotoriUnlockModal();
           }
         });
 
@@ -6614,9 +6766,12 @@
             if (num && z >= 1 && z <= 10) {
               num.value = String(z);
               handleSearchByZ();
-              /* 잠긴 원소면 lookup 탭으로 보내서 자물쇠 카드 보이게 */
               if (!isElementUnlocked(z)) {
                 showTab("lookup");
+                var lockedEl = window.getElementByZ(z);
+                if (lockedEl) {
+                  showDotoriUnlockModal(lockedEl);
+                }
               } else {
                 showTab("home");
               }

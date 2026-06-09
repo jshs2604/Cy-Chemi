@@ -10795,6 +10795,118 @@ body.mh-theme-paper .mh-tab.is-active {
 
 .cy-lock-card__foot b { color: #c8801a; font-size: 11px; }
 
+/* 도토리 미니홈 해제 팝업 */
+.cy-dotori-unlock-modal[hidden] {
+  display: none !important;
+}
+
+.cy-dotori-unlock-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(30, 40, 55, 0.48);
+}
+
+.cy-dotori-unlock-modal__box {
+  max-width: 300px;
+  width: 100%;
+  padding: 18px 16px 14px;
+  border-radius: 12px;
+  border: 2px solid #e6b422;
+  background: linear-gradient(180deg, #fffef8 0%, #fff8e8 100%);
+  box-shadow: 4px 6px 0 rgba(120, 80, 0, 0.18);
+  font-family: "Galmuri11", Gulim, monospace;
+  text-align: center;
+}
+
+.cy-dotori-unlock-modal__icon {
+  font-size: 32px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.cy-dotori-unlock-modal__title {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 800;
+  color: #5d4037;
+  letter-spacing: -0.02em;
+}
+
+.cy-dotori-unlock-modal__msg {
+  margin: 0 0 10px;
+  font-size: 11px;
+  line-height: 1.55;
+  color: #455a64;
+}
+
+.cy-dotori-unlock-modal__msg b {
+  color: #c8801a;
+}
+
+.cy-dotori-unlock-modal__price {
+  margin: 0 0 6px;
+  font-size: 11px;
+  color: #6a4a0a;
+}
+
+.cy-dotori-unlock-modal__price b {
+  font-size: 13px;
+  color: #c8801a;
+}
+
+.cy-dotori-unlock-modal__balance {
+  margin: 0 0 14px;
+  font-size: 10px;
+  color: #78909c;
+}
+
+.cy-dotori-unlock-modal__balance b {
+  color: #c8801a;
+}
+
+.cy-dotori-unlock-modal__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cy-dotori-unlock-modal__btn {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cy-dotori-unlock-modal__btn--open {
+  color: #fff;
+  background: linear-gradient(180deg, #ffb74d 0%, #f57c00 100%);
+  border-color: #e65100;
+  box-shadow: 0 2px 0 #bf360c;
+}
+
+.cy-dotori-unlock-modal__btn--open:hover {
+  filter: brightness(1.05);
+}
+
+.cy-dotori-unlock-modal__btn--dismiss {
+  color: #607d8b;
+  background: #eceff1;
+  border-color: #b0bec5;
+}
+
+.cy-dotori-unlock-modal__btn--dismiss:hover {
+  background: #dfe4e7;
+}
+
 /* 홈 최근 카드 잠금 */
 .mh-home-recent__card {
   position: relative;
