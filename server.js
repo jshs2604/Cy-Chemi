@@ -184,6 +184,13 @@ app.post("/api/nickname/claim", (req, res) => {
     if (token && existing.token === token) {
       return res.json({ ok: true, name, token: existing.token, restored: true });
     }
+    // 토큰을 잃었을 때(브라우저 초기화 등) 같은 닉네임으로 다시 입장
+    if (!token) {
+      const newTok = newToken();
+      store.nicknames[name].token = newTok;
+      writeStore(store);
+      return res.json({ ok: true, name, token: newTok, reclaimed: true });
+    }
     return res.status(409).json({
       ok: false,
       error: "taken",
@@ -410,13 +417,18 @@ app.get("/api/ilchon/inbox", (req, res) => {
   const name = normalizeNick(req.query.nickname);
   const token = String(req.query.token || "").trim();
   const store = readStore();
-  if (!authNick(store, name, token, res)) {
-    return;
+  if (!name) {
+    return res.status(400).json({
+      ok: false,
+      error: "empty",
+      message: "닉네임을 알려 주세요.",
+    });
   }
   const items = (store.ilchonRequests || []).filter(
     (r) => r.status === "pending" && r.to === name
   );
-  res.json({ ok: true, nickname: name, items });
+  const authed = !!(token && verifyNickToken(store, name, token));
+  res.json({ ok: true, nickname: name, items, authRequired: !authed });
 });
 
 app.get("/api/ilchon/outbox", (req, res) => {

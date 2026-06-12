@@ -1799,7 +1799,18 @@
         if (!requestId) {
           return;
         }
-        CyShared.respondIlchon(requestId, action)
+        CyShared.ensureNicknameAuth()
+          .then(function (ok) {
+            if (!ok) {
+              showIlchonModal(
+                "수락·거절하려면 입장 버튼에서 <b>같은 닉네임</b>으로 다시 저장해 주세요 ♡",
+                "fail"
+              );
+              openNickModal();
+              throw new Error("auth_required");
+            }
+            return CyShared.respondIlchon(requestId, action);
+          })
           .then(function (data) {
             closeIlchonRequestModal();
             var msg =
@@ -1818,6 +1829,9 @@
             }
           })
           .catch(function (e) {
+            if (e && e.message === "auth_required") {
+              return;
+            }
             var msg =
               (e && e.data && e.data.message) ||
               "서버에 연결할 수 없어요. 잠시 후 다시 시도해 주세요.";
@@ -1854,37 +1868,74 @@
         }
         ul.innerHTML = '<li class="mh-ilchon-empty">신청 목록 불러오는 중…</li>';
         CyShared.getIlchonInbox()
-          .then(function (arr) {
+          .then(function (data) {
+            var arr = (data && data.items) || [];
+            var authRequired = !!(data && data.authRequired);
             if (!arr.length) {
+              updateIlchonTabBadge(0);
               ul.innerHTML =
                 '<li class="mh-ilchon-empty">받은 일촌 신청이 없어요</li>';
               return;
             }
-            ul.innerHTML = arr
-              .map(function (r) {
-                return (
-                  '<li class="mh-ilchon-inbox-item">' +
-                  '<span class="mh-ilchon-inbox-item__who">' +
-                  escapeHtml(r.from) +
-                  "님 ♡</span>" +
-                  '<span class="mh-ilchon-inbox-item__actions">' +
-                  '<button type="button" class="mh-ilchon-inbox-btn mh-ilchon-inbox-btn--ok" data-ilchon-accept="' +
-                  escapeHtml(r.id) +
-                  '">수락</button>' +
-                  '<button type="button" class="mh-ilchon-inbox-btn mh-ilchon-inbox-btn--no" data-ilchon-reject="' +
-                  escapeHtml(r.id) +
-                  '">거절</button>' +
-                  "</span></li>"
-                );
-              })
-              .join("");
+            var notice = "";
+            if (authRequired) {
+              notice =
+                '<li class="mh-ilchon-empty mh-ilchon-empty--warn">신청은 보여요! 수락하려면 입장 버튼에서 <b>같은 닉네임</b>으로 다시 저장해 주세요 ♡</li>';
+            }
+            ul.innerHTML =
+              notice +
+              arr
+                .map(function (r) {
+                  return (
+                    '<li class="mh-ilchon-inbox-item">' +
+                    '<span class="mh-ilchon-inbox-item__who">' +
+                    escapeHtml(r.from) +
+                    "님 ♡</span>" +
+                    '<span class="mh-ilchon-inbox-item__actions">' +
+                    '<button type="button" class="mh-ilchon-inbox-btn mh-ilchon-inbox-btn--ok" data-ilchon-accept="' +
+                    escapeHtml(r.id) +
+                    '">수락</button>' +
+                    '<button type="button" class="mh-ilchon-inbox-btn mh-ilchon-inbox-btn--no" data-ilchon-reject="' +
+                    escapeHtml(r.id) +
+                    '">거절</button>' +
+                    "</span></li>"
+                  );
+                })
+                .join("");
             bindIlchonInboxButtons(ul);
             openIlchonRequestModal(arr[0]);
+            updateIlchonTabBadge(arr.length);
           })
-          .catch(function () {
-            ul.innerHTML =
-              '<li class="mh-ilchon-empty">서버에 연결할 수 없어요<br><small>Render 링크로 접속해 주세요</small></li>';
+          .catch(function (e) {
+            var authMsg =
+              e &&
+              e.data &&
+              e.data.error === "auth" &&
+              (e.data.message || "닉네임 인증이 필요해요");
+            ul.innerHTML = authMsg
+              ? '<li class="mh-ilchon-empty mh-ilchon-empty--warn">' +
+                escapeHtml(authMsg) +
+                "<br><small>입장 버튼 → 같은 닉네임 저장</small></li>"
+              : '<li class="mh-ilchon-empty">서버에 연결할 수 없어요<br><small>Render 링크로 접속해 주세요</small></li>';
           });
+      }
+
+      function updateIlchonTabBadge(count) {
+        var tab = document.querySelector('.mh-tab[data-tab="ilchon"]');
+        if (!tab) {
+          return;
+        }
+        var old = tab.querySelector(".mh-tab-badge");
+        if (old) {
+          old.remove();
+        }
+        if (count > 0) {
+          var badge = document.createElement("span");
+          badge.className = "mh-tab-badge";
+          badge.textContent = String(count);
+          badge.setAttribute("aria-label", "받은 일촌 신청 " + count + "건");
+          tab.appendChild(badge);
+        }
       }
 
       var __cyInboxTimer = null;
@@ -4492,6 +4543,7 @@
         if (name === "ilchon") {
           syncBondAFromCurrent();
           loadIlchonList();
+          loadIlchonInbox();
         }
         if (name === "shop") {
           renderShopTab();
@@ -6723,18 +6775,19 @@
         checkServerConnection();
 
         if (getNickname()) {
+          startInboxPolling();
+          loadIlchonList();
+          refreshGuestbookCompose();
           CyShared.ensureNicknameAuth().then(function (ok) {
             if (!ok) {
               showCyToast(
-                "닉네임 연결이 끊겼어요. 입장 버튼에서 <b>같은 닉네임</b>으로 다시 입장해 주세요 ♡",
+                "닉네임 연결이 끊겼어요. 받은 신청은 보일 수 있어요 — 수락하려면 입장 버튼에서 <b>같은 닉네임</b>으로 다시 저장해 주세요 ♡",
                 "bad",
                 8000
               );
             } else {
-              startInboxPolling();
               loadGiftInbox();
-              loadIlchonList();
-              refreshGuestbookCompose();
+              loadIlchonInbox();
             }
           });
         }

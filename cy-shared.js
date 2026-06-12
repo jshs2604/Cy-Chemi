@@ -235,6 +235,8 @@
           if (status && status.valid) {
             return true;
           }
+          // 꼬인 토큰은 지우고 같은 닉네임으로 다시 입장 시도
+          saveNicknameLocal(name, "");
           return CyShared.claimNickname(name).then(function (data) {
             return !!(data && data.ok);
           });
@@ -338,20 +340,23 @@
 
     getIlchonInbox: function () {
       var name = getNickname();
-      var token = getNickToken();
-      if (!name || !token) {
-        return Promise.resolve([]);
+      if (!name) {
+        return Promise.resolve({ items: [], authRequired: false });
       }
-      return request(
-        "GET",
+      var token = getNickToken();
+      var path =
         "/api/ilchon/inbox?nickname=" +
-          encodeURIComponent(name) +
-          "&token=" +
-          encodeURIComponent(token) +
-          "&_=" +
-          Date.now()
-      ).then(function (d) {
-        return d.items || [];
+        encodeURIComponent(name) +
+        "&_=" +
+        Date.now();
+      if (token) {
+        path += "&token=" + encodeURIComponent(token);
+      }
+      return request("GET", path).then(function (d) {
+        return {
+          items: (d && d.items) || [],
+          authRequired: !!(d && d.authRequired),
+        };
       });
     },
 
