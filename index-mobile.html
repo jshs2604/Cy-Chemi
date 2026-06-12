@@ -3,8 +3,23 @@
   <head>
     <script>
       (function () {
-        var isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
-        if (!isMobile) {
+        function isPhoneDevice() {
+          var ua = navigator.userAgent;
+          if (/iPad/i.test(ua)) {
+            return false;
+          }
+          if (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1) {
+            return false;
+          }
+          if (/iPhone|iPod/i.test(ua)) {
+            return true;
+          }
+          if (/Android/i.test(ua)) {
+            return /Mobile/i.test(ua);
+          }
+          return false;
+        }
+        if (!isPhoneDevice()) {
           location.replace("index.html" + location.search + location.hash);
         }
       })();
