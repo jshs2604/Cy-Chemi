@@ -223,6 +223,182 @@
     }
   }
 
+  function captureComposeDrafts() {
+    var drafts = {
+      gbMsg: "",
+      boardText: "",
+      gbSecret: false,
+      gbTo: "",
+      activeId: "",
+      selectionStart: 0,
+      selectionEnd: 0,
+    };
+    try {
+      var gb = document.getElementById("gb-msg");
+      if (gb) {
+        drafts.gbMsg = gb.value || "";
+        if (document.activeElement === gb) {
+          drafts.activeId = "gb-msg";
+          drafts.selectionStart = gb.selectionStart || 0;
+          drafts.selectionEnd = gb.selectionEnd || 0;
+        }
+      }
+      var board = document.getElementById("board-text");
+      if (board) {
+        drafts.boardText = board.value || "";
+        if (document.activeElement === board) {
+          drafts.activeId = "board-text";
+          drafts.selectionStart = board.selectionStart || 0;
+          drafts.selectionEnd = board.selectionEnd || 0;
+        }
+      }
+      var secret = document.getElementById("gb-secret");
+      if (secret) {
+        drafts.gbSecret = !!secret.checked;
+      }
+      var to = document.getElementById("gb-to");
+      if (to) {
+        drafts.gbTo = to.value || "";
+      }
+    } catch (e) {}
+    return drafts;
+  }
+
+  function restoreComposeDrafts(drafts) {
+    if (!drafts) {
+      return;
+    }
+    try {
+      var gb = document.getElementById("gb-msg");
+      if (gb && drafts.gbMsg !== undefined && gb.value !== drafts.gbMsg) {
+        gb.value = drafts.gbMsg;
+      }
+      var board = document.getElementById("board-text");
+      if (board && drafts.boardText !== undefined && board.value !== drafts.boardText) {
+        board.value = drafts.boardText;
+      }
+      var secret = document.getElementById("gb-secret");
+      if (secret && drafts.gbSecret !== undefined) {
+        secret.checked = !!drafts.gbSecret;
+      }
+      var to = document.getElementById("gb-to");
+      if (to && drafts.gbTo !== undefined && drafts.gbTo) {
+        to.value = drafts.gbTo;
+      }
+      if (drafts.activeId) {
+        var active = document.getElementById(drafts.activeId);
+        if (active && typeof active.focus === "function") {
+          active.focus();
+          if (typeof active.setSelectionRange === "function") {
+            var len = (active.value || "").length;
+            var start = Math.min(drafts.selectionStart || 0, len);
+            var end = Math.min(drafts.selectionEnd || 0, len);
+            active.setSelectionRange(start, end);
+          }
+        }
+      }
+    } catch (e2) {}
+  }
+
+  function hasComposeDraft() {
+    try {
+      var gb = document.getElementById("gb-msg");
+      if (gb && String(gb.value || "").trim()) {
+        return true;
+      }
+      var board = document.getElementById("board-text");
+      if (board && String(board.value || "").trim()) {
+        return true;
+      }
+      var openReply = document.querySelector(
+        ".mh-gb-reply-form:not([hidden]) .mh-gb-reply-form__msg"
+      );
+      if (openReply && String(openReply.value || "").trim()) {
+        return true;
+      }
+    } catch (e) {}
+    return false;
+  }
+
+  function captureListUiState(listEl) {
+    var state = { scrollTop: 0, openReplies: [] };
+    if (!listEl) {
+      return state;
+    }
+    try {
+      state.scrollTop = listEl.scrollTop || 0;
+      listEl.querySelectorAll(".mh-gb-reply-form").forEach(function (form) {
+        var ta = form.querySelector(".mh-gb-reply-form__msg");
+        var id = form.getAttribute("data-letter-id") || "";
+        if (!id) {
+          return;
+        }
+        state.openReplies.push({
+          id: id,
+          msg: ta ? ta.value || "" : "",
+          open: !form.hidden,
+        });
+      });
+    } catch (e) {}
+    return state;
+  }
+
+  function restoreListUiState(listEl, state) {
+    if (!listEl || !state) {
+      return;
+    }
+    try {
+      listEl.scrollTop = state.scrollTop || 0;
+      (state.openReplies || []).forEach(function (item) {
+        var form = listEl.querySelector(
+          '.mh-gb-reply-form[data-letter-id="' + item.id + '"]'
+        );
+        if (!form) {
+          return;
+        }
+        if (item.open) {
+          form.hidden = false;
+        }
+        var ta = form.querySelector(".mh-gb-reply-form__msg");
+        if (ta && item.msg !== undefined) {
+          ta.value = item.msg;
+        }
+      });
+    } catch (e) {}
+  }
+
+  function bindDraftKeepalive() {
+    ["gb-msg", "board-text"].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el || el.dataset.cyDraftBound === "1") {
+        return;
+      }
+      el.dataset.cyDraftBound = "1";
+      var key = "cy_draft_" + id + "_v1";
+      try {
+        var saved = localStorage.getItem(key);
+        if (saved && !el.value) {
+          el.value = saved;
+        }
+      } catch (e) {}
+      el.addEventListener("input", function () {
+        try {
+          if (el.value) {
+            localStorage.setItem(key, el.value);
+          } else {
+            localStorage.removeItem(key);
+          }
+        } catch (e2) {}
+      });
+    });
+  }
+
+  function clearDraftField(id) {
+    try {
+      localStorage.removeItem("cy_draft_" + id + "_v1");
+    } catch (e) {}
+  }
+
   var CyShared = {
     NICK_KEY: NICK_KEY,
     NICK_TOKEN_KEY: NICK_TOKEN_KEY,
@@ -230,6 +406,13 @@
     isUserBusy: isUserBusy,
     jsonFingerprint: jsonFingerprint,
     isPanelVisible: isPanelVisible,
+    captureComposeDrafts: captureComposeDrafts,
+    restoreComposeDrafts: restoreComposeDrafts,
+    hasComposeDraft: hasComposeDraft,
+    captureListUiState: captureListUiState,
+    restoreListUiState: restoreListUiState,
+    bindDraftKeepalive: bindDraftKeepalive,
+    clearDraftField: clearDraftField,
 
     getApiBase: getApiBase,
     setApiBase: function (url) {

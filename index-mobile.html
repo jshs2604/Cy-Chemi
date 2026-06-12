@@ -2380,7 +2380,7 @@
             '<li class="mh-ilchon-empty">닉네임 입장 후 받은 신청을 볼 수 있어요</li>';
           return;
         }
-        if (!opts.silent || !ul.querySelector(".mh-ilchon-inbox-item, .mh-ilchon-empty")) {
+        if (!opts.silent && !ul.querySelector(".mh-ilchon-inbox-item, .mh-ilchon-empty")) {
           ul.innerHTML = '<li class="mh-ilchon-empty">신청 목록 불러오는 중…</li>';
         }
         CyShared.getIlchonInbox()
@@ -2401,7 +2401,7 @@
               }
             });
             renderIlchonInboxList(ul, arr, authRequired);
-            if (brandNew.length) {
+            if (brandNew.length && !CyShared.hasComposeDraft()) {
               openIlchonRequestModal(brandNew[0]);
             }
           })
@@ -2455,20 +2455,20 @@
         }
         loadIlchonInbox();
         __cyInboxTimer = window.setInterval(function () {
-          if (getNickname() && !CyShared.isUserBusy()) {
-            loadIlchonInbox({ silent: true, skipIfBusy: true, onlyWhenVisible: true });
+          if (getNickname()) {
+            loadIlchonInbox({ silent: true, onlyWhenVisible: true });
           }
         }, 30000);
         __cyGbMailTimer = window.setInterval(function () {
-          if (getNickname() && !CyShared.isUserBusy() && CyShared.isPanelVisible("panel-guestbook")) {
-            loadIlchonMailBox({ silent: true, skipIfBusy: true });
+          if (getNickname() && CyShared.isPanelVisible("panel-guestbook")) {
+            loadIlchonMailBox({ silent: true });
           }
         }, 30000);
         __cyFriendsSayTimer = window.setInterval(function () {
-          if (!CyShared.isUserBusy() && CyShared.isPanelVisible("panel-home")) {
+          if (CyShared.isPanelVisible("panel-home")) {
             var cur = window.__cyCurrentElement;
             if (cur) {
-              loadFriendsSay(cur, { silent: true, skipIfBusy: true });
+              loadFriendsSay(cur, { silent: true });
             }
           }
         }, 30000);
@@ -5903,8 +5903,12 @@
       }
 
       function renderBoardList(ul, arr) {
+        var drafts = CyShared.captureComposeDrafts();
+        var scrollTop = ul.scrollTop || 0;
         if (!arr.length) {
           ul.innerHTML = '<li class="board-stickies__empty">📝 아직 글이 없어요. 첫 포스트잇을 붙여 보세요.</li>';
+          ul.scrollTop = scrollTop;
+          CyShared.restoreComposeDrafts(drafts);
           return;
         }
         ul.innerHTML = arr
@@ -5928,6 +5932,8 @@
             );
           })
           .join("");
+        ul.scrollTop = scrollTop;
+        CyShared.restoreComposeDrafts(drafts);
       }
 
       function loadBoardList(el) {
@@ -5939,7 +5945,9 @@
           ul.innerHTML = '<li class="board-stickies__empty">원소 조회 후 글이 분리 저장돼요.</li>';
           return;
         }
-        ul.innerHTML = '<li class="board-stickies__empty">게시판 불러오는 중…</li>';
+        if (!ul.querySelector(".board-sticky, .board-stickies__empty")) {
+          ul.innerHTML = '<li class="board-stickies__empty">게시판 불러오는 중…</li>';
+        }
         CyShared.getBoard(el.symbol)
           .then(function (arr) {
             renderBoardList(ul, arr);
@@ -6022,6 +6030,8 @@
 
       function renderIlchonMailList(ul, arr, mode) {
         var me = getNickname();
+        var drafts = CyShared.captureComposeDrafts();
+        var uiState = CyShared.captureListUiState(ul);
         window.__cyGuestbookCache = { symbol: mode, items: arr || [] };
         if (!arr.length) {
           ul.innerHTML =
@@ -6033,6 +6043,7 @@
               : "아직 받은 방명록이 없어요. 일촌이 내면 여기에 보여요 ♡") +
             "</span></li>";
           updateMobileAppChrome();
+          CyShared.restoreComposeDrafts(drafts);
           return;
         }
         ul.innerHTML = arr
@@ -6103,6 +6114,8 @@
           })
           .join("");
         bindIlchonMailInteractions(ul);
+        CyShared.restoreListUiState(ul, uiState);
+        CyShared.restoreComposeDrafts(drafts);
         updateMobileAppChrome();
       }
 
@@ -6124,9 +6137,6 @@
         if (!ul) {
           return;
         }
-        if (opts.skipIfBusy && CyShared.isUserBusy()) {
-          return;
-        }
         var me = getNickname();
         if (!me) {
           ul.innerHTML =
@@ -6136,7 +6146,7 @@
           updateMobileAppChrome();
           return;
         }
-        if (!opts.silent || !ul.querySelector(".mh-gb-letter, .mh-gb-empty")) {
+        if (!opts.silent && !ul.querySelector(".mh-gb-letter, .mh-gb-empty")) {
           ul.innerHTML =
             "<li class=\"mh-empty mh-gb-empty\"><span>방명록 불러오는 중…</span></li>";
         }
@@ -6212,6 +6222,7 @@
         var chips = document.getElementById("gb-ilchon-chips");
         var toEl = document.getElementById("gb-to");
         var me = getNickname();
+        var drafts = CyShared.captureComposeDrafts();
         if (nameEl) {
           nameEl.value = me || "";
           nameEl.readOnly = true;
@@ -6219,12 +6230,16 @@
         if (toEl && __gbSelectedPeer) {
           toEl.value = __gbSelectedPeer;
         }
+        CyShared.restoreComposeDrafts(drafts);
         if (!chips) {
           return;
         }
         if (!me) {
           chips.innerHTML =
             '<li class="mh-gb-ilchon-empty">닉네임 입장 후 일촌 목록이 보여요</li>';
+          return;
+        }
+        if (CyShared.hasComposeDraft() && chips.querySelector(".mh-gb-ilchon-chip")) {
           return;
         }
         chips.innerHTML =
@@ -6245,9 +6260,6 @@
         opts = opts || {};
         var fs = document.getElementById("friends-say-body");
         if (!fs || !el) {
-          return;
-        }
-        if (opts.skipIfBusy && CyShared.isUserBusy()) {
           return;
         }
         var me = getNickname();
@@ -7772,6 +7784,7 @@
 
 
       function init() {
+        CyShared.bindDraftKeepalive();
         if (getNickname()) {
           startInboxPolling();
           loadIlchonList();
@@ -8514,6 +8527,7 @@
                 if (ta) {
                   ta.value = "";
                 }
+                CyShared.clearDraftField("board-text");
                 loadBoardList(el);
                 addDotori(1, "게시판 글 (" + el.symbol + ")");
                 try { bumpAchievement("board_write"); renderAchievements(); } catch (e) {}
@@ -8572,6 +8586,7 @@
                   if (msgEl) {
                     msgEl.value = "";
                   }
+                  CyShared.clearDraftField("gb-msg");
                   if (secretEl) secretEl.checked = false;
                   __gbMailTab = "sent";
                   __gbMailFingerprint = "";
