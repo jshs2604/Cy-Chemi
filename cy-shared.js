@@ -312,6 +312,56 @@
       });
     },
 
+    getIlchonMailInbox: function () {
+      var name = getNickname();
+      if (!name) {
+        return Promise.resolve([]);
+      }
+      return request(
+        "GET",
+        "/api/ilchon-mail/inbox?nickname=" +
+          encodeURIComponent(name) +
+          "&_=" +
+          Date.now()
+      ).then(function (d) {
+        return (d && d.items) || [];
+      });
+    },
+
+    getIlchonMailSent: function () {
+      var name = getNickname();
+      if (!name) {
+        return Promise.resolve([]);
+      }
+      return request(
+        "GET",
+        "/api/ilchon-mail/sent?nickname=" +
+          encodeURIComponent(name) +
+          "&_=" +
+          Date.now()
+      ).then(function (d) {
+        return (d && d.items) || [];
+      });
+    },
+
+    sendIlchonMail: function (payload) {
+      return request("POST", "/api/ilchon-mail/send", {
+        name: getNickname(),
+        token: getNickToken(),
+        to: payload && payload.to,
+        msg: payload && payload.msg,
+        secret: !!(payload && payload.secret),
+      });
+    },
+
+    replyIlchonMail: function (mailId, msg) {
+      return request("POST", "/api/ilchon-mail/" + encodeURIComponent(mailId) + "/reply", {
+        name: getNickname(),
+        token: getNickToken(),
+        msg: msg,
+      });
+    },
+
     getIlchon: function (nickname) {
       var name = nickname || getNickname();
       if (!name) {

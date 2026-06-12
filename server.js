@@ -28,6 +28,7 @@ function emptyStore() {
     ilchons: {},
     ilchonRequests: [],
     gifts: [],
+    ilchonMail: [],
   };
 }
 
@@ -43,6 +44,7 @@ function readStore() {
         ilchons: data.ilchons || {},
         ilchonRequests: Array.isArray(data.ilchonRequests) ? data.ilchonRequests : [],
         gifts: Array.isArray(data.gifts) ? data.gifts : [],
+        ilchonMail: Array.isArray(data.ilchonMail) ? data.ilchonMail : [],
       };
     }
   } catch (e) {}
@@ -104,6 +106,10 @@ function newRequestId() {
 
 function newGiftId() {
   return "gf_" + Date.now() + "_" + crypto.randomBytes(4).toString("hex");
+}
+
+function newMailId() {
+  return "ml_" + Date.now() + "_" + crypto.randomBytes(4).toString("hex");
 }
 
 function findPendingRequest(store, from, to) {
@@ -491,6 +497,134 @@ app.get("/api/ilchon/:nickname", (req, res) => {
   const store = readStore();
   const items = getIlchonListFor(store, name);
   res.json({ ok: true, nickname: name, items });
+});
+
+app.post("/api/ilchon-mail/send", (req, res) => {
+  const from = normalizeNick(req.body && req.body.name);
+  const token = String((req.body && req.body.token) || "").trim();
+  const to = normalizeNick(req.body && req.body.to);
+  const msg = String((req.body && req.body.msg) || "").trim().slice(0, 500);
+  const secret = !!(req.body && req.body.secret);
+  const store = readStore();
+  if (!authNick(store, from, token, res)) {
+    return;
+  }
+  if (!to || !msg) {
+    return res.status(400).json({
+      ok: false,
+      error: "empty",
+      message: "받는 사람과 메시지를 적어 주세요.",
+    });
+  }
+  if (to === from) {
+    return res.status(400).json({
+      ok: false,
+      error: "self",
+      message: "나에게는 보낼 수 없어요 ㅎㅎ",
+    });
+  }
+  if (!store.nicknames[to]) {
+    return res.status(404).json({
+      ok: false,
+      error: "not_found",
+      message: "그 닉네임은 아직 없어요.",
+    });
+  }
+  if (!hasIlchonLink(store, from, to)) {
+    return res.status(403).json({
+      ok: false,
+      error: "not_ilchon",
+      message: "일촌에게만 방명록을 보낼 수 있어요 ♡",
+    });
+  }
+  const item = {
+    id: newMailId(),
+    from,
+    to,
+    msg,
+    secret,
+    replies: [],
+    t: nowKo(),
+  };
+  if (!store.ilchonMail) store.ilchonMail = [];
+  store.ilchonMail.unshift(item);
+  store.ilchonMail = store.ilchonMail.slice(0, 300);
+  writeStore(store);
+  res.status(201).json({ ok: true, item, message: to + "님에게 방명록을 보냈어요 ♡" });
+});
+
+app.get("/api/ilchon-mail/inbox", (req, res) => {
+  const name = normalizeNick(req.query.nickname);
+  if (!name) {
+    return res.status(400).json({
+      ok: false,
+      error: "empty",
+      message: "닉네임을 알려 주세요.",
+    });
+  }
+  const store = readStore();
+  const items = (store.ilchonMail || []).filter((m) => m.to === name);
+  res.json({ ok: true, nickname: name, items });
+});
+
+app.get("/api/ilchon-mail/sent", (req, res) => {
+  const name = normalizeNick(req.query.nickname);
+  if (!name) {
+    return res.status(400).json({
+      ok: false,
+      error: "empty",
+      message: "닉네임을 알려 주세요.",
+    });
+  }
+  const store = readStore();
+  const items = (store.ilchonMail || []).filter((m) => m.from === name);
+  res.json({ ok: true, nickname: name, items });
+});
+
+app.post("/api/ilchon-mail/:id/reply", (req, res) => {
+  const name = normalizeNick(req.body && req.body.name);
+  const token = String((req.body && req.body.token) || "").trim();
+  const id = String(req.params.id || "").trim();
+  const msg = String((req.body && req.body.msg) || "").trim().slice(0, 200);
+  const store = readStore();
+  if (!authNick(store, name, token, res)) {
+    return;
+  }
+  if (!id || !msg) {
+    return res.status(400).json({
+      ok: false,
+      error: "empty",
+      message: "답장 내용을 적어 주세요.",
+    });
+  }
+  const mail = (store.ilchonMail || []).find((m) => m.id === id);
+  if (!mail) {
+    return res.status(404).json({
+      ok: false,
+      error: "not_found",
+      message: "편지를 찾을 수 없어요.",
+    });
+  }
+  if (name !== mail.from && name !== mail.to) {
+    return res.status(403).json({
+      ok: false,
+      error: "forbidden",
+      message: "이 편지에 답장할 수 없어요.",
+    });
+  }
+  if (!hasIlchonLink(store, mail.from, mail.to)) {
+    return res.status(403).json({
+      ok: false,
+      error: "not_ilchon",
+      message: "일촌끼리만 답장할 수 있어요.",
+    });
+  }
+  if (!Array.isArray(mail.replies)) {
+    mail.replies = [];
+  }
+  mail.replies.push({ name, msg, t: nowKo() });
+  writeStore(store);
+  res.json({ ok: true, item: mail, message: "답장을 보냈어요 ♡" });
 });
 
 app.post("/api/gift/send", (req, res) => {

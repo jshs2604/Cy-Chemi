@@ -1041,11 +1041,20 @@
                   <div class="mh-card-body mh-gb-wrap">
                     <div class="mh-gb-mailbox" aria-hidden="true">
                       <span class="mh-gb-mailbox__icon">💌</span>
-                      <span class="mh-gb-mailbox__title">우편함</span>
-                      <span class="mh-gb-mailbox__sub">♡ 일촌에게 도착한 편지 ♡</span>
+                      <span class="mh-gb-mailbox__title">일촌 우편함</span>
+                      <span class="mh-gb-mailbox__sub">♡ 받은 편지 · 보낸 편지 · 답장 ♡</span>
                       <span class="mh-gb-mailbox__deco mh-gb-mailbox__deco--heart">♥</span>
                       <span class="mh-gb-mailbox__deco mh-gb-mailbox__deco--star">★</span>
                       <span class="mh-gb-mailbox__deco mh-gb-mailbox__deco--flower">✿</span>
+                    </div>
+
+                    <div class="mh-gb-mail-tabs" role="tablist" aria-label="방명록 구분">
+                      <button type="button" class="mh-gb-mail-tab is-active" data-gb-mail-tab="inbox" role="tab" aria-selected="true">
+                        📥 받은 방명록
+                      </button>
+                      <button type="button" class="mh-gb-mail-tab" data-gb-mail-tab="sent" role="tab" aria-selected="false">
+                        📤 보낸 방명록
+                      </button>
                     </div>
 
                     <ul id="guestbook-list" class="mh-gb-list" aria-live="polite"></ul>
@@ -1053,12 +1062,24 @@
                     <div class="mh-gb-compose mh-gb-compose--cute">
                       <div class="mh-gb-compose__header">
                         <span class="mh-gb-compose__icon" aria-hidden="true">✉️</span>
-                        <span class="mh-gb-compose__title">새 편지 쓰기</span>
+                        <span class="mh-gb-compose__title">일촌에게 편지 쓰기</span>
                       </div>
 
                       <div class="mh-gb-compose__field mh-gb-compose__field--ilchon">
-                        <label>내 일촌 ♡</label>
-                        <ul id="gb-ilchon-chips" class="mh-gb-ilchon-chips" aria-label="일촌 목록"></ul>
+                        <label>To ♡ — 일촌 선택</label>
+                        <ul id="gb-ilchon-chips" class="mh-gb-ilchon-chips" aria-label="받는 일촌"></ul>
+                      </div>
+
+                      <div class="mh-gb-compose__field">
+                        <label for="gb-to">받는 사람</label>
+                        <input
+                          id="gb-to"
+                          type="text"
+                          maxlength="12"
+                          placeholder="위 일촌 칩을 눌러 선택하세요"
+                          autocomplete="off"
+                          readonly
+                        />
                       </div>
 
                       <div class="mh-gb-compose__field">
@@ -4545,6 +4566,10 @@
           loadIlchonList();
           loadIlchonInbox();
         }
+        if (name === "guestbook") {
+          loadIlchonMailBox();
+          refreshGuestbookCompose();
+        }
         if (name === "shop") {
           renderShopTab();
                                                                                                                                                                           }
@@ -4825,7 +4850,7 @@
           }
           refreshVideoPanel(el);
           loadBoardList(el);
-          loadGuestbookList(el);
+          loadIlchonMailBox();
           refreshGuestbookCompose();
           loadFriendsSay(el);
           startLiveRefresh(el);
@@ -5062,7 +5087,10 @@
           });
       }
 
-      function bindGuestbookInteractions(ul, el) {
+      var __gbMailTab = "inbox";
+      var __gbSelectedPeer = "";
+
+      function bindIlchonMailInteractions(ul) {
         ul.querySelectorAll(".mh-gb-letter__body--secret").forEach(function (b) {
           b.addEventListener("click", function () {
             var content = b.parentNode.querySelector(".mh-gb-letter__body--secret-content");
@@ -5100,41 +5128,55 @@
             if (!msg) return;
             var letterId = form.getAttribute("data-letter-id") || "";
             if (!letterId) return;
-            CyShared.replyGuestbook(el.symbol, letterId, {
-              name: el.symbol + " 주인",
-              msg: msg,
-            })
+            CyShared.ensureNicknameAuth()
+              .then(function (ok) {
+                if (!ok) {
+                  showCyToast("답장하려면 입장 버튼에서 같은 닉네임으로 다시 저장해 주세요 ♡", "warn");
+                  openNickModal();
+                  throw new Error("auth_required");
+                }
+                return CyShared.replyIlchonMail(letterId, msg);
+              })
               .then(function () {
                 try { bumpAchievement("gb_reply"); renderAchievements(); } catch (e) {}
                 addDotori(1, "방명록 답글");
-                loadGuestbookList(el);
+                loadIlchonMailBox();
                 showCyToast("답장을 보냈어요 ✉", "ok");
               })
-              .catch(function () {
-                showCyToast("서버에 연결할 수 없어요", "warn");
+              .catch(function (e) {
+                if (e && e.message === "auth_required") return;
+                var m = (e && e.data && e.data.message) || "서버에 연결할 수 없어요";
+                showCyToast(m, "warn");
               });
           });
         });
       }
 
-      function renderGuestbookList(ul, el, arr) {
+      function renderIlchonMailList(ul, arr, mode) {
+        var me = getNickname();
         if (!arr.length) {
           ul.innerHTML =
             "<li class=\"mh-empty mh-gb-empty\">" +
             "<span class=\"mh-gb-empty__icon\" aria-hidden=\"true\">💌</span>" +
-            "<span>아직 도착한 편지가 없어요. 첫 한마디를 남겨봐 ♡</span>" +
-            "</li>";
+            "<span>" +
+            (mode === "sent"
+              ? "아직 보낸 방명록이 없어요. 일촌을 골라 편지를 내봐 ♡"
+              : "아직 받은 방명록이 없어요. 일촌이내면 여기에 보여요 ♡") +
+            "</span></li>";
           return;
         }
         ul.innerHTML = arr
           .map(function (o, idx) {
-            var nm = escapeHtml(o.name || "익명");
+            var peer = mode === "sent" ? o.to : o.from;
+            var peerLabel = mode === "sent" ? "To." : "From.";
+            var nm = escapeHtml(peer || "익명");
             var firstChar = nm.replace(/<[^>]+>/g, "").trim().charAt(0) || "♡";
             var msg = escapeHtml(o.msg || "").replace(/\n/g, "<br/>");
             var ts = escapeHtml(o.t || "");
             var secret = !!o.secret;
-            var letterId = escapeHtml(o.id || ("gb-" + idx));
+            var letterId = escapeHtml(o.id || ("ml-" + idx));
             var replies = Array.isArray(o.replies) ? o.replies : [];
+            var canReply = !!(me && (me === o.from || me === o.to));
             var bodyHtml = secret
               ? '<p class="mh-gb-letter__body mh-gb-letter__body--secret" data-secret="hidden" data-idx="' + idx + '">' +
                   '<span class="mh-gb-secret-lock">🔒</span>' +
@@ -5144,7 +5186,7 @@
               : '<p class="mh-gb-letter__body">' + msg + '</p>';
             var repliesHtml = replies.length
               ? '<ul class="mh-gb-replies">' + replies.map(function (r) {
-                  var rn = escapeHtml(r.name || "주인");
+                  var rn = escapeHtml(r.name || "익명");
                   var rm = escapeHtml(r.msg || "").replace(/\n/g, "<br/>");
                   var rt = escapeHtml(r.t || "");
                   return (
@@ -5155,12 +5197,24 @@
                   );
                 }).join("") + '</ul>'
               : '';
+            var replyBtn = canReply
+              ? '<button type="button" class="mh-gb-reply-btn" data-idx="' + idx + '">✉ 답글</button>'
+              : "";
+            var replyForm = canReply
+              ? '<form class="mh-gb-reply-form" data-idx="' + idx + '" data-letter-id="' + letterId + '" hidden>' +
+                  '<textarea class="mh-gb-reply-form__msg" rows="2" placeholder="답장을 적어줘 ♡" maxlength="200"></textarea>' +
+                  '<div class="mh-gb-reply-form__actions">' +
+                    '<button type="button" class="mh-gb-reply-form__cancel">취소</button>' +
+                    '<button type="submit" class="mh-gb-reply-form__send">↩ 답장 보내기</button>' +
+                  '</div>' +
+                '</form>'
+              : "";
             return (
               '<li class="mh-gb-letter' + (secret ? ' is-secret' : '') + '" data-idx="' + idx + '" data-letter-id="' + letterId + '" style="--gb-i:' + idx + '">' +
                 '<span class="mh-gb-letter__tape" aria-hidden="true"></span>' +
                 '<div class="mh-gb-letter__head">' +
                   '<span class="mh-gb-letter__avatar" aria-hidden="true">' + escapeHtml(firstChar) + '</span>' +
-                  '<span class="mh-gb-letter__from"><b>From.</b> ' + nm + (secret ? ' <span class="mh-gb-secret-chip">비밀</span>' : '') + '</span>' +
+                  '<span class="mh-gb-letter__from"><b>' + peerLabel + '</b> ' + nm + (secret ? ' <span class="mh-gb-secret-chip">비밀</span>' : '') + '</span>' +
                   '<span class="mh-gb-letter__stamp" aria-hidden="true">' +
                     '<span class="mh-gb-letter__stamp-mark">♥</span>' +
                     '<span class="mh-gb-letter__stamp-cy">CY</span>' +
@@ -5170,56 +5224,112 @@
                 repliesHtml +
                 '<div class="mh-gb-letter__foot">' +
                   '<span class="mh-gb-letter__post">📮 ' + ts + '</span>' +
-                  '<button type="button" class="mh-gb-reply-btn" data-idx="' + idx + '">✉ 답글</button>' +
+                  replyBtn +
                   '<span class="mh-gb-letter__heart" aria-hidden="true">♡</span>' +
                 '</div>' +
-                '<form class="mh-gb-reply-form" data-idx="' + idx + '" data-letter-id="' + letterId + '" hidden>' +
-                  '<textarea class="mh-gb-reply-form__msg" rows="2" placeholder="답장을 적어줘 ♡" maxlength="200"></textarea>' +
-                  '<div class="mh-gb-reply-form__actions">' +
-                    '<button type="button" class="mh-gb-reply-form__cancel">취소</button>' +
-                    '<button type="submit" class="mh-gb-reply-form__send">↩ 답장 보내기</button>' +
-                  '</div>' +
-                '</form>' +
+                replyForm +
               '</li>'
             );
           })
           .join("");
-        bindGuestbookInteractions(ul, el);
+        bindIlchonMailInteractions(ul);
       }
 
-      function loadGuestbookList(el) {
+      function setGbMailTab(mode) {
+        __gbMailTab = mode === "sent" ? "sent" : "inbox";
+        document.querySelectorAll("[data-gb-mail-tab]").forEach(function (btn) {
+          var on = btn.getAttribute("data-gb-mail-tab") === __gbMailTab;
+          btn.classList.toggle("is-active", on);
+          btn.setAttribute("aria-selected", on ? "true" : "false");
+        });
+        loadIlchonMailBox();
+      }
+
+      function loadIlchonMailBox() {
         var ul = document.getElementById("guestbook-list");
         if (!ul) {
           return;
         }
-        if (!el) {
+        var me = getNickname();
+        if (!me) {
           ul.innerHTML =
             "<li class=\"mh-empty mh-gb-empty\">" +
             "<span class=\"mh-gb-empty__icon\" aria-hidden=\"true\">📭</span>" +
-            "<span>원소를 조회하면 방명록 우편함이 열려요…</span>" +
-            "</li>";
+            "<span>닉네임 입장 후 일촌 방명록을 볼 수 있어요 ♡</span></li>";
           return;
         }
         ul.innerHTML =
           "<li class=\"mh-empty mh-gb-empty\"><span>방명록 불러오는 중…</span></li>";
-        CyShared.getGuestbook(el.symbol)
+        var loader =
+          __gbMailTab === "sent"
+            ? CyShared.getIlchonMailSent()
+            : CyShared.getIlchonMailInbox();
+        loader
           .then(function (arr) {
-            renderGuestbookList(ul, el, arr);
+            renderIlchonMailList(ul, arr, __gbMailTab);
           })
           .catch(function () {
             ul.innerHTML =
               "<li class=\"mh-empty mh-gb-empty\">" +
-              "<span>서버에 연결할 수 없어요. 방명록은 모두가 함께 봐요.</span></li>";
+              "<span>서버에 연결할 수 없어요. Render 링크로 접속해 주세요.</span></li>";
           });
+      }
+
+      function renderIlchonChips(arr) {
+        var chips = document.getElementById("gb-ilchon-chips");
+        var toEl = document.getElementById("gb-to");
+        if (!chips) {
+          return;
+        }
+        if (!arr.length) {
+          chips.innerHTML =
+            '<li class="mh-gb-ilchon-empty">아직 일촌이 없어요. 먼저 일촌을 맺어 주세요 ♡</li>';
+          if (toEl) toEl.value = "";
+          __gbSelectedPeer = "";
+          return;
+        }
+        chips.innerHTML = arr
+          .map(function (r) {
+            var peer = r.peer;
+            var sel = peer === __gbSelectedPeer ? " is-selected" : "";
+            return (
+              '<li><button type="button" class="mh-gb-ilchon-chip' +
+              sel +
+              '" data-gb-peer="' +
+              escapeHtml(peer) +
+              '">' +
+              escapeHtml(peer) +
+              "</button></li>"
+            );
+          })
+          .join("");
+        chips.querySelectorAll("[data-gb-peer]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            __gbSelectedPeer = btn.getAttribute("data-gb-peer") || "";
+            if (toEl) {
+              toEl.value = __gbSelectedPeer;
+            }
+            chips.querySelectorAll(".mh-gb-ilchon-chip").forEach(function (b) {
+              b.classList.toggle(
+                "is-selected",
+                b.getAttribute("data-gb-peer") === __gbSelectedPeer
+              );
+            });
+          });
+        });
       }
 
       function refreshGuestbookCompose() {
         var nameEl = document.getElementById("gb-name");
         var chips = document.getElementById("gb-ilchon-chips");
+        var toEl = document.getElementById("gb-to");
         var me = getNickname();
         if (nameEl) {
           nameEl.value = me || "";
           nameEl.readOnly = true;
+        }
+        if (toEl && __gbSelectedPeer) {
+          toEl.value = __gbSelectedPeer;
         }
         if (!chips) {
           return;
@@ -5233,20 +5343,7 @@
           '<li class="mh-gb-ilchon-empty">일촌 불러오는 중…</li>';
         CyShared.getIlchon(me)
           .then(function (arr) {
-            if (!arr.length) {
-              chips.innerHTML =
-                '<li class="mh-gb-ilchon-empty">아직 일촌이 없어요. 먼저 일촌을 맺어 주세요 ♡</li>';
-              return;
-            }
-            chips.innerHTML = arr
-              .map(function (r) {
-                return (
-                  '<li class="mh-gb-ilchon-chip">' +
-                  escapeHtml(r.peer) +
-                  "</li>"
-                );
-              })
-              .join("");
+            renderIlchonChips(arr);
           })
           .catch(function () {
             chips.innerHTML =
@@ -5311,7 +5408,7 @@
             return;
           }
           loadBoardList(cur);
-          loadGuestbookList(cur);
+          loadIlchonMailBox();
           loadFriendsSay(cur);
           if (getNickname()) {
             loadIlchonList();
@@ -6777,6 +6874,7 @@
         if (getNickname()) {
           startInboxPolling();
           loadIlchonList();
+          loadIlchonMailBox();
           refreshGuestbookCompose();
           CyShared.ensureNicknameAuth().then(function (ok) {
             if (!ok) {
@@ -7542,19 +7640,27 @@
         });
 
         var btnGb = document.getElementById("btn-gb-submit");
+        document.querySelectorAll("[data-gb-mail-tab]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            setGbMailTab(btn.getAttribute("data-gb-mail-tab"));
+          });
+        });
+
         if (btnGb) {
           btnGb.addEventListener("click", function (ev) {
-            var el = window.__cyCurrentElement;
-            if (!el) {
-              alert("원소를 먼저 조회해 주세요.");
-              return;
-            }
             var msgEl = document.getElementById("gb-msg");
-            var name = getNickname() || "익명";
+            var toEl = document.getElementById("gb-to");
+            var to =
+              __gbSelectedPeer ||
+              (toEl && toEl.value ? toEl.value.trim() : "");
             var msg = msgEl && msgEl.value ? msgEl.value.trim() : "";
             if (!getNickname()) {
               showCyToast("닉네임 입장 후 방명록을 쓸 수 있어요 ♡", "warn");
               openNickModal();
+              return;
+            }
+            if (!to) {
+              showCyToast("일촌 칩에서 받는 사람을 골라 주세요 ♡", "warn");
               return;
             }
             if (!msg) {
@@ -7564,23 +7670,24 @@
             var secretEl = document.getElementById("gb-secret");
             var secret = !!(secretEl && secretEl.checked);
             flyLetterFromButton(ev.currentTarget, msg, function () {
-              CyShared.postGuestbook(el.symbol, {
-                name: name,
-                msg: msg,
-                secret: secret,
-              })
+              CyShared.sendIlchonMail({ to: to, msg: msg, secret: secret })
                 .then(function () {
                   if (msgEl) {
                     msgEl.value = "";
                   }
                   if (secretEl) secretEl.checked = false;
-                  loadGuestbookList(el);
-                  loadFriendsSay(el);
-                  addDotori(1, "방명록 글 (" + el.symbol + ")");
+                  __gbMailTab = "sent";
+                  setGbMailTab("sent");
+                  loadIlchonMailBox();
+                  addDotori(1, "방명록 → " + to);
                   try { bumpAchievement("gb_write"); renderAchievements(); } catch (e) {}
+                  showCyToast(to + "님에게 방명록을 보냈어요 ♡", "ok");
                 })
-                .catch(function () {
-                  showCyToast("서버에 연결할 수 없어요", "warn");
+                .catch(function (e) {
+                  var m =
+                    (e && e.data && e.data.message) ||
+                    "서버에 연결할 수 없어요";
+                  showCyToast(m, "warn");
                 });
             });
           });
