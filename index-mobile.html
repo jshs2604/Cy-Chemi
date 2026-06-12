@@ -2323,9 +2323,55 @@
         });
       }
 
-      function loadIlchonInbox() {
+      var __cyInboxFingerprint = "";
+      var __cyKnownInboxIds = {};
+
+      function renderIlchonInboxList(ul, arr, authRequired) {
+        if (!arr.length) {
+          updateIlchonTabBadge(0);
+          ul.innerHTML =
+            '<li class="mh-ilchon-empty">받은 일촌 신청이 없어요</li>';
+          return;
+        }
+        var notice = "";
+        if (authRequired) {
+          notice =
+            '<li class="mh-ilchon-empty mh-ilchon-empty--warn">신청은 보여요! 수락하려면 입장 버튼에서 <b>같은 닉네임</b>으로 다시 저장해 주세요 ♡</li>';
+        }
+        ul.innerHTML =
+          notice +
+          arr
+            .map(function (r) {
+              return (
+                '<li class="mh-ilchon-inbox-item">' +
+                '<span class="mh-ilchon-inbox-item__who">' +
+                escapeHtml(r.from) +
+                "님 ♡</span>" +
+                '<span class="mh-ilchon-inbox-item__actions">' +
+                '<button type="button" class="mh-ilchon-inbox-btn mh-ilchon-inbox-btn--ok" data-ilchon-accept="' +
+                escapeHtml(r.id) +
+                '">수락</button>' +
+                '<button type="button" class="mh-ilchon-inbox-btn mh-ilchon-inbox-btn--no" data-ilchon-reject="' +
+                escapeHtml(r.id) +
+                '">거절</button>' +
+                "</span></li>"
+              );
+            })
+            .join("");
+        bindIlchonInboxButtons(ul);
+        updateIlchonTabBadge(arr.length);
+      }
+
+      function loadIlchonInbox(opts) {
+        opts = opts || {};
         var ul = document.getElementById("ilchon-inbox");
         if (!ul) {
+          return;
+        }
+        if (opts.skipIfBusy && CyShared.isUserBusy()) {
+          return;
+        }
+        if (opts.onlyWhenVisible && !CyShared.isPanelVisible("panel-ilchon")) {
           return;
         }
         var me = getNickname();
@@ -2334,45 +2380,30 @@
             '<li class="mh-ilchon-empty">닉네임 입장 후 받은 신청을 볼 수 있어요</li>';
           return;
         }
-        ul.innerHTML = '<li class="mh-ilchon-empty">신청 목록 불러오는 중…</li>';
+        if (!opts.silent || !ul.querySelector(".mh-ilchon-inbox-item, .mh-ilchon-empty")) {
+          ul.innerHTML = '<li class="mh-ilchon-empty">신청 목록 불러오는 중…</li>';
+        }
         CyShared.getIlchonInbox()
           .then(function (data) {
             var arr = (data && data.items) || [];
             var authRequired = !!(data && data.authRequired);
-            if (!arr.length) {
-              updateIlchonTabBadge(0);
-              ul.innerHTML =
-                '<li class="mh-ilchon-empty">받은 일촌 신청이 없어요</li>';
+            var fp = CyShared.jsonFingerprint({ arr: arr, authRequired: authRequired });
+            if (opts.silent && fp === __cyInboxFingerprint) {
               return;
             }
-            var notice = "";
-            if (authRequired) {
-              notice =
-                '<li class="mh-ilchon-empty mh-ilchon-empty--warn">신청은 보여요! 수락하려면 입장 버튼에서 <b>같은 닉네임</b>으로 다시 저장해 주세요 ♡</li>';
+            __cyInboxFingerprint = fp;
+            var brandNew = arr.filter(function (r) {
+              return r.id && !__cyKnownInboxIds[r.id];
+            });
+            arr.forEach(function (r) {
+              if (r.id) {
+                __cyKnownInboxIds[r.id] = true;
+              }
+            });
+            renderIlchonInboxList(ul, arr, authRequired);
+            if (brandNew.length) {
+              openIlchonRequestModal(brandNew[0]);
             }
-            ul.innerHTML =
-              notice +
-              arr
-                .map(function (r) {
-                  return (
-                    '<li class="mh-ilchon-inbox-item">' +
-                    '<span class="mh-ilchon-inbox-item__who">' +
-                    escapeHtml(r.from) +
-                    "님 ♡</span>" +
-                    '<span class="mh-ilchon-inbox-item__actions">' +
-                    '<button type="button" class="mh-ilchon-inbox-btn mh-ilchon-inbox-btn--ok" data-ilchon-accept="' +
-                    escapeHtml(r.id) +
-                    '">수락</button>' +
-                    '<button type="button" class="mh-ilchon-inbox-btn mh-ilchon-inbox-btn--no" data-ilchon-reject="' +
-                    escapeHtml(r.id) +
-                    '">거절</button>' +
-                    "</span></li>"
-                  );
-                })
-                .join("");
-            bindIlchonInboxButtons(ul);
-            openIlchonRequestModal(arr[0]);
-            updateIlchonTabBadge(arr.length);
           })
           .catch(function (e) {
             var authMsg =
@@ -2409,17 +2440,38 @@
       }
 
       var __cyInboxTimer = null;
+      var __cyGbMailTimer = null;
+      var __cyFriendsSayTimer = null;
 
       function startInboxPolling() {
         if (__cyInboxTimer) {
           clearInterval(__cyInboxTimer);
         }
+        if (__cyGbMailTimer) {
+          clearInterval(__cyGbMailTimer);
+        }
+        if (__cyFriendsSayTimer) {
+          clearInterval(__cyFriendsSayTimer);
+        }
         loadIlchonInbox();
         __cyInboxTimer = window.setInterval(function () {
-          if (getNickname()) {
-            loadIlchonInbox();
+          if (getNickname() && !CyShared.isUserBusy()) {
+            loadIlchonInbox({ silent: true, skipIfBusy: true, onlyWhenVisible: true });
           }
-        }, 12000);
+        }, 30000);
+        __cyGbMailTimer = window.setInterval(function () {
+          if (getNickname() && !CyShared.isUserBusy() && CyShared.isPanelVisible("panel-guestbook")) {
+            loadIlchonMailBox({ silent: true, skipIfBusy: true });
+          }
+        }, 30000);
+        __cyFriendsSayTimer = window.setInterval(function () {
+          if (!CyShared.isUserBusy() && CyShared.isPanelVisible("panel-home")) {
+            var cur = window.__cyCurrentElement;
+            if (cur) {
+              loadFriendsSay(cur, { silent: true, skipIfBusy: true });
+            }
+          }
+        }, 30000);
       }
 
       var GIFT_TYPES = ["💐", "🍰", "🍫", "🎀", "💌", "🎁", "🌹"];
@@ -5484,10 +5536,6 @@
           if (bubble) {
             bubble.innerHTML = A.getMiniroomBubble(el);
           }
-          var fs = document.getElementById("friends-say-body");
-          if (fs && window.CyChemiElements) {
-            fs.innerHTML = A.getFriendsSayHtml(el, window.CyChemiElements);
-          }
         }
 
         if (window.CyChemiRoom) {
@@ -5511,8 +5559,7 @@
           }
           refreshVideoPanel(el);
           loadBoardList(el);
-          loadIlchonMailBox();
-          refreshGuestbookCompose();
+          loadFriendsSay(el);
         }
 
         var symEl = document.getElementById("profile-symbol");
@@ -5956,7 +6003,13 @@
               .then(function () {
                 try { bumpAchievement("gb_reply"); renderAchievements(); } catch (e) {}
                 addDotori(1, "방명록 답글");
+                __gbMailFingerprint = "";
                 loadIlchonMailBox();
+                var curEl = window.__cyCurrentElement;
+                if (curEl) {
+                  __cyFriendsSayFingerprint = "";
+                  loadFriendsSay(curEl);
+                }
                 showCyToast("답장을 보냈어요 ✉", "ok");
               })
               .catch(function (e) {
@@ -6063,9 +6116,15 @@
         loadIlchonMailBox();
       }
 
-      function loadIlchonMailBox() {
+      var __gbMailFingerprint = "";
+
+      function loadIlchonMailBox(opts) {
+        opts = opts || {};
         var ul = document.getElementById("guestbook-list");
         if (!ul) {
+          return;
+        }
+        if (opts.skipIfBusy && CyShared.isUserBusy()) {
           return;
         }
         var me = getNickname();
@@ -6077,21 +6136,30 @@
           updateMobileAppChrome();
           return;
         }
-        ul.innerHTML =
-          "<li class=\"mh-empty mh-gb-empty\"><span>방명록 불러오는 중…</span></li>";
+        if (!opts.silent || !ul.querySelector(".mh-gb-letter, .mh-gb-empty")) {
+          ul.innerHTML =
+            "<li class=\"mh-empty mh-gb-empty\"><span>방명록 불러오는 중…</span></li>";
+        }
         var loader =
           __gbMailTab === "sent"
             ? CyShared.getIlchonMailSent()
             : CyShared.getIlchonMailInbox();
         loader
           .then(function (arr) {
+            var fp = CyShared.jsonFingerprint({ tab: __gbMailTab, arr: arr });
+            if (opts.silent && fp === __gbMailFingerprint && ul.querySelector(".mh-gb-letter")) {
+              return;
+            }
+            __gbMailFingerprint = fp;
             renderIlchonMailList(ul, arr, __gbMailTab);
           })
           .catch(function () {
-            ul.innerHTML =
-              "<li class=\"mh-empty mh-gb-empty\">" +
-              "<span>서버에 연결할 수 없어요. Render 링크로 접속해 주세요.</span></li>";
-            updateMobileAppChrome();
+            if (!opts.silent) {
+              ul.innerHTML =
+                "<li class=\"mh-empty mh-gb-empty\">" +
+                "<span>서버에 연결할 수 없어요. Render 링크로 접속해 주세요.</span></li>";
+              updateMobileAppChrome();
+            }
           });
       }
 
@@ -6168,6 +6236,55 @@
           .catch(function () {
             chips.innerHTML =
               '<li class="mh-gb-ilchon-empty">일촌 목록을 불러오지 못했어요</li>';
+          });
+      }
+
+      var __cyFriendsSayFingerprint = "";
+
+      function loadFriendsSay(el, opts) {
+        opts = opts || {};
+        var fs = document.getElementById("friends-say-body");
+        if (!fs || !el) {
+          return;
+        }
+        if (opts.skipIfBusy && CyShared.isUserBusy()) {
+          return;
+        }
+        var me = getNickname();
+        if (!me) {
+          fs.innerHTML =
+            '<p class="mh-friends-say__empty">닉네임 입장 후 일촌과 주고받은 방명록이 여기에 보여요 ♡</p>';
+          return;
+        }
+        CyShared.getFriendsSay(el.symbol, me)
+          .then(function (arr) {
+            var fp = CyShared.jsonFingerprint(arr);
+            if (opts.silent && fp === __cyFriendsSayFingerprint && fs.querySelector("p b")) {
+              return;
+            }
+            __cyFriendsSayFingerprint = fp;
+            if (!arr.length) {
+              fs.innerHTML =
+                '<p class="mh-friends-say__empty">일촌에게 방명록을 보내거나 받으면 홈에 실시간으로 보여요 ♡</p>';
+              return;
+            }
+            fs.innerHTML = arr
+              .map(function (item) {
+                return (
+                  "<p><b>" +
+                  escapeHtml(item.name) +
+                  "</b>: " +
+                  escapeHtml(item.msg) +
+                  "</p>"
+                );
+              })
+              .join("");
+          })
+          .catch(function () {
+            if (!opts.silent) {
+              fs.innerHTML =
+                '<p class="mh-friends-say__empty">일촌 한마디 불러오기 실패… 잠시 후 새로고침 해 주세요</p>';
+            }
           });
       }
 
@@ -8457,7 +8574,13 @@
                   }
                   if (secretEl) secretEl.checked = false;
                   __gbMailTab = "sent";
+                  __gbMailFingerprint = "";
                   setGbMailTab("sent");
+                  var curEl = window.__cyCurrentElement;
+                  if (curEl) {
+                    __cyFriendsSayFingerprint = "";
+                    loadFriendsSay(curEl);
+                  }
                   addDotori(1, "방명록 → " + to);
                   try { bumpAchievement("gb_write"); renderAchievements(); } catch (e) {}
                   showCyToast(to + "님에게 방명록을 보냈어요 ♡", "ok");

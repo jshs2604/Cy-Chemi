@@ -181,9 +181,55 @@
     } catch (e) {}
   }
 
+  function isUserBusy() {
+    try {
+      var el = document.activeElement;
+      if (el) {
+        var tag = String(el.tagName || "").toLowerCase();
+        if (tag === "input" || tag === "textarea" || tag === "select") {
+          return true;
+        }
+        if (el.isContentEditable) {
+          return true;
+        }
+      }
+      if (document.querySelector(".mh-gb-reply-form:not([hidden])")) {
+        return true;
+      }
+      if (document.querySelector(".mh-ilchon-modal:not([hidden])")) {
+        return true;
+      }
+      if (document.querySelector("#nick-modal:not([hidden])")) {
+        return true;
+      }
+    } catch (e) {}
+    return false;
+  }
+
+  function jsonFingerprint(value) {
+    try {
+      return JSON.stringify(value);
+    } catch (e2) {
+      return "";
+    }
+  }
+
+  function isPanelVisible(panelId) {
+    try {
+      var panel = document.getElementById(panelId);
+      return !!(panel && !panel.hasAttribute("hidden"));
+    } catch (e) {
+      return false;
+    }
+  }
+
   var CyShared = {
     NICK_KEY: NICK_KEY,
     NICK_TOKEN_KEY: NICK_TOKEN_KEY,
+
+    isUserBusy: isUserBusy,
+    jsonFingerprint: jsonFingerprint,
+    isPanelVisible: isPanelVisible,
 
     getApiBase: getApiBase,
     setApiBase: function (url) {

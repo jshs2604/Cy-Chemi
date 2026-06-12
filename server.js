@@ -321,16 +321,33 @@ app.get("/api/friends-say/:symbol", (req, res) => {
   getIlchonListFor(store, name).forEach((item) => {
     peerSet[normalizeNick(item.peer)] = true;
   });
-  const guestbook = store.guestbooks[sym] || [];
-  const items = guestbook
-    .filter((item) => peerSet[normalizeNick(item.name)])
-    .slice(0, 12)
-    .map((item) => ({
-      name: normalizeNick(item.name),
-      msg: item.secret ? "🔒 비밀 편지" : String(item.msg || "").slice(0, 200),
-      t: item.t || "",
-    }));
-  res.json({ ok: true, symbol: sym, items });
+  const items = [];
+  (store.ilchonMail || []).forEach((m) => {
+    const from = normalizeNick(m.from);
+    const to = normalizeNick(m.to);
+    const peer = from === name ? to : from;
+    if ((from !== name && to !== name) || !peerSet[peer]) {
+      return;
+    }
+    const msgText = m.secret
+      ? "🔒 비밀 편지"
+      : String(m.msg || "").slice(0, 200);
+    if (from === name) {
+      items.push({ name: "나 → " + to, msg: msgText, t: m.t || "", kind: "sent" });
+    } else {
+      items.push({ name: from, msg: msgText, t: m.t || "", kind: "received" });
+    }
+    (m.replies || []).forEach((r) => {
+      const rn = normalizeNick(r.name) || "익명";
+      items.push({
+        name: rn + " ↩",
+        msg: String(r.msg || "").slice(0, 200),
+        t: r.t || "",
+        kind: "reply",
+      });
+    });
+  });
+  res.json({ ok: true, symbol: sym, items: items.slice(0, 12) });
 });
 
 function handleIlchonRequest(req, res) {
