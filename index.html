@@ -6722,6 +6722,23 @@
       function init() {
         checkServerConnection();
 
+        if (getNickname()) {
+          CyShared.ensureNicknameAuth().then(function (ok) {
+            if (!ok) {
+              showCyToast(
+                "닉네임 연결이 끊겼어요. 입장 버튼에서 <b>같은 닉네임</b>으로 다시 입장해 주세요 ♡",
+                "bad",
+                8000
+              );
+            } else {
+              startInboxPolling();
+              loadGiftInbox();
+              loadIlchonList();
+              refreshGuestbookCompose();
+            }
+          });
+        }
+
         document.querySelectorAll(".mh-tab").forEach(function (btn) {
           btn.addEventListener("click", function () {
             var name = btn.getAttribute("data-tab");
@@ -6820,7 +6837,6 @@
         applyNicknameChrome();
         if (getNickname()) {
           loadIlchonList();
-          startInboxPolling();
         }
 
         var cyLogin = document.getElementById("cy-chrome-login");
@@ -6869,8 +6885,9 @@
                     }
                   }).catch(function () {});
                 } else if (e && e.data && e.data.error === "auth") {
-                  CyShared.clearNickname();
-                  msg = "닉네임 인증이 꼬였어요. 다시 입장해 주세요 ♡";
+                  msg =
+                    "닉네임 인증이 꼬였어요. 입장 버튼 → 같은 닉네임 입력 → 저장해 주세요 ♡";
+                  openNickModal();
                 } else if (!msg) {
                   msg = serverFailMessage();
                 }

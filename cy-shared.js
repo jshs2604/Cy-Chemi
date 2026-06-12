@@ -60,6 +60,20 @@
     return serverReady ? 1 : 3;
   }
 
+  var authRetryDepth = 0;
+
+  function patchAuthBody(body) {
+    if (!body || typeof body !== "object") {
+      return body;
+    }
+    var next = Object.assign({}, body);
+    if ("name" in next || "token" in next) {
+      next.name = getNickname();
+      next.token = getNickToken();
+    }
+    return next;
+  }
+
   function request(method, path, body, attempt) {
     attempt = attempt || 0;
     var base = getApiBase();
@@ -83,6 +97,28 @@
           })
           .then(function (data) {
             if (!res.ok) {
+              if (
+                res.status === 401 &&
+                data &&
+                data.error === "auth" &&
+                authRetryDepth < 1 &&
+                getNickname()
+              ) {
+                authRetryDepth += 1;
+                return CyShared.ensureNicknameAuth().then(function (ok) {
+                  authRetryDepth -= 1;
+                  if (ok) {
+                    return request(method, path, patchAuthBody(body), attempt);
+                  }
+                  var err = new Error(
+                    (data && data.message) ||
+                      "닉네임 인증이 필요해요. 입장 버튼에서 다시 입장해 주세요."
+                  );
+                  err.status = res.status;
+                  err.data = data;
+                  throw err;
+                });
+              }
               if (
                 attempt < maxAttempts() &&
                 (res.status === 502 || res.status === 503 || res.status === 504)
@@ -172,6 +208,40 @@
 
     clearNickname: function () {
       saveNicknameLocal("", "");
+    },
+
+    verifyNickname: function () {
+      var name = getNickname();
+      var token = getNickToken();
+      if (!name || !token) {
+        return Promise.resolve({ ok: true, valid: false, name: name || "" });
+      }
+      return request(
+        "GET",
+        "/api/nickname/verify?name=" +
+          encodeURIComponent(name) +
+          "&token=" +
+          encodeURIComponent(token)
+      );
+    },
+
+    ensureNicknameAuth: function () {
+      var name = getNickname();
+      if (!name) {
+        return Promise.resolve(false);
+      }
+      return CyShared.verifyNickname()
+        .then(function (status) {
+          if (status && status.valid) {
+            return true;
+          }
+          return CyShared.claimNickname(name).then(function (data) {
+            return !!(data && data.ok);
+          });
+        })
+        .catch(function () {
+          return false;
+        });
     },
 
     checkNickname: function (name) {

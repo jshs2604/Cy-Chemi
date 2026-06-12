@@ -157,6 +157,21 @@ app.get("/api/nickname/check", (req, res) => {
   res.json({ ok: true, available: !taken, name });
 });
 
+app.get("/api/nickname/verify", (req, res) => {
+  const name = normalizeNick(req.query.name);
+  const token = String(req.query.token || "").trim();
+  const store = readStore();
+  if (!name || !token) {
+    return res.json({ ok: true, valid: false, name: name || "" });
+  }
+  res.json({
+    ok: true,
+    valid: verifyNickToken(store, name, token),
+    name,
+    exists: !!store.nicknames[name],
+  });
+});
+
 app.post("/api/nickname/claim", (req, res) => {
   const name = normalizeNick(req.body && req.body.name);
   const token = String((req.body && req.body.token) || "").trim();
