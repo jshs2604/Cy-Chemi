@@ -201,7 +201,10 @@
     saveNicknameLocal: saveNicknameLocal,
 
     getBoard: function (symbol) {
-      return request("GET", "/api/board/" + encodeURIComponent(symbol)).then(function (d) {
+      return request(
+        "GET",
+        "/api/board/" + encodeURIComponent(symbol) + "?_=" + Date.now()
+      ).then(function (d) {
         return d.items || [];
       });
     },
@@ -213,7 +216,10 @@
     },
 
     getGuestbook: function (scope) {
-      return request("GET", "/api/guestbook/" + encodeURIComponent(scope)).then(function (d) {
+      return request(
+        "GET",
+        "/api/guestbook/" + encodeURIComponent(scope) + "?_=" + Date.now()
+      ).then(function (d) {
         return d.items || [];
       });
     },
@@ -244,13 +250,66 @@
       });
     },
 
-    linkIlchon: function (peerNickname) {
-      return request("POST", "/api/ilchon/link", {
+    requestIlchon: function (peerNickname) {
+      return request("POST", "/api/ilchon/request", {
         name: getNickname(),
         token: getNickToken(),
         peer: peerNickname,
-      }).then(function (d) {
+      });
+    },
+
+    linkIlchon: function (peerNickname) {
+      return request("POST", "/api/ilchon/request", {
+        name: getNickname(),
+        token: getNickToken(),
+        peer: peerNickname,
+      });
+    },
+
+    getIlchonInbox: function () {
+      var name = getNickname();
+      var token = getNickToken();
+      if (!name || !token) {
+        return Promise.resolve([]);
+      }
+      return request(
+        "GET",
+        "/api/ilchon/inbox?nickname=" +
+          encodeURIComponent(name) +
+          "&token=" +
+          encodeURIComponent(token) +
+          "&_=" +
+          Date.now()
+      ).then(function (d) {
         return d.items || [];
+      });
+    },
+
+    getIlchonOutbox: function () {
+      var name = getNickname();
+      var token = getNickToken();
+      if (!name || !token) {
+        return Promise.resolve([]);
+      }
+      return request(
+        "GET",
+        "/api/ilchon/outbox?nickname=" +
+          encodeURIComponent(name) +
+          "&token=" +
+          encodeURIComponent(token) +
+          "&_=" +
+          Date.now()
+      ).then(function (d) {
+        return d.items || [];
+      });
+    },
+
+    respondIlchon: function (requestId, action) {
+      return request("POST", "/api/ilchon/respond", {
+        name: getNickname(),
+        token: getNickToken(),
+        requestId: requestId,
+        action: action,
       });
     },
 

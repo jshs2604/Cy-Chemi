@@ -21,7 +21,7 @@ app.use(function (req, res, next) {
 });
 
 function emptyStore() {
-  return { nicknames: {}, boards: {}, guestbooks: {}, ilchons: {} };
+  return { nicknames: {}, boards: {}, guestbooks: {}, ilchons: {}, ilchonRequests: [] };
 }
 
 function readStore() {
@@ -34,6 +34,7 @@ function readStore() {
         boards: data.boards || {},
         guestbooks: data.guestbooks || {},
         ilchons: data.ilchons || {},
+        ilchonRequests: Array.isArray(data.ilchonRequests) ? data.ilchonRequests : [],
       };
     }
   } catch (e) {}
@@ -87,6 +88,47 @@ function addIlchonLink(store, a, b) {
     store.ilchons[a] = store.ilchons[a].slice(0, 48);
     store.ilchons[b] = store.ilchons[b].slice(0, 48);
   }
+}
+
+function newRequestId() {
+  return "ir_" + Date.now() + "_" + crypto.randomBytes(4).toString("hex");
+}
+
+function findPendingRequest(store, from, to) {
+  return (store.ilchonRequests || []).find(
+    (r) => r.status === "pending" && r.from === from && r.to === to
+  );
+}
+
+function clearPendingBetween(store, a, b) {
+  (store.ilchonRequests || []).forEach((r) => {
+    if (
+      r.status === "pending" &&
+      ((r.from === a && r.to === b) || (r.from === b && r.to === a))
+    ) {
+      r.status = "cancelled";
+    }
+  });
+}
+
+function authNick(store, name, token, res) {
+  if (!name || !token) {
+    res.status(401).json({
+      ok: false,
+      error: "auth",
+      message: "닉네임부터 정해 주세요 ♡",
+    });
+    return false;
+  }
+  if (!verifyNickToken(store, name, token)) {
+    res.status(401).json({
+      ok: false,
+      error: "auth",
+      message: "닉네임 인증이 필요해요. 다시 입장해 주세요.",
+    });
+    return false;
+  }
+  return true;
 }
 
 app.get("/api/health", (req, res) => {
@@ -261,24 +303,13 @@ app.get("/api/ilchon/:nickname", (req, res) => {
   res.json({ ok: true, nickname: name, items });
 });
 
-app.post("/api/ilchon/link", (req, res) => {
+function handleIlchonRequest(req, res) {
   const name = normalizeNick(req.body && req.body.name);
   const token = String((req.body && req.body.token) || "").trim();
   const peer = normalizeNick(req.body && req.body.peer);
-  if (!name || !token) {
-    return res.status(401).json({
-      ok: false,
-      error: "auth",
-      message: "닉네임부터 정해 주세요 ♡",
-    });
-  }
   const store = readStore();
-  if (!verifyNickToken(store, name, token)) {
-    return res.status(401).json({
-      ok: false,
-      error: "auth",
-      message: "닉네임 인증이 필요해요. 다시 입장해 주세요.",
-    });
+  if (!authNick(store, name, token, res)) {
+    return;
   }
   if (!peer) {
     return res.status(400).json({
@@ -308,13 +339,118 @@ app.post("/api/ilchon/link", (req, res) => {
       message: "이미 일촌이에요 ♡",
     });
   }
-  addIlchonLink(store, name, peer);
+  const reverse = findPendingRequest(store, peer, name);
+  if (reverse) {
+    return res.status(409).json({
+      ok: false,
+      error: "incoming",
+      message: peer + "님이 먼저 신청했어요! 받은 신청에서 수락해 주세요 ♡",
+      requestId: reverse.id,
+    });
+  }
+  if (findPendingRequest(store, name, peer)) {
+    return res.status(409).json({
+      ok: false,
+      error: "pending",
+      message: "이미 일촌 신청을 보냈어요. 상대가 수락할 때까지 기다려 주세요 ♡",
+    });
+  }
+  const item = {
+    id: newRequestId(),
+    from: name,
+    to: peer,
+    status: "pending",
+    t: nowKo(),
+  };
+  if (!store.ilchonRequests) store.ilchonRequests = [];
+  store.ilchonRequests.unshift(item);
+  store.ilchonRequests = store.ilchonRequests.slice(0, 200);
   writeStore(store);
   res.status(201).json({
     ok: true,
+    pending: true,
     nickname: name,
     peer,
-    items: getIlchonListFor(store, name),
+    request: item,
+    message: peer + "님에게 일촌 신청을 보냈어요! 수락하면 맺어져요 ♡",
+  });
+}
+
+app.post("/api/ilchon/request", handleIlchonRequest);
+app.post("/api/ilchon/link", handleIlchonRequest);
+
+app.get("/api/ilchon/inbox", (req, res) => {
+  const name = normalizeNick(req.query.nickname);
+  const token = String(req.query.token || "").trim();
+  const store = readStore();
+  if (!authNick(store, name, token, res)) {
+    return;
+  }
+  const items = (store.ilchonRequests || []).filter(
+    (r) => r.status === "pending" && r.to === name
+  );
+  res.json({ ok: true, nickname: name, items });
+});
+
+app.get("/api/ilchon/outbox", (req, res) => {
+  const name = normalizeNick(req.query.nickname);
+  const token = String(req.query.token || "").trim();
+  const store = readStore();
+  if (!authNick(store, name, token, res)) {
+    return;
+  }
+  const items = (store.ilchonRequests || []).filter(
+    (r) => r.status === "pending" && r.from === name
+  );
+  res.json({ ok: true, nickname: name, items });
+});
+
+app.post("/api/ilchon/respond", (req, res) => {
+  const name = normalizeNick(req.body && req.body.name);
+  const token = String((req.body && req.body.token) || "").trim();
+  const requestId = String((req.body && req.body.requestId) || "").trim();
+  const action = String((req.body && req.body.action) || "").trim();
+  const store = readStore();
+  if (!authNick(store, name, token, res)) {
+    return;
+  }
+  if (!requestId || (action !== "accept" && action !== "reject")) {
+    return res.status(400).json({
+      ok: false,
+      error: "invalid",
+      message: "잘못된 요청이에요.",
+    });
+  }
+  const pending = (store.ilchonRequests || []).find(
+    (r) => r.id === requestId && r.status === "pending" && r.to === name
+  );
+  if (!pending) {
+    return res.status(404).json({
+      ok: false,
+      error: "not_found",
+      message: "이미 처리됐거나 없는 신청이에요.",
+    });
+  }
+  if (action === "accept") {
+    addIlchonLink(store, pending.from, pending.to);
+    pending.status = "accepted";
+    clearPendingBetween(store, pending.from, pending.to);
+    writeStore(store);
+    return res.json({
+      ok: true,
+      accepted: true,
+      peer: pending.from,
+      message: pending.from + "님과 일촌이 됐어요 ♡",
+      items: getIlchonListFor(store, name),
+    });
+  }
+  pending.status = "rejected";
+  writeStore(store);
+  res.json({
+    ok: true,
+    accepted: false,
+    peer: pending.from,
+    message: pending.from + "님 일촌 신청을 거절했어요.",
   });
 });
 

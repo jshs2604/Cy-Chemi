@@ -10331,6 +10331,49 @@ body.mh-theme-paper .mh-tab.is-active {
 }
 
 /* 일촌 목록 카드 */
+.mh-ilchon-inbox-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 240, 248, 0.85);
+  border: 1px solid rgba(255, 143, 177, 0.35);
+  margin-bottom: 8px;
+  list-style: none;
+}
+
+.mh-ilchon-inbox-item__who {
+  font-weight: 700;
+  color: #c2185b;
+}
+
+.mh-ilchon-inbox-item__actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.mh-ilchon-inbox-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.mh-ilchon-inbox-btn--ok {
+  background: linear-gradient(180deg, #ff8fb1, #ff6b9d);
+  color: #fff;
+}
+
+.mh-ilchon-inbox-btn--no {
+  background: #f3f3f3;
+  color: #666;
+}
+
 .mh-ilchon-list-card { margin-top: 14px; }
 
 .mh-ilchon-list-heading {
