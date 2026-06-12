@@ -1056,14 +1056,26 @@
                         <span class="mh-gb-compose__title">새 편지 쓰기</span>
                       </div>
 
+                      <div class="mh-gb-compose__field mh-gb-compose__field--ilchon">
+                        <label>내 일촌 ♡</label>
+                        <ul id="gb-ilchon-chips" class="mh-gb-ilchon-chips" aria-label="일촌 목록"></ul>
+                      </div>
+
                       <div class="mh-gb-compose__field">
                         <label for="gb-name">From ♡</label>
-                        <input id="gb-name" type="text" maxlength="20" placeholder="누구세요? (방문자)" autocomplete="off" />
+                        <input
+                          id="gb-name"
+                          type="text"
+                          maxlength="12"
+                          placeholder="닉네임 입장하면 자동으로 들어가요"
+                          autocomplete="off"
+                          readonly
+                        />
                       </div>
 
                       <div class="mh-gb-compose__field">
                         <label for="gb-msg">한 마디 ✎</label>
-                        <textarea id="gb-msg" rows="3" placeholder="일촌에게 따뜻한 한마디… ♥"></textarea>
+                        <textarea id="gb-msg" rows="3" placeholder="일촌에게 남기고 싶은 말을 자유롭게 적어 주세요 ♥"></textarea>
                       </div>
 
                       <div class="mh-gb-compose__footer">
@@ -1407,7 +1419,7 @@
           <h3 id="inv-modal-title" class="cy-gift-modal__title">📬 받은 선물함 (×<b id="inv-modal-count">0</b>)</h3>
           <button type="button" class="cy-gift-modal__close" id="inv-modal-close" aria-label="닫기">✕</button>
         </header>
-        <p class="cy-gift-modal__sub">일촌에게 받은 답례 선물과 럭키박스 깜짝 선물이 모여있어요. <b>↩ 답례</b>를 누르면 보낸 일촌에게 답례 선물을 보낼 수 있어요.</p>
+        <p class="cy-gift-modal__sub">일촌이 <b>서버로 보낸 선물</b>과 럭키박스 보상이 모여 있어요. <b>↩ 답례</b>로 일촌에게 다시 선물할 수 있어요.</p>
         <ul class="cy-inv-modal__list" id="inv-modal-list"></ul>
       </div>
     </div>
@@ -1799,6 +1811,7 @@
             }
             loadIlchonInbox();
             loadIlchonList();
+            refreshGuestbookCompose();
             var cur = window.__cyCurrentElement;
             if (cur) {
               loadFriendsSay(cur);
@@ -1881,9 +1894,11 @@
           clearInterval(__cyInboxTimer);
         }
         loadIlchonInbox();
+        loadGiftInbox();
         __cyInboxTimer = window.setInterval(function () {
           if (getNickname()) {
             loadIlchonInbox();
+            loadGiftInbox();
           }
         }, 12000);
       }
@@ -1988,20 +2003,39 @@
             return;
           }
         }
-        recordGift(me, peerNick, item.emoji);
-        flyGiftFromButton(btnEl, item.emoji);
-        showCyToast(
-          "<b>" + peerNick + "</b>에게 " + item.emoji + " " + item.name + " 보냈어요 ♡",
-          "ok"
-        );
-        try { bumpAchievement("gift_sent"); renderAchievements(); } catch (e) {}
-        try { maybePeerReplyGift(peerNick, item); } catch (e) {}
-        loadIlchonList();
-        renderShopBalance();
-        dropVendingItem(item);
-        CY_VENDING_BUFFER = "";
-        highlightVendingCard("");
-        renderVendingDisplay();
+        CyShared.sendGift(peerNick, {
+          giftId: item.id,
+          giftName: item.name,
+          giftEmoji: item.emoji,
+        })
+          .then(function () {
+            recordGift(me, peerNick, item.emoji);
+            flyGiftFromButton(btnEl, item.emoji);
+            showCyToast(
+              "<b>" + peerNick + "</b>에게 " + item.emoji + " " + item.name + " 보냈어요 ♡",
+              "ok"
+            );
+            try { bumpAchievement("gift_sent"); renderAchievements(); } catch (e) {}
+            loadIlchonList();
+            loadGiftInbox();
+            renderShopBalance();
+            dropVendingItem(item);
+            CY_VENDING_BUFFER = "";
+            highlightVendingCard("");
+            renderVendingDisplay();
+          })
+          .catch(function (e) {
+            if (hasToken) {
+              setGiftTokens(getGiftTokens() + 1);
+              renderGachaWidget();
+            } else {
+              addDotori(price, "선물 실패 환불");
+            }
+            var msg =
+              (e && e.data && e.data.message) ||
+              "선물 전송 실패… 서버 연결을 확인해 주세요.";
+            showCyToast(msg, "bad");
+          });
       }
 
       function flyGiftFromButton(btn, type) {
@@ -2084,37 +2118,102 @@
           cat: item.cat,
           from: from || "?",
           t: new Date().toLocaleString("ko-KR"),
+          localOnly: true,
         });
         setInventory(arr);
         try { bumpAchievement("gift_recv"); renderAchievements(); } catch (e) {}
+        renderInventoryWidget();
         return item;
       }
 
-      /* 일촌이 답례 선물을 보내는 확률 시뮬레이션 — 40% */
-      function maybePeerReplyGift(peerSym, sentItem) {
-        if (Math.random() > 0.4) return;
-        var pool = GIFT_CATALOG.filter(function (g) {
-          return g.id !== "dotori5"; /* 도토리 5묶음 같은 비싼 보상 제외 */
+      function getLocalBonusGifts() {
+        return getInventory().filter(function (g) {
+          return g.localOnly || g.from === "럭키박스";
         });
-        var reply = pool[Math.floor(Math.random() * pool.length)];
-        setTimeout(function () {
-          addInventoryItem(reply.id, peerSym);
-          showCyToast(
-            '<b>' + peerSym + '</b> 일촌이 답례로 ' + reply.emoji + ' ' + reply.name + ' 을(를) 보냈어요 ♡',
-            "ok"
-          );
-          renderInventoryWidget();
-        }, 1200);
+      }
+
+      function mergeGiftInbox(serverItems, localBonus) {
+        var merged = (serverItems || []).map(function (g) {
+          return {
+            id: g.id,
+            giftId: g.giftId,
+            emoji: g.emoji || "🎁",
+            name: g.name || "선물",
+            from: g.from || "?",
+            t: g.t || "",
+            server: true,
+          };
+        });
+        (localBonus || []).forEach(function (g) {
+          merged.push(g);
+        });
+        return merged;
+      }
+
+      function loadGiftInbox() {
+        var cnt = document.getElementById("mh-inv-count");
+        var localBonus = getLocalBonusGifts();
+        if (!getNickname()) {
+          if (cnt) cnt.textContent = String(localBonus.length);
+          return Promise.resolve(localBonus);
+        }
+        return CyShared.getGiftInbox()
+          .then(function (serverItems) {
+            var merged = mergeGiftInbox(serverItems, localBonus);
+            if (cnt) {
+              cnt.textContent = String(merged.length);
+              var btn = cnt.closest(".mh-link-btn");
+              if (btn) btn.classList.toggle("has-items", merged.length > 0);
+            }
+            window.__cyGiftInboxCache = merged;
+            return merged;
+          })
+          .catch(function () {
+            if (cnt) cnt.textContent = String(localBonus.length);
+            window.__cyGiftInboxCache = localBonus;
+            return localBonus;
+          });
       }
 
       function renderInventoryWidget() {
-        var arr = getInventory();
-        var cnt = document.getElementById("mh-inv-count");
-        if (cnt) {
-          cnt.textContent = String(arr.length);
-          var btn = cnt.closest(".mh-link-btn");
-          if (btn) btn.classList.toggle("has-items", arr.length > 0);
+        loadGiftInbox();
+      }
+
+      function renderGiftInboxList(listEl, arr) {
+        if (!listEl) return;
+        listEl.innerHTML = "";
+        if (!arr.length) {
+          listEl.innerHTML =
+            '<li class="cy-inv-modal__empty">아직 받은 선물이 없어요 ♡<br/><small>일촌이 보낸 선물이 여기에 쌓여요</small></li>';
+          return;
         }
+        arr.forEach(function (g) {
+          var li = document.createElement("li");
+          li.className = "cy-inv-modal__item";
+          var replyBtn =
+            g.from && g.from !== "럭키박스"
+              ? '<button type="button" class="cy-inv-modal__reply">답례</button>'
+              : "";
+          li.innerHTML =
+            '<span class="cy-inv-modal__emoji">' + (g.emoji || "🎁") + "</span>" +
+            '<div class="cy-inv-modal__main">' +
+            '<div class="cy-inv-modal__name">' + escapeHtml(g.name || "선물") + "</div>" +
+            '<div class="cy-inv-modal__meta">From. <b>' +
+            escapeHtml(g.from || "?") +
+            "</b> · " +
+            escapeHtml(g.t || "") +
+            "</div>" +
+            "</div>" +
+            replyBtn;
+          var btn = li.querySelector(".cy-inv-modal__reply");
+          if (btn) {
+            btn.addEventListener("click", function () {
+              closeInventoryModal();
+              openGiftModal({ peerNick: g.from, anchorBtn: btn });
+            });
+          }
+          listEl.appendChild(li);
+        });
       }
 
       function openInventoryModal() {
@@ -2122,30 +2221,12 @@
         var list = document.getElementById("inv-modal-list");
         var cnt = document.getElementById("inv-modal-count");
         if (!modal || !list) return;
-        var arr = getInventory();
-        if (cnt) cnt.textContent = String(arr.length);
-        list.innerHTML = "";
-        if (!arr.length) {
-          list.innerHTML = '<li class="cy-inv-modal__empty">아직 받은 선물이 없어요 ♡<br/><small>일촌에게 선물 보내면 약 40% 확률로 답례가 도착해요</small></li>';
-        } else {
-          arr.forEach(function (g) {
-            var li = document.createElement("li");
-            li.className = "cy-inv-modal__item";
-            li.innerHTML =
-              '<span class="cy-inv-modal__emoji">' + g.emoji + '</span>' +
-              '<div class="cy-inv-modal__main">' +
-                '<div class="cy-inv-modal__name">' + escapeHtml(g.name) + '</div>' +
-                '<div class="cy-inv-modal__meta">From. <b>' + escapeHtml(g.from || "?") + '</b> · ' + escapeHtml(g.t || "") + '</div>' +
-              '</div>' +
-              '<button type="button" class="cy-inv-modal__reply" data-peer="' + escapeHtml(g.from || "") + '">↩ 답례</button>';
-            var btn = li.querySelector(".cy-inv-modal__reply");
-            btn.addEventListener("click", function () {
-              closeInventoryModal();
-              openGiftModal({ peerSym: g.from, anchorBtn: btn });
-            });
-            list.appendChild(li);
-          });
-        }
+        list.innerHTML =
+          '<li class="cy-inv-modal__empty">선물함 불러오는 중…</li>';
+        loadGiftInbox().then(function (arr) {
+          if (cnt) cnt.textContent = String(arr.length);
+          renderGiftInboxList(list, arr);
+        });
         modal.hidden = false;
         modal.classList.add("is-open");
       }
@@ -4693,6 +4774,7 @@
           refreshVideoPanel(el);
           loadBoardList(el);
           loadGuestbookList(el);
+          refreshGuestbookCompose();
           loadFriendsSay(el);
           startLiveRefresh(el);
         }
@@ -5076,6 +5158,47 @@
             ul.innerHTML =
               "<li class=\"mh-empty mh-gb-empty\">" +
               "<span>서버에 연결할 수 없어요. 방명록은 모두가 함께 봐요.</span></li>";
+          });
+      }
+
+      function refreshGuestbookCompose() {
+        var nameEl = document.getElementById("gb-name");
+        var chips = document.getElementById("gb-ilchon-chips");
+        var me = getNickname();
+        if (nameEl) {
+          nameEl.value = me || "";
+          nameEl.readOnly = true;
+        }
+        if (!chips) {
+          return;
+        }
+        if (!me) {
+          chips.innerHTML =
+            '<li class="mh-gb-ilchon-empty">닉네임 입장 후 일촌 목록이 보여요</li>';
+          return;
+        }
+        chips.innerHTML =
+          '<li class="mh-gb-ilchon-empty">일촌 불러오는 중…</li>';
+        CyShared.getIlchon(me)
+          .then(function (arr) {
+            if (!arr.length) {
+              chips.innerHTML =
+                '<li class="mh-gb-ilchon-empty">아직 일촌이 없어요. 먼저 일촌을 맺어 주세요 ♡</li>';
+              return;
+            }
+            chips.innerHTML = arr
+              .map(function (r) {
+                return (
+                  '<li class="mh-gb-ilchon-chip">' +
+                  escapeHtml(r.peer) +
+                  "</li>"
+                );
+              })
+              .join("");
+          })
+          .catch(function () {
+            chips.innerHTML =
+              '<li class="mh-gb-ilchon-empty">일촌 목록을 불러오지 못했어요</li>';
           });
       }
 
@@ -6730,6 +6853,8 @@
                 applyNicknameChrome();
                 loadIlchonList();
                 startInboxPolling();
+                refreshGuestbookCompose();
+                loadGiftInbox();
                 closeNickModal();
                 showCyToast("환영해요, " + getNickname() + "님 ♡", "ok");
               })
@@ -7354,10 +7479,14 @@
               alert("원소를 먼저 조회해 주세요.");
               return;
             }
-            var nameEl = document.getElementById("gb-name");
             var msgEl = document.getElementById("gb-msg");
-            var name = nameEl && nameEl.value ? nameEl.value.trim() : getNickname() || "익명";
+            var name = getNickname() || "익명";
             var msg = msgEl && msgEl.value ? msgEl.value.trim() : "";
+            if (!getNickname()) {
+              showCyToast("닉네임 입장 후 방명록을 쓸 수 있어요 ♡", "warn");
+              openNickModal();
+              return;
+            }
             if (!msg) {
               return;
             }

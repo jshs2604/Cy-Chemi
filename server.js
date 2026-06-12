@@ -21,7 +21,14 @@ app.use(function (req, res, next) {
 });
 
 function emptyStore() {
-  return { nicknames: {}, boards: {}, guestbooks: {}, ilchons: {}, ilchonRequests: [] };
+  return {
+    nicknames: {},
+    boards: {},
+    guestbooks: {},
+    ilchons: {},
+    ilchonRequests: [],
+    gifts: [],
+  };
 }
 
 function readStore() {
@@ -35,6 +42,7 @@ function readStore() {
         guestbooks: data.guestbooks || {},
         ilchons: data.ilchons || {},
         ilchonRequests: Array.isArray(data.ilchonRequests) ? data.ilchonRequests : [],
+        gifts: Array.isArray(data.gifts) ? data.gifts : [],
       };
     }
   } catch (e) {}
@@ -92,6 +100,10 @@ function addIlchonLink(store, a, b) {
 
 function newRequestId() {
   return "ir_" + Date.now() + "_" + crypto.randomBytes(4).toString("hex");
+}
+
+function newGiftId() {
+  return "gf_" + Date.now() + "_" + crypto.randomBytes(4).toString("hex");
 }
 
 function findPendingRequest(store, from, to) {
@@ -452,6 +464,75 @@ app.post("/api/ilchon/respond", (req, res) => {
     peer: pending.from,
     message: pending.from + "님 일촌 신청을 거절했어요.",
   });
+});
+
+app.post("/api/gift/send", (req, res) => {
+  const from = normalizeNick(req.body && req.body.name);
+  const token = String((req.body && req.body.token) || "").trim();
+  const to = normalizeNick(req.body && req.body.to);
+  const giftId = String((req.body && req.body.giftId) || "").trim().slice(0, 32);
+  const giftName = String((req.body && req.body.giftName) || "선물").trim().slice(0, 40);
+  const giftEmoji = String((req.body && req.body.giftEmoji) || "🎁").trim().slice(0, 8);
+  const store = readStore();
+  if (!authNick(store, from, token, res)) {
+    return;
+  }
+  if (!to || !giftId) {
+    return res.status(400).json({
+      ok: false,
+      error: "empty",
+      message: "선물 정보가 부족해요.",
+    });
+  }
+  if (!store.nicknames[to]) {
+    return res.status(404).json({
+      ok: false,
+      error: "not_found",
+      message: "그 닉네임은 아직 없어요.",
+    });
+  }
+  if (!hasIlchonLink(store, from, to)) {
+    return res.status(403).json({
+      ok: false,
+      error: "not_ilchon",
+      message: "일촌에게만 선물할 수 있어요 ♡",
+    });
+  }
+  const item = {
+    id: newGiftId(),
+    from,
+    to,
+    giftId,
+    name: giftName,
+    emoji: giftEmoji,
+    t: nowKo(),
+  };
+  if (!store.gifts) store.gifts = [];
+  store.gifts.unshift(item);
+  store.gifts = store.gifts.slice(0, 500);
+  writeStore(store);
+  res.status(201).json({ ok: true, gift: item });
+});
+
+app.get("/api/gift/inbox", (req, res) => {
+  const name = normalizeNick(req.query.nickname);
+  const token = String(req.query.token || "").trim();
+  const store = readStore();
+  if (!authNick(store, name, token, res)) {
+    return;
+  }
+  const items = (store.gifts || [])
+    .filter((g) => g.to === name)
+    .slice(0, 60)
+    .map((g) => ({
+      id: g.id,
+      giftId: g.giftId,
+      emoji: g.emoji || "🎁",
+      name: g.name || "선물",
+      from: g.from,
+      t: g.t || "",
+    }));
+  res.json({ ok: true, nickname: name, items });
 });
 
 app.use(express.static(ROOT));

@@ -313,6 +313,36 @@
       });
     },
 
+    sendGift: function (toNickname, payload) {
+      return request("POST", "/api/gift/send", {
+        name: getNickname(),
+        token: getNickToken(),
+        to: toNickname,
+        giftId: payload && payload.giftId,
+        giftName: payload && payload.giftName,
+        giftEmoji: payload && payload.giftEmoji,
+      });
+    },
+
+    getGiftInbox: function () {
+      var name = getNickname();
+      var token = getNickToken();
+      if (!name || !token) {
+        return Promise.resolve([]);
+      }
+      return request(
+        "GET",
+        "/api/gift/inbox?nickname=" +
+          encodeURIComponent(name) +
+          "&token=" +
+          encodeURIComponent(token) +
+          "&_=" +
+          Date.now()
+      ).then(function (d) {
+        return d.items || [];
+      });
+    },
+
     getFriendsSay: function (symbol, nickname) {
       var name = nickname || getNickname();
       if (!name || !symbol) {
