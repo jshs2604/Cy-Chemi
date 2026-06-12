@@ -225,6 +225,32 @@ app.post("/api/guestbook/:scope/:id/reply", (req, res) => {
   res.json({ ok: true, items: list });
 });
 
+app.get("/api/friends-say/:symbol", (req, res) => {
+  const sym = String(req.params.symbol || "").trim();
+  if (!validSymbol(sym)) {
+    return res.status(400).json({ ok: false, error: "invalid_symbol" });
+  }
+  const name = normalizeNick(req.query.nickname);
+  const store = readStore();
+  if (!name) {
+    return res.json({ ok: true, symbol: sym, items: [] });
+  }
+  const peerSet = {};
+  getIlchonListFor(store, name).forEach((item) => {
+    peerSet[normalizeNick(item.peer)] = true;
+  });
+  const guestbook = store.guestbooks[sym] || [];
+  const items = guestbook
+    .filter((item) => peerSet[normalizeNick(item.name)])
+    .slice(0, 12)
+    .map((item) => ({
+      name: normalizeNick(item.name),
+      msg: item.secret ? "🔒 비밀 편지" : String(item.msg || "").slice(0, 200),
+      t: item.t || "",
+    }));
+  res.json({ ok: true, symbol: sym, items });
+});
+
 app.get("/api/ilchon/:nickname", (req, res) => {
   const name = normalizeNick(req.params.nickname);
   if (!name) {

@@ -13,10 +13,22 @@
 
   function getApiBase() {
     try {
+      if (typeof location !== "undefined" && location.hostname) {
+        var host = location.hostname;
+        // Render·로컬은 화면과 API가 같은 주소 → CORS 문제 없음
+        if (
+          host.indexOf("onrender.com") !== -1 ||
+          host === "localhost" ||
+          host === "127.0.0.1"
+        ) {
+          return String(location.origin).replace(/\/$/, "");
+        }
+      }
+    } catch (e) {}
+    try {
       var custom = localStorage.getItem("cy_api_base");
       if (custom) {
         custom = String(custom).replace(/\/$/, "");
-        // 예전 테스트(localhost 등)로 저장된 주소는 무시
         if (
           custom &&
           custom.indexOf("localhost") === -1 &&
@@ -25,7 +37,7 @@
           return custom;
         }
       }
-    } catch (e) {}
+    } catch (e2) {}
     if (DEFAULT_API_BASE) {
       return String(DEFAULT_API_BASE).replace(/\/$/, "");
     }
@@ -36,10 +48,16 @@
     return getApiBase() + path;
   }
 
+  var serverReady = false;
+
   function sleep(ms) {
     return new Promise(function (resolve) {
       setTimeout(resolve, ms);
     });
+  }
+
+  function maxAttempts() {
+    return serverReady ? 1 : 3;
   }
 
   function request(method, path, body, attempt) {
@@ -66,10 +84,10 @@
           .then(function (data) {
             if (!res.ok) {
               if (
-                attempt < 4 &&
+                attempt < maxAttempts() &&
                 (res.status === 502 || res.status === 503 || res.status === 504)
               ) {
-                return sleep(2500 * (attempt + 1)).then(function () {
+                return sleep(1500 * (attempt + 1)).then(function () {
                   return request(method, path, body, attempt + 1);
                 });
               }
@@ -78,12 +96,13 @@
               err.data = data;
               throw err;
             }
+            serverReady = true;
             return data;
           });
       })
       .catch(function (err) {
-        if (attempt < 4 && err && err.message !== "no_api_base") {
-          return sleep(2500 * (attempt + 1)).then(function () {
+        if (attempt < maxAttempts() && err && err.message !== "no_api_base") {
+          return sleep(1500 * (attempt + 1)).then(function () {
             return request(method, path, body, attempt + 1);
           });
         }
@@ -91,7 +110,6 @@
       });
   }
 
-  // Render 무료 서버 깨우기 (페이지 로드 시 미리 연결)
   if (typeof window !== "undefined" && DEFAULT_API_BASE) {
     request("GET", "/api/health").catch(function () {});
   }
@@ -146,14 +164,30 @@
       return request("GET", "/api/health");
     },
 
+    isOnline: function () {
+      return request("GET", "/api/health").then(function (d) {
+        return !!(d && d.ok);
+      });
+    },
+
+    clearNickname: function () {
+      saveNicknameLocal("", "");
+    },
+
     checkNickname: function (name) {
       return request("GET", "/api/nickname/check?name=" + encodeURIComponent(name));
     },
 
     claimNickname: function (name) {
+      var trimmed = String(name || "").trim().slice(0, 12);
+      var current = getNickname();
+      var token = getNickToken();
+      if (!current || current !== trimmed) {
+        token = "";
+      }
       return request("POST", "/api/nickname/claim", {
-        name: name,
-        token: getNickToken() || undefined,
+        name: trimmed,
+        token: token || undefined,
       }).then(function (data) {
         if (data && data.ok && data.name) {
           saveNicknameLocal(data.name, data.token);
@@ -216,6 +250,22 @@
         token: getNickToken(),
         peer: peerNickname,
       }).then(function (d) {
+        return d.items || [];
+      });
+    },
+
+    getFriendsSay: function (symbol, nickname) {
+      var name = nickname || getNickname();
+      if (!name || !symbol) {
+        return Promise.resolve([]);
+      }
+      return request(
+        "GET",
+        "/api/friends-say/" +
+          encodeURIComponent(symbol) +
+          "?nickname=" +
+          encodeURIComponent(name)
+      ).then(function (d) {
         return d.items || [];
       });
     },

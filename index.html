@@ -3410,7 +3410,7 @@
       }
 
       /* 작은 토스트 — 화면 가운데 위쪽에 잠깐 떴다 사라짐 */
-      function showCyToast(msg, kind) {
+      function showCyToast(msg, kind, ms) {
         try {
           var t = document.createElement("div");
           t.className =
@@ -3419,8 +3419,28 @@
           document.body.appendChild(t);
           setTimeout(function () {
             if (t && t.parentNode) t.parentNode.removeChild(t);
-          }, 2400);
+          }, ms || 2400);
         } catch (e) {}
+      }
+
+      function serverFailMessage() {
+        if (
+          typeof location !== "undefined" &&
+          location.hostname &&
+          location.hostname.indexOf("github.io") !== -1
+        ) {
+          return (
+            '서버 연결 실패! 친구들이랑 쓸 땐 <a href="https://cy-chemi-6nme.onrender.com/" ' +
+            'style="color:#fff;text-decoration:underline">cy-chemi-6nme.onrender.com</a> 으로 접속해 주세요'
+          );
+        }
+        return "서버에 연결할 수 없어요. 1분 기다린 뒤 새로고침 해 주세요.";
+      }
+
+      function checkServerConnection() {
+        CyShared.ping().catch(function () {
+          showCyToast(serverFailMessage(), "bad", 8000);
+        });
       }
 
       /* 가챠 추첨표 — 가중치(weight)·라벨·실행 함수 */
@@ -4477,10 +4497,6 @@
           if (bubble) {
             bubble.innerHTML = A.getMiniroomBubble(el);
           }
-          var fs = document.getElementById("friends-say-body");
-          if (fs && window.CyChemiElements) {
-            fs.innerHTML = A.getFriendsSayHtml(el, window.CyChemiElements);
-          }
         }
 
         if (window.CyChemiRoom) {
@@ -4505,6 +4521,8 @@
           refreshVideoPanel(el);
           loadBoardList(el);
           loadGuestbookList(el);
+          loadFriendsSay(el);
+          startLiveRefresh(el);
         }
 
         var symEl = document.getElementById("profile-symbol");
@@ -4887,6 +4905,71 @@
               "<li class=\"mh-empty mh-gb-empty\">" +
               "<span>서버에 연결할 수 없어요. 방명록은 모두가 함께 봐요.</span></li>";
           });
+      }
+
+      function loadFriendsSay(el) {
+        var fs = document.getElementById("friends-say-body");
+        if (!fs) {
+          return;
+        }
+        if (!el) {
+          return;
+        }
+        var me = getNickname();
+        if (!me) {
+          fs.innerHTML =
+            '<p class="mh-friends-say__empty">닉네임 입장 후 일촌 친구 방명록이 여기에 보여요 ♡</p>';
+          return;
+        }
+        CyShared.getFriendsSay(el.symbol, me)
+          .then(function (arr) {
+            if (!arr.length) {
+              fs.innerHTML =
+                '<p class="mh-friends-say__empty">일촌 친구가 이 원소 방명록에 편지를 남기면 실시간으로 보여요 ♡</p>';
+              return;
+            }
+            fs.innerHTML = arr
+              .map(function (item) {
+                return (
+                  "<p><b>" +
+                  escapeHtml(item.name) +
+                  "</b>: " +
+                  escapeHtml(item.msg) +
+                  "</p>"
+                );
+              })
+              .join("");
+          })
+          .catch(function () {
+            fs.innerHTML =
+              '<p class="mh-friends-say__empty">일촌 한마디 불러오기 실패… 잠시 후 새로고침 해 주세요</p>';
+          });
+      }
+
+      var __cyLiveTimer = null;
+
+      function startLiveRefresh(el) {
+        if (__cyLiveTimer) {
+          clearInterval(__cyLiveTimer);
+          __cyLiveTimer = null;
+        }
+        if (!el) {
+          return;
+        }
+        __cyLiveTimer = window.setInterval(function () {
+          var cur = window.__cyCurrentElement;
+          if (!cur || cur.symbol !== el.symbol) {
+            clearInterval(__cyLiveTimer);
+            __cyLiveTimer = null;
+            return;
+          }
+          loadBoardList(cur);
+          loadGuestbookList(cur);
+          loadFriendsSay(cur);
+          if (getNickname()) {
+            loadIlchonList();
+          }
+        }, 10000);
       }
 
       /**
@@ -6320,6 +6403,10 @@
               inputB.value = "";
             }
             loadIlchonList();
+            var cur = window.__cyCurrentElement;
+            if (cur) {
+              loadFriendsSay(cur);
+            }
           })
           .catch(function (e) {
             var msg =
@@ -6332,6 +6419,8 @@
 
 
       function init() {
+        checkServerConnection();
+
         document.querySelectorAll(".mh-tab").forEach(function (btn) {
           btn.addEventListener("click", function () {
             var name = btn.getAttribute("data-tab");
@@ -6465,14 +6554,26 @@
                 showCyToast("환영해요, " + getNickname() + "님 ♡", "ok");
               })
               .catch(function (e) {
-                var msg =
-                  (e && e.data && e.data.message) ||
-                  "서버에 연결할 수 없어요. server 폴더에서 npm start를 실행해 주세요.";
+                var msg = (e && e.data && e.data.message) || "";
+                if (e && e.data && e.data.error === "taken") {
+                  msg = "이 닉네임은 이미 다른 사람이 쓰고 있어요. 새 이름을 골라 주세요 ♡";
+                  CyShared.checkNickname(v.trim()).then(function (chk) {
+                    if (chk && chk.available && err) {
+                      err.innerHTML =
+                        "인증이 꼬였어요. 입장 버튼 옆에서 닉네임을 지우고 다시 입장해 보세요 ♡";
+                    }
+                  }).catch(function () {});
+                } else if (e && e.data && e.data.error === "auth") {
+                  CyShared.clearNickname();
+                  msg = "닉네임 인증이 꼬였어요. 다시 입장해 주세요 ♡";
+                } else if (!msg) {
+                  msg = serverFailMessage();
+                }
                 if (err) {
                   err.hidden = false;
-                  err.textContent = msg;
+                  err.innerHTML = msg;
                 } else {
-                  alert(msg);
+                  alert(msg.replace(/<[^>]+>/g, ""));
                 }
               })
               .finally(function () {
@@ -7016,6 +7117,7 @@
                   ta.value = "";
                 }
                 loadBoardList(el);
+                loadFriendsSay(el);
                 addDotori(1, "게시판 글 (" + el.symbol + ")");
                 try { bumpAchievement("board_write"); renderAchievements(); } catch (e) {}
               })
@@ -7067,6 +7169,7 @@
                   }
                   if (secretEl) secretEl.checked = false;
                   loadGuestbookList(el);
+                  loadFriendsSay(el);
                   addDotori(1, "방명록 글 (" + el.symbol + ")");
                   try { bumpAchievement("gb_write"); renderAchievements(); } catch (e) {}
                 })
