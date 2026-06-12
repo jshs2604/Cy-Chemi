@@ -327,16 +327,6 @@ app.get("/api/friends-say/:symbol", (req, res) => {
   res.json({ ok: true, symbol: sym, items });
 });
 
-app.get("/api/ilchon/:nickname", (req, res) => {
-  const name = normalizeNick(req.params.nickname);
-  if (!name) {
-    return res.status(400).json({ ok: false, error: "empty" });
-  }
-  const store = readStore();
-  const items = getIlchonListFor(store, name);
-  res.json({ ok: true, nickname: name, items });
-});
-
 function handleIlchonRequest(req, res) {
   const name = normalizeNick(req.body && req.body.name);
   const token = String((req.body && req.body.token) || "").trim();
@@ -491,6 +481,16 @@ app.post("/api/ilchon/respond", (req, res) => {
     peer: pending.from,
     message: pending.from + "님 일촌 신청을 거절했어요.",
   });
+});
+
+app.get("/api/ilchon/:nickname", (req, res) => {
+  const name = normalizeNick(req.params.nickname);
+  if (!name) {
+    return res.status(400).json({ ok: false, error: "empty" });
+  }
+  const store = readStore();
+  const items = getIlchonListFor(store, name);
+  res.json({ ok: true, nickname: name, items });
 });
 
 app.post("/api/gift/send", (req, res) => {

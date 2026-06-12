@@ -10468,6 +10468,30 @@ body.mh-theme-paper .mh-tab.is-active {
   opacity: 0.85;
 }
 
+.mh-ilchon-empty--warn {
+  color: #c45a10;
+  background: #fff8e8;
+  border: 1px dashed #e8a040;
+  border-radius: 8px;
+}
+
+.mh-tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  margin-left: 4px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #ff4d6d;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  vertical-align: middle;
+}
+
 .mh-ilchon-chip {
   display: flex;
   flex-direction: column;
