@@ -8,16 +8,20 @@
 
   var NICK_KEY = "cy_nickname_v1";
   var NICK_TOKEN_KEY = "cy_nickname_token_v1";
-
-  function getApiBase() {
-    try {
-      var custom = localStorage.getItem("cy_api_base");
-      if (custom) {
-        return String(custom).replace(/\/$/, "");
-      }
-    } catch (e) {}
-    return "";
+  
+  var DEFAULT_API_BASE = "https://cy-chemi-6nme.onrender.com";
+  ffunction getApiBase() {
+  try {
+    var custom = localStorage.getItem("cy_api_base");
+    if (custom) {
+      return String(custom).replace(/\/$/, "");
+    }
+  } catch (e) {}
+  if (DEFAULT_API_BASE) {
+    return String(DEFAULT_API_BASE).replace(/\/$/, "");
   }
+  return "";
+}
 
   function apiUrl(path) {
     return getApiBase() + path;
