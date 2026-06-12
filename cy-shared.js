@@ -8,26 +8,46 @@
 
   var NICK_KEY = "cy_nickname_v1";
   var NICK_TOKEN_KEY = "cy_nickname_token_v1";
-  
+
   var DEFAULT_API_BASE = "https://cy-chemi-6nme.onrender.com";
+
   function getApiBase() {
-  try {
-    var custom = localStorage.getItem("cy_api_base");
-    if (custom) {
-      return String(custom).replace(/\/$/, "");
+    try {
+      var custom = localStorage.getItem("cy_api_base");
+      if (custom) {
+        custom = String(custom).replace(/\/$/, "");
+        // 예전 테스트(localhost 등)로 저장된 주소는 무시
+        if (
+          custom &&
+          custom.indexOf("localhost") === -1 &&
+          custom.indexOf("127.0.0.1") === -1
+        ) {
+          return custom;
+        }
+      }
+    } catch (e) {}
+    if (DEFAULT_API_BASE) {
+      return String(DEFAULT_API_BASE).replace(/\/$/, "");
     }
-  } catch (e) {}
-  if (DEFAULT_API_BASE) {
-    return String(DEFAULT_API_BASE).replace(/\/$/, "");
+    return "";
   }
-  return "";
-}
 
   function apiUrl(path) {
     return getApiBase() + path;
   }
 
-  function request(method, path, body) {
+  function sleep(ms) {
+    return new Promise(function (resolve) {
+      setTimeout(resolve, ms);
+    });
+  }
+
+  function request(method, path, body, attempt) {
+    attempt = attempt || 0;
+    var base = getApiBase();
+    if (!base) {
+      return Promise.reject(new Error("no_api_base"));
+    }
     var opts = {
       method: method,
       headers: { Accept: "application/json" },
@@ -36,19 +56,44 @@
       opts.headers["Content-Type"] = "application/json";
       opts.body = JSON.stringify(body);
     }
-    return fetch(apiUrl(path), opts).then(function (res) {
-      return res.json().catch(function () {
-        return { ok: false, error: "bad_json" };
-      }).then(function (data) {
-        if (!res.ok) {
-          var err = new Error((data && data.message) || "request_failed");
-          err.status = res.status;
-          err.data = data;
-          throw err;
+    return fetch(apiUrl(path), opts)
+      .then(function (res) {
+        return res
+          .json()
+          .catch(function () {
+            return { ok: false, error: "bad_json" };
+          })
+          .then(function (data) {
+            if (!res.ok) {
+              if (
+                attempt < 4 &&
+                (res.status === 502 || res.status === 503 || res.status === 504)
+              ) {
+                return sleep(2500 * (attempt + 1)).then(function () {
+                  return request(method, path, body, attempt + 1);
+                });
+              }
+              var err = new Error((data && data.message) || "request_failed");
+              err.status = res.status;
+              err.data = data;
+              throw err;
+            }
+            return data;
+          });
+      })
+      .catch(function (err) {
+        if (attempt < 4 && err && err.message !== "no_api_base") {
+          return sleep(2500 * (attempt + 1)).then(function () {
+            return request(method, path, body, attempt + 1);
+          });
         }
-        return data;
+        throw err;
       });
-    });
+  }
+
+  // Render 무료 서버 깨우기 (페이지 로드 시 미리 연결)
+  if (typeof window !== "undefined" && DEFAULT_API_BASE) {
+    request("GET", "/api/health").catch(function () {});
   }
 
   function getNickname() {
