@@ -10,7 +10,7 @@
   var NICK_TOKEN_KEY = "cy_nickname_token_v1";
   
   var DEFAULT_API_BASE = "https://cy-chemi-6nme.onrender.com";
-  ffunction getApiBase() {
+  function getApiBase() {
   try {
     var custom = localStorage.getItem("cy_api_base");
     if (custom) {
