@@ -73,6 +73,15 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body class="cyworld-body">
+    <div id="cy-boot-splash" class="cy-boot-splash" role="status" aria-live="polite" aria-busy="true">
+      <div class="cy-boot-splash__card">
+        <div class="cy-boot-splash__deco" aria-hidden="true">♡ ✿ ♡</div>
+        <p class="cy-boot-splash__logo">Cy-Chemi</p>
+        <p class="cy-boot-splash__msg" id="cy-boot-splash-msg">미니홈 문을 열고 있어요…</p>
+        <div class="cy-boot-splash__dots" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="cy-boot-splash__acorns" aria-hidden="true">🌰 🧪 ✨</div>
+      </div>
+    </div>
     <header class="cy-chrome" role="banner">
       <div class="cy-chrome__inner">
         <div class="cy-chrome__brand">
@@ -1271,7 +1280,7 @@
               <div id="bgm-scroller" class="mh-mp3__scr-title">
                 ♪ Gee — 소녀시대
               </div>
-              <p id="bgm-hint" class="mh-mp3__scr-sub">원소 조회 시 실제 발매곡이 추천돼요</p>
+              <p id="bgm-hint" class="mh-mp3__scr-sub">▶ 누르면 유튜브에서 재생</p>
               <div class="mh-mp3__scr-bar" aria-hidden="true">
                 <span></span>
               </div>
@@ -1281,12 +1290,15 @@
               <button type="button" id="bgm-next" class="mh-mp3__wheel-btn mh-mp3__wheel-btn--right" title="다음 곡">▶▶</button>
               <button type="button" class="mh-mp3__wheel-btn mh-mp3__wheel-btn--top" title="MENU">MENU</button>
               <button type="button" class="mh-mp3__wheel-btn mh-mp3__wheel-btn--bottom mh-player__list" title="LIST">≡</button>
-              <button type="button" id="bgm-play" class="mh-mp3__wheel-center" title="재생/저장" aria-label="재생">▶</button>
+              <button type="button" id="bgm-play" class="mh-mp3__wheel-center" title="재생" aria-label="재생">▶</button>
             </div>
             <p class="mh-mp3__note">
-              ▶ 버튼은 <b>추천곡 저장</b>이에요. 듣기는 스트리밍에서 검색!
+              ▶ 버튼으로 <b>유튜브 재생</b> · ◀/▶▶로 플레이리스트
             </p>
           </div>
+        </div>
+        <div id="cy-yt-wrap" class="cy-yt-wrap" aria-hidden="true">
+          <div id="cy-yt-player"></div>
         </div>
 
       </aside>
@@ -1508,6 +1520,7 @@
     <script src="element-assets.js"></script>
     <script src="chem-room.js"></script>
     <script src="cy-shared.js"></script>
+    <script src="bgm-player.js"></script>
     <script>
       var CY_NICK_KEY = CyShared.NICK_KEY;
 
@@ -1983,7 +1996,7 @@
               ? '<li class="mh-ilchon-empty mh-ilchon-empty--warn">' +
                 escapeHtml(authMsg) +
                 "<br><small>입장 버튼 → 같은 닉네임 저장</small></li>"
-              : '<li class="mh-ilchon-empty">서버에 연결할 수 없어요<br><small>Render 링크로 접속해 주세요</small></li>';
+              : '<li class="mh-ilchon-empty">서버에 연결할 수 없어요<br><small>잠시 후 다시 시도해 주세요 ♡</small></li>';
           });
       }
 
@@ -3816,23 +3829,7 @@
       }
 
       function serverFailMessage() {
-        if (
-          typeof location !== "undefined" &&
-          location.hostname &&
-          location.hostname.indexOf("github.io") !== -1
-        ) {
-          return (
-            '서버 연결 실패! 친구들이랑 쓸 땐 <a href="https://cy-chemi-6nme.onrender.com/" ' +
-            'style="color:#fff;text-decoration:underline">cy-chemi-6nme.onrender.com</a> 으로 접속해 주세요'
-          );
-        }
-        return "서버에 연결할 수 없어요. 1분 기다린 뒤 새로고침 해 주세요.";
-      }
-
-      function checkServerConnection() {
-        CyShared.ping().catch(function () {
-          showCyToast(serverFailMessage(), "bad", 8000);
-        });
+        return "서버가 잠깐 잠들어 있어요… 1~2분 뒤 새로고침해 주세요 ♡";
       }
 
       /* 가챠 추첨표 — 가중치(weight)·라벨·실행 함수 */
@@ -5378,7 +5375,7 @@
             if (!opts.silent) {
               ul.innerHTML =
                 "<li class=\"mh-empty mh-gb-empty\">" +
-                "<span>서버에 연결할 수 없어요. Render 링크로 접속해 주세요.</span></li>";
+                "<span>서버에 연결할 수 없어요. 잠시 후 다시 시도해 주세요 ♡</span></li>";
             }
           });
       }
@@ -6991,7 +6988,7 @@
 
 
       function init() {
-        checkServerConnection();
+        CyShared.runBootSplash();
         CyShared.bindDraftKeepalive();
 
         if (getNickname()) {
@@ -7824,83 +7821,26 @@
           });
         }
 
-        var bgmPlay = document.getElementById("bgm-play");
-        var bgmPrev = document.getElementById("bgm-prev");
-        var bgmNext = document.getElementById("bgm-next");
         function currentBgmSong() {
           var el = window.__cyCurrentElement;
           if (el && window.CyChemiRoom) {
             return CyChemiRoom.getBgm(el);
           }
-          return { title: "…", artist: "…", hint: "" };
+          return { title: "Gee", artist: "소녀시대", hint: "원소를 조회하면 추천곡이 바뀌어요" };
         }
-        function saveCurrentBgmToPlaylist() {
-          var s = currentBgmSong();
-          if (!s || !s.title || s.title === "…") {
-            return;
-          }
-          var arr = getBgmPlaylist();
-          var key = s.title + "@" + s.artist;
-          var exists = arr.some(function (x) { return x.key === key; });
-          if (!exists) {
-            arr.unshift({ key: key, title: s.title, artist: s.artist, hint: s.hint || "" });
-            saveBgmPlaylist(arr);
-            bumpAchievement("bgm_save");
-            renderAchievements();
-            addDotori(2, "BGM 저장");
-            try {
-              localStorage.setItem(BGM_PLAYLIST_IDX_KEY, "0");
-            } catch (e) {}
-          }
-        }
-        function playFromPlaylist(step) {
-          var arr = getBgmPlaylist();
-          if (!arr.length) {
-            alert("저장된 곡이 없어요. 먼저 ▶ 버튼으로 추천곡을 저장해 주세요.");
-            return;
-          }
-          var idx = 0;
-          try {
-            idx = parseInt(localStorage.getItem(BGM_PLAYLIST_IDX_KEY) || "0", 10);
-          } catch (e) {}
-          if (Number.isNaN(idx)) {
-            idx = 0;
-          }
-          idx = (idx + step + arr.length) % arr.length;
-          try {
-            localStorage.setItem(BGM_PLAYLIST_IDX_KEY, String(idx));
-          } catch (e) {}
-          var song = arr[idx];
-          setBgmScrollerText(song.title, song.artist);
-          var hint = document.getElementById("bgm-hint");
-          if (hint) {
-            hint.textContent = song.hint || "내 플레이리스트에서 불러온 곡";
-          }
-        }
-        if (bgmPlay) {
-          bgmPlay.addEventListener("click", function () {
-            var b = currentBgmSong();
-            saveCurrentBgmToPlaylist();
-            setBgmScrollerText(b.title, b.artist);
-            alert(
-              "♪ 오늘의 추천곡 메모: " +
-                b.title +
-                " — " +
-                b.artist +
-                "\n" +
-                (b.hint || "") +
-                "\n\n플레이리스트에 저장했어요. ◀/▶▶로 순환해 볼 수 있어요."
-            );
-          });
-        }
-        if (bgmPrev) {
-          bgmPrev.addEventListener("click", function () {
-            playFromPlaylist(-1);
-          });
-        }
-        if (bgmNext) {
-          bgmNext.addEventListener("click", function () {
-            playFromPlaylist(1);
+        if (window.CyBgmPlayer) {
+          CyBgmPlayer.mount({
+            playlistIdxKey: BGM_PLAYLIST_IDX_KEY,
+            getCurrentSong: currentBgmSong,
+            getPlaylist: getBgmPlaylist,
+            savePlaylist: saveBgmPlaylist,
+            setScrollerText: setBgmScrollerText,
+            showToast: showCyToast,
+            onPlaylistSaved: function () {
+              bumpAchievement("bgm_save");
+              renderAchievements();
+              addDotori(2, "BGM 저장");
+            },
           });
         }
 

@@ -50,6 +50,89 @@
 
   var serverReady = false;
 
+  var BOOT_SPLASH_LINES = [
+    "미니홈 문을 열고 있어요…",
+    "원소 친구들을 깨우는 중… 🧪",
+    "도토리 상자를 정리하는 중… 🌰",
+    "거의 다 왔어요, 조금만! ♡",
+  ];
+
+  function setBootSplashMessage(msg) {
+    var el = document.getElementById("cy-boot-splash-msg");
+    if (el) {
+      el.textContent = msg;
+    }
+  }
+
+  function hideBootSplash() {
+    var el = document.getElementById("cy-boot-splash");
+    if (!el) {
+      return;
+    }
+    el.classList.add("cy-boot-splash--out");
+    if (document.body) {
+      document.body.classList.remove("cy-booting");
+    }
+    window.setTimeout(function () {
+      if (el && el.parentNode) {
+        el.parentNode.removeChild(el);
+      }
+    }, 520);
+  }
+
+  function waitForServer(opts) {
+    opts = opts || {};
+    var maxMs = opts.maxMs || 40000;
+    var intervalMs = opts.intervalMs || 2000;
+    var start = Date.now();
+    var lineIdx = 0;
+    var base = getApiBase();
+
+    if (!base) {
+      return Promise.resolve(false);
+    }
+
+    function tickStatus() {
+      if (opts.onStatus) {
+        opts.onStatus(BOOT_SPLASH_LINES[lineIdx % BOOT_SPLASH_LINES.length]);
+      }
+      lineIdx += 1;
+    }
+
+    function tryOnce() {
+      tickStatus();
+      return request("GET", "/api/health")
+        .then(function (d) {
+          return !!(d && d.ok);
+        })
+        .catch(function () {
+          if (Date.now() - start >= maxMs) {
+            return false;
+          }
+          return sleep(intervalMs).then(tryOnce);
+        });
+    }
+
+    return tryOnce();
+  }
+
+  function runBootSplash(opts) {
+    opts = opts || {};
+    var minMs = opts.minMs || 700;
+    if (document.body) {
+      document.body.classList.add("cy-booting");
+    }
+    return Promise.all([
+      sleep(minMs),
+      waitForServer({
+        maxMs: opts.maxMs || 40000,
+        onStatus: setBootSplashMessage,
+      }),
+    ]).then(function () {
+      hideBootSplash();
+    });
+  }
+
   function sleep(ms) {
     return new Promise(function (resolve) {
       setTimeout(resolve, ms);
@@ -428,6 +511,18 @@
     ping: function () {
       return request("GET", "/api/health");
     },
+
+    searchYoutube: function (q) {
+      return request(
+        "GET",
+        "/api/youtube/search?q=" + encodeURIComponent(String(q || "").trim())
+      );
+    },
+
+    setBootSplashMessage: setBootSplashMessage,
+    hideBootSplash: hideBootSplash,
+    waitForServer: waitForServer,
+    runBootSplash: runBootSplash,
 
     isOnline: function () {
       return request("GET", "/api/health").then(function (d) {
