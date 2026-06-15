@@ -2196,7 +2196,7 @@ button.mh-widget--cy-head.mh-cy-head-btn:focus-visible {
   padding: 7px 6px !important;
 }
 
-/* 싸이월드 홈 — 스크랩 | 즐겨찾기 한 줄 */
+/* 싸이케미 홈 — 스크랩 | 즐겨찾기 한 줄 */
 .mh-stat-cyworld-row {
   display: flex;
   flex-wrap: wrap;
@@ -11635,6 +11635,7 @@ body.cy-booting {
   width: min(320px, 88vw);
   padding: 28px 22px 24px;
   text-align: center;
+  font-family: "Galmuri11", "Galmuri9", Gulim, Dotum, sans-serif;
   background: linear-gradient(180deg, #fff 0%, #fff8fd 100%);
   border: 3px solid #ff9ec8;
   border-radius: 22px;
@@ -11645,30 +11646,34 @@ body.cy-booting {
 }
 
 .cy-boot-splash__deco {
-  font-family: "Gaegu", "Hi Melody", cursive;
-  font-size: 18px;
+  font-family: "Galmuri11", "Galmuri9", Gulim, Dotum, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
   color: #ff7eb8;
-  letter-spacing: 0.35em;
-  margin-bottom: 8px;
+  letter-spacing: 0.28em;
+  margin-bottom: 10px;
 }
 
 .cy-boot-splash__logo {
-  margin: 0 0 10px;
-  font-family: "Press Start 2P", "Galmuri11", monospace;
-  font-size: clamp(14px, 4.2vw, 18px);
-  line-height: 1.5;
-  color: #6b2fa0;
+  margin: 0 0 12px;
+  font-family: "Galmuri11", "Galmuri9", Gulim, Dotum, sans-serif;
+  font-size: clamp(20px, 5.5vw, 26px);
+  font-weight: 700;
+  line-height: 1.35;
+  color: #5b2d8a;
+  letter-spacing: -0.02em;
   text-shadow: 0 2px 0 #ffd6ec;
 }
 
 .cy-boot-splash__msg {
   margin: 0 0 14px;
   min-height: 1.4em;
-  font-family: "Gaegu", "Hi Melody", cursive;
-  font-size: 18px;
+  font-family: "Galmuri11", "Galmuri9", Gulim, Dotum, sans-serif;
+  font-size: 14px;
   font-weight: 700;
-  color: #4a5f8c;
-  line-height: 1.45;
+  color: #3d4f6e;
+  line-height: 1.55;
+  letter-spacing: -0.01em;
 }
 
 .cy-boot-splash__dots {

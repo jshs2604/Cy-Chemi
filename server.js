@@ -153,6 +153,47 @@ app.get("/api/health", (req, res) => {
   res.json({ ok: true });
 });
 
+const INVIDIOUS_INSTANCES = [
+  "https://inv.nadeko.net",
+  "https://yewtu.be",
+  "https://invidious.fdn.fr",
+];
+
+app.get("/api/youtube/search", async (req, res) => {
+  const q = String(req.query.q || "").trim();
+  if (!q) {
+    return res.status(400).json({ ok: false, error: "empty" });
+  }
+  for (const base of INVIDIOUS_INSTANCES) {
+    try {
+      const url =
+        base +
+        "/api/v1/search?q=" +
+        encodeURIComponent(q) +
+        "&type=video";
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 8000);
+      const r = await fetch(url, { signal: controller.signal });
+      clearTimeout(timer);
+      if (!r.ok) {
+        continue;
+      }
+      const data = await r.json();
+      const hit = Array.isArray(data)
+        ? data.find((item) => item && item.type === "video" && item.videoId)
+        : null;
+      if (hit && hit.videoId) {
+        return res.json({
+          ok: true,
+          videoId: hit.videoId,
+          title: hit.title || "",
+        });
+      }
+    } catch (e) {}
+  }
+  return res.status(502).json({ ok: false, error: "search_failed" });
+});
+
 app.get("/api/nickname/check", (req, res) => {
   const name = normalizeNick(req.query.name);
   if (!name) {
